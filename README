@@ -13,7 +13,6 @@ Requirements :
 Strongly recommended :
   - lm_sensors(lm-sensors) >= 3.4.0
 ------------------------------------------------------
-it's not difficult!It`s easy to make and use.
 1) BUILDING and CLEANING projest
 - - - - - - - - - - - - - - - - - - - - - - - -
 IMPORTANT!
@@ -46,5 +45,3 @@ To clean project type 'make clean'.
  - or to unininstal jast run "sudo make uninstall" (Mageia (7 beta 2) : su -c 'make uninstall')
  - For help type 'make help'
  - To cleaning up 'make clean'
-
-That's all.
