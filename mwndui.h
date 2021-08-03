@@ -1,0 +1,89 @@
+/*
+ *    uhInfo
+ *    Copyright (C) 2020
+ */
+
+#ifndef _MWNDUI_H_
+#define _MWNDUI_H_
+
+#include "uhirc.h"
+
+using unit_calc_el = struct _unit_calc_el;
+
+class UIHWindow : public Gtk::Window
+{
+public:
+  UIHWindow();
+
+  const uhimc_unique_ptr tColumns = uhimc_unique_ptr(new CModelUhiColumns()),dColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::DISK));
+  const Glib::RefPtr<Gtk::ListStore> m_refTreeModel = Gtk::ListStore::create(*dColumns),ptRefTreeModel = Gtk::ListStore::create(*tColumns);
+    
+  bool temperature_monitoring_enabled = false;
+  Gtk::Label m_Label_CPU,m_Label_OS,m_Label_Audio,m_Label_Network,m_Label_Monitors,m_Label_Memory,m_Label_MOBO;
+protected:
+  Gtk::Frame m_Frame_Disks,m_Frame_Sensors,m_Frame_CPU,m_Frame_VGA,m_Frame_VGA_pcie,m_Frame_MOBO,m_Frame_OS,m_Frame_Memory,m_Frame_CPUFrecq,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network; // Data.
+  Gtk::Paned m_HPaned, m_VPanedTrmpetature;
+  Gtk::Box m_VBoxAll,m_VBoxVLeft,m_VBoxVRight,m_VBoxMenu,m_VBoxVGA,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBox_Audio,m_VBox_Network,m_DABox_Temperature,m_Box_TmpControls,m_VBoxCPUActivityAll;
+  Gtk::Grid m_gridVGA_cond;
+  Gtk::ButtonBox m_ButtonBox;
+  Gtk::Button m_ButtonQuit;
+  Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
+  Gtk::Label m_Label_Sensors;
+  Gtk::HBox hbox_operation_status_cpu,hbox_operation_status_pcie,hbox_operation_status_sensors;
+  Gtk::Image operation_status_image_cpu,operation_status_image_pcie,operation_status_image_sensors; 
+
+  //CPU activity all
+  Gtk::Grid m_BlinkGrid, m_CPUModeGrid;
+  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUNativeFqLabel;
+  Gtk::Switch m_BlinkSwitch, m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch;
+
+  Gtk::Revealer m_Revealer;
+  Gtk::FlowBox m_Fbox_CPUActivityAll;
+  Gtk::Frame m_Frame_CPUActivityAll;
+
+  Gtk::ProgressBar m_pbFreq,m_pbUse;
+  Gtk::Separator m_separator;
+  Gtk::Statusbar m_status_bar;
+  Gtk::Label m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status;
+  CDrawArea m_DAtemperature;
+
+  bool smDlg_shown = false,sensors_printing_enable = false,temperature_mode_status = false;
+
+  Gtk::TextView m_TextView;
+  Gtk::Label m_Label_VGA,m_Label_VGA_cond,m_Label_VGA_cond_status;
+  Gtk::TreeView m_temperatureTreeView, m_TreeView;
+  Gtk::ComboBoxText m_Gpus;
+  
+  Gtk::CheckMenuItem *item_cpu = nullptr;
+  Gtk::CheckMenuItem *item_infomode = nullptr;
+  Gtk::CheckMenuItem *item_temperature = nullptr;
+  Gtk::MenuItem *item_manage = nullptr;
+  Gtk::MenuItem *item_options = nullptr;
+  
+  std::string Ud2printcache = "";
+
+  std::mutex mutex_print;
+  std::unique_ptr<sigc::connection> c_Timer{nullptr};
+
+  void InitUI();
+  void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain); 
+  void StatusbarCpuText(){m_sb_cpu_status.set_text(m_CPUModeSwitch.get_active() ? "scaling_cur_freq      " : "cpuinfo      " );}
+  
+  virtual void about_dialog_info() = 0;
+  virtual void enhanced_system_info() = 0; 
+  virtual void show_cpu_activity_all() = 0; 
+  virtual void manage_sensors() = 0; 
+  virtual void monitor_temperature() = 0; 
+  virtual void get_preferences() const  = 0;
+  
+  virtual void Wnd_show_handler() = 0;
+  virtual void on_quit_button_clicked() = 0;
+  virtual void on_gpus_selection_changed() = 0;
+  virtual void On_CPUActivityAll_switch_changed() = 0;
+  virtual void On_Compare_mode_switch_changed() = 0;
+  virtual void On_NativeFq_changed() = 0;  
+
+  virtual ~UIHWindow() = default;
+};
+
+#endif // _MWNDUI_H_

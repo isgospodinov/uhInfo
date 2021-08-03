@@ -1,0 +1,50 @@
+uhInfo
+******
+A small gnome desktop application for displaying configuration information and
+monitoring CPU and temperature statistics.Including CPU temperatures,voltage,
+activity,PCIE link status,HDD/SSD temperatures,fan speeds and other important
+system parameters readings under Linux.
+
+Author: Ivailo Gospodinov <isgospodinov@gmail.com>
+------------------------------------------------------
+Requirements :
+  - GNOME desktop environment with gtkmm-3.0 >= 3.22.0
+  - Udisks2 >= 2.7.6
+Strongly recommended :
+  - lm_sensors(lm-sensors) >= 3.4.0
+------------------------------------------------------
+it's not difficult!It`s easy to make and use.
+1) BUILDING and CLEANING projest
+- - - - - - - - - - - - - - - - - - - - - - - -
+IMPORTANT!
+To ensure proper project compilation you will need to install:
+- Fedora (33/34) : gtkmm30-devel lm_sensors-devel libudisks2-devel
+- Ubuntu (20.10/21.4),Tails (3.14) & Zorin (15 beta) : libgtkmm-3.0-dev libsensors4-dev libudisks2-dev
+- Mageia (7 beta 2) : gtkmm3.0-devel lm_sensors-devel lib64udisks2-devel
+- Antergos (19.3) & Manjaro (18.0.4) : gtkmm3 lm_sensors udisks2
+- openSUSE (Tumbleweed) : gtkmm3-devel libudisks2-0-devel libsensors4-devel
+So if necessary :
+- Fedora (33/34) : sudo dnf install gtkmm30-devel lm_sensors-devel libudisks2-devel
+- Ubuntu (20.10/21.4),Tails (3.14) & Zorin (15 beta) : sudo apt-get install libgtkmm-3.0-dev libsensors4-dev libudisks2-dev
+- Mageia (7 beta 2) : su -c 'dnf install gtkmm3.0-devel lm_sensors-devel lib64udisks2-devel'
+- Antergos (19.3) & Manjaro (18.0.4) : sudo pacman -S gtkmm3 lm_sensors udisks2
+- openSUSE (Tumbleweed) : sudo zypper install gtkmm3-devel libudisks2-0-devel libsensors4-devel
+IMPORTANT!
+FIX : Before compiling
+Sometimes there are small "incompatibilities", so we have to fix them.
+Under Fedora (33/34),Ubuntu (20.10/21.4),Mageia (7 beta 2),Tails (3.14),
+Zorin (15 beta),Antergos (19.3),Manjaro (18.0.4) & openSUSE (Tumbleweed)
+go to '/usr/include/udisks2/udisks' directory end manualy edit *.h files.
+When you encounter '<udisks/' ,replace it with '<udisks2/udisks/'.
+Save changes.
+Now open terminal and go to 'uhInfo' directory.
+To create a executable binary jast run 'make'.
+To clean project type 'make clean'.
+2)SETTING UP and DELETE
+- - - - - - - - - - - -- - - - - - - - - - - -
+ - To install run "sudo make install" (Mageia (7 beta 2) : su -c 'make install')
+ - or to unininstal jast run "sudo make uninstall" (Mageia (7 beta 2) : su -c 'make uninstall')
+ - For help type 'make help'
+ - To cleaning up 'make clean'
+
+That's all.

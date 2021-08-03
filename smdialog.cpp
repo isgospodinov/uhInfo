@@ -1,0 +1,170 @@
+/*
+ *    uhInfo
+ *    Copyright (C) 2018
+ */
+
+#include "smdialog.h"
+#include "sysens.h"
+#include "ud2mon.h"
+#include "mwnd.h"
+using uhiutil::cpu::UhiDownCast;
+
+CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : Gtk::Dialog("Settings",p_wnd),
+                     pmWnd(p_wnd),pSensors(&pS),pUd2mon(&pUd2)
+{
+    //add_events(Gdk::STRUCTURE_MASK);
+    uhiutil::GetDesktopSize((unsigned int*) &dh,(unsigned int*) &dw);
+
+   scrollWindow.add(treeView);
+   get_content_area()->pack_start(scrollWindow);
+   treeView.set_model(pRefTreeModel);
+
+   treeView.append_column_editable("+/-", vColumns->col_tcheck);
+   treeView.append_column("Node", vColumns->tsensor_node);
+   treeView.append_column("Sensor", vColumns->tsensor_name);
+
+   Gtk::CellRendererToggle* pRenderer = nullptr;
+   Gtk::TreeViewColumn* pColumn = treeView.get_column(0);
+
+   if(pColumn)
+       pRenderer = UhiDownCast<Gtk::CellRenderer,Gtk::CellRendererToggle>(pColumn->get_first_cell());
+
+   if(pColumn && pRenderer)
+       pRenderer->signal_toggled().connect(sigc::mem_fun(*this,&CSmDialog::OnToggled));
+
+   get_vbox()->set_border_width(7);
+
+   signal_response().connect(sigc::mem_fun((CHWindow&)*p_wnd, fp) );
+
+   get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
+void CSmDialog::InitVision()
+{
+   if(pSensors) {
+       bool stat = ((CHWindow*)pmWnd)->pfDlg->GetAllInputStat();
+       for(Chip_node n : pSensors->monitoring)  {
+           for(Sensor_node sn : n.sensors) {
+                if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
+                Gtk::TreeModel::Row row = *(pRefTreeModel->append());
+                row[vColumns->col_tcheck] = sn.visible;
+                row[vColumns->tsensor_node] = n.chip_name.cnip_prefix;
+                row[vColumns->tsensor_name] = sn.label;
+                row[vColumns->tnode_id] = n.chip_id;
+                row[vColumns->tsensor_id] = sn.feature_number;
+           }
+       }
+   }
+
+   if(pUd2mon) {
+       for(Ud2_sens_node it : pUd2mon->monitoring)  {
+           Gtk::TreeModel::Row row = *(pRefTreeModel->append());
+           row[vColumns->col_tcheck] = it.visible;
+           row[vColumns->tsensor_node] = sensors::nud2;
+           row[vColumns->tsensor_name] = it.ud2_model_name;
+           row[vColumns->tnode_id] = it.ud2_drv_id;
+           row[vColumns->tsensor_id] = it.index;
+       }
+   }
+}
+
+const std::string CSmDialog::GetAllInused() const
+{
+   bool found = false;
+   std::string buff(""),allinused = GetInused(),config = "/home/" + uhiutil::GetUserName() + "/.uhInfo/uhInfo.cfg";
+   if(uhiutil::ExistenceVerification(config.c_str())) {
+          buff = "cat " + config + " | grep -v uhi";
+          buff = uhiutil::execmd(buff.c_str());
+          if(buff != "") {
+              config = GetInused(true);
+              std::istringstream alreadysaved(buff);
+              for(std::string line; std::getline(alreadysaved, line);) {
+                    std::istringstream activenow(config);
+                    for(std::string ln; std::getline(activenow, ln);) {
+                          if(line == ln) {
+                                found = true;
+                                break;
+                          }
+                    }
+              if(!found) allinused.append(line + "\n");
+              found = false;      
+              }
+          }
+   }
+
+   return allinused;
+}
+
+const std::string CSmDialog::GetInused(bool all) const
+{
+   std::string inused("");
+
+   if(pSensors) {
+        for(Chip_node n : pSensors->monitoring)  {
+              for(Sensor_node sn : n.sensors) {
+                    if(all || !sn.visible)
+                         inused.append(sn.label + ":" + n.chip_id + ":" + std::to_string(sn.feature_number) + "\n");
+              }
+        }
+   }
+
+   if(pUd2mon) {
+        for(Ud2_sens_node sn : pUd2mon->monitoring)  {
+              if(all || !sn.visible)
+                    inused.append(std::string(sn.ud2_model_name) + ":" + std::string(sn.ud2_drv_id) + ":" + std::to_string(sn.index) + "\n");
+        }
+   }
+
+   return inused;
+}
+
+void CSmDialog::OnToggled(const Glib::ustring &path_string)
+{
+   Gtk::TreePath path(path_string);
+   Gtk::TreeModel::iterator iter = pRefTreeModel->get_iter(path);
+
+   if((*iter)[vColumns->tsensor_node] == sensors::nud2) {
+       if(pUd2mon) {
+           for(std::list<Ud2_sens_node>::iterator it = pUd2mon->monitoring.begin(); it != pUd2mon->monitoring.end(); it++)  {
+                if(((*iter)[vColumns->tsensor_name] == Glib::ustring(it->ud2_model_name)) && ((*iter)[vColumns->tnode_id] == it->ud2_drv_id)) { 
+                    it->visible = (*iter)[vColumns->col_tcheck];
+                    ((!it->visible) ? ++pUd2mon->inactive_dev_number : --pUd2mon->inactive_dev_number);
+                    pUd2mon->dataPrint_forced = true;
+                    break;
+                }
+           }
+       }
+   }
+   else {
+       if(pSensors) {
+           bool break_it = false;
+           for(std::list<Chip_node>::iterator n = pSensors->monitoring.begin(); n != pSensors->monitoring.end(); n++)  {
+                if((*iter)[vColumns->tsensor_node] == Glib::ustring(n->chip_name.cnip_prefix) && ((*iter)[vColumns->tnode_id] == n->chip_id)) {
+                    for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
+                        if((*iter)[vColumns->tsensor_name] == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) { 
+                            sn->visible = (*iter)[vColumns->col_tcheck];
+                            ((!sn->visible) ? ++n->inactive_sensors_number : --n->inactive_sensors_number);
+                            break_it = true;
+                            break;
+                        }
+                    }
+                }
+                if(break_it) break;
+           }
+       } 
+   }
+}
+
+void CSmDialog::on_show()
+{
+    int x = 0, y = 0;
+    pmWnd->get_position(x,y);
+
+    // !! move(... , ...) works effectively only after Gtk::Dialog::on_show() execution
+    //MVWND(x,y,pmWnd->get_width(),get_width());
+
+    pRefTreeModel->clear();
+    InitVision();
+    Gtk::Dialog::on_show();
+    MVWND(x,y,pmWnd->get_width(),get_width());
+}
