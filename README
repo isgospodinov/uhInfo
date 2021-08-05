@@ -4,8 +4,6 @@ A small gnome desktop application for displaying configuration information and
 monitoring CPU and temperature statistics.Including CPU temperatures,voltage,
 activity,PCIE link status,HDD/SSD temperatures,fan speeds and other important
 system parameters readings under Linux.
-
-Author: Ivailo Gospodinov <isgospodinov@gmail.com>
 ------------------------------------------------------
 Requirements :
   - GNOME desktop environment with gtkmm-3.0 >= 3.22.0
