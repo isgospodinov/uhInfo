@@ -46,6 +46,7 @@ private:
               if(ce.lCompareColor) ce.lCompareColor->set_visible(sv);
               if(ce.lFirstSpace) ce.lFirstSpace->set_visible(sv);});
        }
+  CDrawArea::TmpWndState DTmpA_Mng();
 
   virtual void enhanced_system_info() override;
   virtual void show_cpu_activity_all() override;  
