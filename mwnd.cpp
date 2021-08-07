@@ -53,6 +53,22 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
 }
 
+CDrawArea::TmpWndState CHWindow::DTmpA_Mng()
+{
+	CDrawArea::TmpWndState state = CDrawArea::DAWndState::NORMAL;
+	bool visiblity = true;
+
+	if(m_DAtemperature.m_TmpWndCurrState == state) {
+		state = CDrawArea::DAWndState::FULL;
+		visiblity = false;
+	}
+
+	TEMPERATUREWNDVIEW(visiblity);
+
+	return state;
+}
+
+
 void CHWindow::InitVision()
 {
   InitUI();
@@ -220,12 +236,25 @@ void CHWindow::Posthreadnotify()
     ShowHide_compare_elements();
     
      if(!c_Timer)
-             c_Timer = std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,&CHWindow::uhI_Timer), uhiutil::timer_id),uhiutil::timer_interval)));
+             c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
+
+     if(!c_tTWndMng)
+    	     c_tTWndMng = SETIMER(uhiutil::timer_id + 1,uhiutil::timer_interval - 1400);
+
 }
 
 bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
+
+      if(TmNo == uhiutil::timer_id + 1) {
+          if(item_temperature->get_active() && m_DAtemperature.m_DAStch) {
+        	  m_DAtemperature.m_TmpWndCurrState = DTmpA_Mng();
+        	  m_DAtemperature.m_DAStch = false;
+          }
+
+          return true;
+      }
 
       // --------------- cpu units activity calc ---------------
       if(item_cpu->get_active()) {
