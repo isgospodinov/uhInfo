@@ -63,7 +63,7 @@ protected:
   std::string Ud2printcache = "";
 
   std::mutex mutex_print;
-  std::unique_ptr<sigc::connection> c_Timer{nullptr};
+  std::unique_ptr<sigc::connection> c_Timer{nullptr},c_tTWndMng{nullptr};
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain); 
