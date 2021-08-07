@@ -18,6 +18,8 @@ CDrawArea::CDrawArea(Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_f
               valusg = dw_usg;
               valfreqcmpr = dw_frec_cp;
   }
+  else
+	  add_events(Gdk::BUTTON_PRESS_MASK);
 }
 
 void CDrawArea::Redraw()
