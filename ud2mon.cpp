@@ -165,12 +165,11 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
    int KelvTemp = 0.0;
    double ctemp = 0.0;
    std::string bufer("");
-   const std::string lnud2{"  " + std::string{sensors::nud2} + "\n"};
    Gtk::TextBuffer::iterator itxbf = txtbuff->get_iter_at_line(txtbuff->get_line_count());
    if(GetSensorNodesNumb() && !get_ud2_print_status()) {
-        bufer.append(lnud2);
+	   bufer.append("  " + std::string{sensors::nud2} + '\n');
         if(printmode)
-        	  itxbf = txtbuff->insert(itxbf,lnud2);
+        	itxbf = txtbuff->insert(itxbf,"  " + std::string{sensors::nud2} + '\n');
         for(std::list<Ud2_sens_node>::iterator it =  monitoring.begin(); it != monitoring.end(); it++) {
               if(!it->visible) continue;
               if(Ud2Cl && it->ata_drive) {
