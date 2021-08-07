@@ -13,6 +13,7 @@ class CDrawArea : public Gtk::DrawingArea
 {
 public:
   using StatPaint = enum class PaintMode {FREQP,COMPAREFREQP,USAGE,TEMPERATUREP};
+  using TmpWndState = enum class DAWndState {NORMAL,FULL};
   using DRAWVECTOR = const std::vector<double>*;
   using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
     
@@ -24,11 +25,18 @@ public:
   void EraseAll() {draw_temperatures.clear();}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
+  bool m_DAStch = false;
+  TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
       std::string DItName = "";
   };
+
+  virtual bool on_button_press_event(GdkEventButton* bntev) override {
+  	if(bntev->type == GDK_2BUTTON_PRESS && !m_DAStch) m_DAStch = true;
+  	return false;
+  }
 
   DRAWVECTOR tmpmon = nullptr;
   const TUDRAWVECTOR *valfreq = nullptr, *valfreqcmpr = nullptr, *valusg = nullptr;
