@@ -15,7 +15,7 @@ public:
 private:
    void PreInitVision();
    Gtk::Button nB;
-   Gtk::LinkButton lB;
+   Gtk::LinkButton lB,lbGH;
 
    void bt_quit_clicked(){hide();}
 };
