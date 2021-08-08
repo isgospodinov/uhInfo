@@ -45,7 +45,6 @@ protected:
   Gtk::Separator m_separator;
   Gtk::Statusbar m_status_bar;
   Gtk::Label m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status;
-  CDrawArea m_DAtemperature;
 
   bool smDlg_shown = false,sensors_printing_enable = false,temperature_mode_status = false;
 
@@ -63,7 +62,7 @@ protected:
   std::string Ud2printcache = "";
 
   std::mutex mutex_print;
-  std::unique_ptr<sigc::connection> c_Timer{nullptr},c_tTWndMng{nullptr};
+  std::unique_ptr<sigc::connection> c_Timer{nullptr};
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain); 
@@ -81,7 +80,7 @@ protected:
   virtual void on_gpus_selection_changed() = 0;
   virtual void On_CPUActivityAll_switch_changed() = 0;
   virtual void On_Compare_mode_switch_changed() = 0;
-  virtual void On_NativeFq_changed() = 0;  
+  virtual void On_NativeFq_changed() = 0;
 
   virtual ~UIHWindow() = default;
 };
