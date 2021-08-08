@@ -6,7 +6,7 @@
 #include "aboutdlg.h"
 
 CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : Gtk::MessageDialog(*p_mWnd,"",false, Gtk::MESSAGE_INFO, Gtk::BUTTONS_NONE, true),
-                          nB(Gtk::Stock::CLOSE),lB("http://www.uhinfo.free.bg/","Go to uhInfo website")
+                          nB(Gtk::Stock::CLOSE),lB("http://www.uhinfo.free.bg/","Go to uhInfo website"),lbGH("https://github.com/isgospodinov/uhInfo","uhInfo on GitHub")
 {
 	get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	PreInitVision();
@@ -15,9 +15,10 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
 void CAboutDlg::PreInitVision()
 {
      set_title("About...");
-     set_secondary_text("Application version :\n          0.15");
+     set_secondary_text("Application version :\n          0.16");
      set_image(*(Gtk::manage(new Gtk::Image(Gtk::Stock::DIALOG_INFO,Gtk::IconSize(Gtk::BuiltinIconSize::ICON_SIZE_DIALOG)))));
      get_content_area()->pack_start(*Gtk::manage(new Gtk::Label("Copyright© Ivailo Gospodinov")));
+     get_content_area()->pack_start(*(Gtk::manage(&lbGH)));
 
      nB.set_image_from_icon_name("window-close");
      nB.set_always_show_image();
