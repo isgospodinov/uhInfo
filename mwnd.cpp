@@ -8,8 +8,10 @@ using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
-					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov))
+					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
+					   m_DAtemperature(this,&CHWindow::on_DA_button_press_event)
 {
+  m_DABox_Temperature.pack_start(m_DAtemperature);// ! moved from mwndui.cpp
   add(m_VBoxAll);
 
   Glib::RefPtr<Gtk::StyleContext> refStyleContext = get_style_context();
@@ -53,8 +55,10 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
 }
 
-CDrawArea::TmpWndState CHWindow::DTmpA_Mng()
+bool CHWindow::on_DA_button_press_event(GdkEventButton* bntev)
 {
+	if(bntev->type != GDK_2BUTTON_PRESS || bntev->button != 1) return false;
+
 	CDrawArea::TmpWndState state = CDrawArea::DAWndState::NORMAL;
 	bool visiblity = true;
 
@@ -64,10 +68,10 @@ CDrawArea::TmpWndState CHWindow::DTmpA_Mng()
 	}
 
 	TEMPERATUREWNDVIEW(visiblity);
+	m_DAtemperature.m_TmpWndCurrState = state;
 
-	return state;
+   return false;
 }
-
 
 void CHWindow::InitVision()
 {
@@ -237,24 +241,11 @@ void CHWindow::Posthreadnotify()
     
      if(!c_Timer)
              c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
-
-     if(!c_tTWndMng)
-    	     c_tTWndMng = SETIMER(uhiutil::timer_id + 1,uhiutil::timer_interval - 1400);
-
 }
 
 bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
-
-      if(TmNo == uhiutil::timer_id + 1) {
-          if(item_temperature->get_active() && m_DAtemperature.m_DAStch) {
-        	  m_DAtemperature.m_TmpWndCurrState = DTmpA_Mng();
-        	  m_DAtemperature.m_DAStch = false;
-          }
-
-          return true;
-      }
 
       // --------------- cpu units activity calc ---------------
       if(item_cpu->get_active()) {
