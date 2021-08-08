@@ -62,7 +62,6 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_VBoxVLeft.pack_start(m_BlinkGrid, Gtk::PACK_SHRINK);
   m_VBoxVLeft.pack_start(m_Frame_Sensors);
   m_Box_TmpControls.pack_start(m_ScrolledWindowTemperatures);
-  m_DABox_Temperature.pack_start(m_DAtemperature);
 
   m_VPanedTrmpetature.add1(m_Box_TmpControls);
   m_VPanedTrmpetature.add2(m_DABox_Temperature);
@@ -316,7 +315,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                Gtk::Label *lCcpuColor = Gtk::manage(new Gtk::Label);
                Gtk::Label *lUsageColor = Gtk::manage(new Gtk::Label);
                Gtk::Label *lSpace = Gtk::manage(new Gtk::Label);
-               cpu_unit.pDArea = Gtk::manage(new CDrawArea(Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg)));
+               cpu_unit.pDArea = Gtk::manage(new CDrawArea(nullptr,nullptr,Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg)));
                cpu_unit.cpuid_m_pbF = Gtk::manage(new Gtk::ProgressBar);
                cpu_unit.cpuid_m_pbU = Gtk::manage(new Gtk::ProgressBar);
                cpu_unit.lCompareColor = Gtk::manage(new Gtk::Label);
