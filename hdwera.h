@@ -9,14 +9,18 @@
 #include "util.h"
 #include <iomanip>
 
+class CHWindow;
+
 class CDrawArea : public Gtk::DrawingArea
 {
 public:
   using StatPaint = enum class PaintMode {FREQP,COMPAREFREQP,USAGE,TEMPERATUREP};
+  using TmpWndState = enum class DAWndState {NORMAL,FULL};
+  using fp_lDASR = bool (CHWindow::*)(GdkEventButton*);
   using DRAWVECTOR = const std::vector<double>*;
   using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
     
-  CDrawArea(Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
+  CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
   virtual ~CDrawArea() = default;
 
   void Redraw();
@@ -24,6 +28,7 @@ public:
   void EraseAll() {draw_temperatures.clear();}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
+  TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;

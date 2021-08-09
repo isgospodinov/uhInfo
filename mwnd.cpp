@@ -8,8 +8,10 @@ using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
-					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov))
+					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
+					   m_DAtemperature(this,&CHWindow::on_DA_button_press_event)
 {
+  m_DABox_Temperature.pack_start(m_DAtemperature);// ! moved from mwndui.cpp
   add(m_VBoxAll);
 
   Glib::RefPtr<Gtk::StyleContext> refStyleContext = get_style_context();
@@ -51,6 +53,24 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   m_VPanedTrmpetature.set_visible(false);
 
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
+}
+
+bool CHWindow::on_DA_button_press_event(GdkEventButton* bntev)
+{
+	if(bntev->type != GDK_2BUTTON_PRESS || bntev->button != 1) return false;
+
+	CDrawArea::TmpWndState state = CDrawArea::DAWndState::NORMAL;
+	bool visiblity = true;
+
+	if(m_DAtemperature.m_TmpWndCurrState == state) {
+		state = CDrawArea::DAWndState::FULL;
+		visiblity = false;
+	}
+
+	TEMPERATUREWNDVIEW(visiblity);
+	m_DAtemperature.m_TmpWndCurrState = state;
+
+   return false;
 }
 
 void CHWindow::InitVision()
@@ -220,7 +240,7 @@ void CHWindow::Posthreadnotify()
     ShowHide_compare_elements();
     
      if(!c_Timer)
-             c_Timer = std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,&CHWindow::uhI_Timer), uhiutil::timer_id),uhiutil::timer_interval)));
+             c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
 }
 
 bool CHWindow::uhI_Timer(int TmNo)

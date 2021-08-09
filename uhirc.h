@@ -88,6 +88,12 @@
           item_options->set_sensitive(flag); \
           item_manage->set_sensitive(flag)
 
+#define TEMPERATUREWNDVIEW(wndstat) \
+		  m_status_bar.set_visible(wndstat); \
+	      m_VBoxVLeft.set_visible(wndstat);  \
+	      m_Box_TmpControls.set_visible(wndstat); \
+	      m_VBoxMenu.set_visible(wndstat)
+
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()
 
@@ -101,6 +107,8 @@
                                 removable = g_strrstr(skey,"removable"); \
                                 hotplug = g_strrstr(skey,"hotplug");     \
                                 fixed = g_strrstr(skey,"fixed")
+
+#define SETIMER(id,interval) std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,&CHWindow::uhI_Timer), id), interval)))
                                 
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \

@@ -167,9 +167,9 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
    std::string bufer("");
    Gtk::TextBuffer::iterator itxbf = txtbuff->get_iter_at_line(txtbuff->get_line_count());
    if(GetSensorNodesNumb() && !get_ud2_print_status()) {
-        bufer.append("  UDisks2\n");
+	   bufer.append("  " + std::string{sensors::nud2} + '\n');
         if(printmode)
-              itxbf = txtbuff->insert(itxbf,"  UDisks2\n");
+        	itxbf = txtbuff->insert(itxbf,"  " + std::string{sensors::nud2} + '\n');
         for(std::list<Ud2_sens_node>::iterator it =  monitoring.begin(); it != monitoring.end(); it++) {
               if(!it->visible) continue;
               if(Ud2Cl && it->ata_drive) {
@@ -215,7 +215,7 @@ void Ud2mon::PopulateTemperatureSelection(CHWindow *m_wnd)
            if(sn.visible) {
                   Gtk::TreeModel::Row row = *(pTM->append());
                   row[m_wnd->tColumns->col_tcheck] = sn.t_statistic_active;
-                  row[m_wnd->tColumns->tsensor_node] = "UDisks2";
+                  row[m_wnd->tColumns->tsensor_node] = sensors::nud2;
                   row[m_wnd->tColumns->tsensor_name] = sn.ud2_model_name;
                   row[m_wnd->tColumns->tnode_id] = sn.ud2_drv_id;
                   row[m_wnd->tColumns->tsensor_id] = sn.index;

@@ -3,20 +3,24 @@
  *    Copyright (C) 2018
  */
 
+#include "mwnd.h"
 #include "hdwera.h"
 #include "proc.h"
-#include <iostream>
 #include <cairomm/context.h>
 
 const Gtk::Switch *CDrawArea::l_CPUModeSwitch = nullptr,*CDrawArea::l_CPUCompareSwitch = nullptr;
 
-CDrawArea::CDrawArea(Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
+CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
 {
   set_size_request(uhiutil::draw::dwaw,uhiutil::draw::dwah);
   if(dwm == Dm::CPUDRAW) {
               valfreq = dw_frec;
               valusg = dw_usg;
               valfreqcmpr = dw_frec_cp;
+  }
+  else {
+	  add_events(Gdk::BUTTON_PRESS_MASK);
+	  signal_button_press_event().connect(sigc::mem_fun(*uhiwnd,ldafp));
   }
 }
 
