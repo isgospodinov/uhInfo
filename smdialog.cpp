@@ -15,6 +15,11 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
     //add_events(Gdk::STRUCTURE_MASK);
     uhiutil::GetDesktopSize((unsigned int*) &dh,(unsigned int*) &dw);
 
+    if(!dh || !dw) {
+    	dw = uhiutil::def_desktop_width;
+        dh = uhiutil::def_desktop_height;
+   }
+
    scrollWindow.add(treeView);
    get_content_area()->pack_start(scrollWindow);
    treeView.set_model(pRefTreeModel);
