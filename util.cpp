@@ -65,18 +65,27 @@ void uhiutil::GetDesktopSize(unsigned int *Wh,  unsigned int *Ww)
   std::string::size_type pos1,pos2;
 
   std::string result = execmd("xrandr");
-  pos1 = result.find("current");
-  pos1 += (((std::string)("current")).size());
+  if(result!= "") {
+      pos1 = result.find("current");
+      pos1 += (((std::string)("current")).size());
 
-  pos2 = result.find(",",pos1);
-  sub = result.substr(pos1,pos2 - pos1);
+      pos2 = result.find(",",pos1);
+      sub = result.substr(pos1,pos2 - pos1);
+  }
+  else
+  	  sub = execmd("xdpyinfo | grep dimensions: | awk '{print $2}'");
 
-  pos1 = sub.find("x");
-  w = sub.substr(0,pos1);
-  h = sub.substr((pos1 + 1), (sub.size() - pos1));
+  //sub = "";
+  if(sub != "") {
+      pos1 = sub.find("x");
+      w = sub.substr(0,pos1);
+      h = sub.substr((pos1 + 1), (sub.size() - pos1));
 
-  *Ww = (  (unsigned int) std::stoi(w)  );
-  *Wh = (  (unsigned int) std::stoi(h)  );
+      *Ww = ((unsigned int) std::stoi(w));
+      *Wh = ((unsigned int) std::stoi(h));
+  }
+  else
+	  *Ww = *Wh = 0;
 }
 
 bool uhiutil::ExistenceVerification(const char *path)
