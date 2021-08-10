@@ -75,7 +75,7 @@ std::string CGpus::GpuStatus(int pos) const
                   ret = adp.adapter_set;
                   unsigned int height,width;
                   uhiutil::GetDesktopSize(&height,&width);
-                  ret.append("\nDesktop resolution: " + std::to_string(width) + "x" + std::to_string(height));
+                  if(height > 0 && width > 0) ret.append("\nDesktop resolution: " + std::to_string(width) + "x" + std::to_string(height));
                   break;
               }
      }
