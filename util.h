@@ -26,6 +26,7 @@ namespace uhiutil {
    const unsigned int timer_interval = 1500;
    const unsigned int timer_id = 0;
    const unsigned int max_size = 1024;
+   const int def_desktop_width = 620, def_desktop_height = 460;
 
    namespace calc {
        enum {bfr = 0,cfr,usg,dimension};
