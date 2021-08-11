@@ -66,8 +66,8 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   Cairo::Matrix matrix(-1.0 , 0.0, 0.0, -1.0, width, height); // axes flipping
   cr->transform(matrix);// (0,0) -> (width,height):(width,0) -> (0,height):(0,height) -> (width,0):...
 
-  double xc = (double)width / 15.0;
-  int yc = (double)height / 5.0;
+  double xc = (double)width / (double)uhiutil::draw::uhi_draw_xscale;
+  int yc = (double)height / (double)uhiutil::draw::uhi_draw_yscale;
 
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
@@ -207,17 +207,26 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
   layout->set_font_description(font);
 
   layout->set_text(std::to_string(uhiutil::cpu::max_cpu_t) + " °");
-  layout->get_pixel_size(width,height); 
+  layout->get_pixel_size(width,height);
   cr->move_to(w - (width + uhiutil::draw::dofset),uhiutil::draw::dofset);
   layout->show_in_cairo_context(cr);// max temperature
 
   layout->set_text("0");
-  layout->get_pixel_size(width,height); 
+  layout->get_pixel_size(width,height);
   cr->move_to(w - (width + uhiutil::draw::dofset),h - (height + uhiutil::draw::dofset));
   layout->show_in_cairo_context(cr); // start point
 
+  if(m_TmpWndCurrState == DAWndState::FULL) {
+      for (int br  = 1; br < (int)uhiutil::draw::uhi_draw_yscale ; br++) {
+	     layout->set_text(std::to_string((uhiutil::cpu::max_cpu_t / uhiutil::draw::uhi_draw_yscale) * br) + " °");
+	     layout->get_pixel_size(width,height);
+	     cr->move_to(w - (width + uhiutil::draw::dofset),( (h - ((h / uhiutil::draw::uhi_draw_yscale) * br)) - (height + uhiutil::draw::dofset / 2) ) );
+	     layout->show_in_cairo_context(cr);
+      }
+  }
+
   layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
-  layout->get_pixel_size(width,height); 
+  layout->get_pixel_size(width,height);
   cr->move_to(uhiutil::draw::dofset,h - (height + uhiutil::draw::dofset));
   layout->show_in_cairo_context(cr); // "page" max time duration*/
 }
