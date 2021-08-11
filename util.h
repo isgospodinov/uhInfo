@@ -60,6 +60,7 @@ namespace uhiutil {
        const unsigned int dtxthin = 8;
        const unsigned int dwaw = 100;
        const unsigned int dwah = 50;
+       const unsigned int uhi_draw_yscale = 5,uhi_draw_xscale = 15;
     }
 
    namespace monitor {
