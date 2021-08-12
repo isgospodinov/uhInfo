@@ -188,7 +188,8 @@ std::string CDrawArea::GetDurationString()
 
 void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h)
 {
-  int width = 0,height = 0; 
+  int width = 0,height = 0,dtxt = 0;
+  const int scale = uhiutil::cpu::max_cpu_t / uhiutil::draw::uhi_draw_yscale;
   Pango::FontDescription font;
   Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
 
@@ -206,27 +207,26 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
   font.set_size(uhiutil::draw::dtxthin * PANGO_SCALE);
   layout->set_font_description(font);
 
-  layout->set_text(std::to_string(uhiutil::cpu::max_cpu_t) + " °");
+  layout->set_text(std::to_string(dtxt) + " °");
   layout->get_pixel_size(width,height);
-  cr->move_to(w - (width + uhiutil::draw::dofset),uhiutil::draw::dofset);
-  layout->show_in_cairo_context(cr);// max temperature
-
-  layout->set_text("0");
-  layout->get_pixel_size(width,height);
-  cr->move_to(w - (width + uhiutil::draw::dofset),h - (height + uhiutil::draw::dofset));
-  layout->show_in_cairo_context(cr); // start point
+  DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), h - (height + uhiutil::draw::dofset)); // start point
 
   if(m_TmpWndCurrState == DAWndState::FULL) {
-      for (int br  = 1; br < (int)uhiutil::draw::uhi_draw_yscale ; br++) {
-	     layout->set_text(std::to_string((uhiutil::cpu::max_cpu_t / uhiutil::draw::uhi_draw_yscale) * br) + " °");
+	  dtxt = scale;
+      for(int br  = 1; br < (int)uhiutil::draw::uhi_draw_yscale ; dtxt = scale * (br + 1), br++) {
+    	 layout->set_text(std::to_string(dtxt) + " °");
 	     layout->get_pixel_size(width,height);
-	     cr->move_to(w - (width + uhiutil::draw::dofset),( (h - ((h / uhiutil::draw::uhi_draw_yscale) * br)) - (height + uhiutil::draw::dofset / 2) ) );
-	     layout->show_in_cairo_context(cr);
+	     DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), ( (h - ((h / uhiutil::draw::uhi_draw_yscale) * br)) - (height + uhiutil::draw::dofset / 2) )); // intermediate points
       }
   }
+  else
+	  dtxt = uhiutil::cpu::max_cpu_t;
+
+  layout->set_text(std::to_string(dtxt) + " °");
+  layout->get_pixel_size(width,height);
+  DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), uhiutil::draw::dofset); // max temperature
 
   layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
   layout->get_pixel_size(width,height);
-  cr->move_to(uhiutil::draw::dofset,h - (height + uhiutil::draw::dofset));
-  layout->show_in_cairo_context(cr); // "page" max time duration*/
+  DADRAWTEXT(cr, layout, uhiutil::draw::dofset,h - (height + uhiutil::draw::dofset)); // "page" max time duration
 }
