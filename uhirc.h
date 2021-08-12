@@ -109,6 +109,9 @@
                                 fixed = g_strrstr(skey,"fixed")
 
 #define SETIMER(id,interval) std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,&CHWindow::uhI_Timer), id), interval)))
+
+#define DADRAWTEXT(crt, ly, dw, dh) crt->move_to(dw,dh); \
+                                     ly->show_in_cairo_context(crt)
                                 
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
