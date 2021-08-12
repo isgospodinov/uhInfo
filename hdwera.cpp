@@ -9,10 +9,11 @@
 #include <cairomm/context.h>
 
 const Gtk::Switch *CDrawArea::l_CPUModeSwitch = nullptr,*CDrawArea::l_CPUCompareSwitch = nullptr;
+namespace draw = uhiutil::draw;
 
 CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
 {
-  set_size_request(uhiutil::draw::dwaw,uhiutil::draw::dwah);
+  set_size_request(draw::dwaw,draw::dwah);
   if(dwm == Dm::CPUDRAW) {
               valfreq = dw_frec;
               valusg = dw_usg;
@@ -66,8 +67,8 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   Cairo::Matrix matrix(-1.0 , 0.0, 0.0, -1.0, width, height); // axes flipping
   cr->transform(matrix);// (0,0) -> (width,height):(width,0) -> (0,height):(0,height) -> (width,0):...
 
-  double xc = (double)width / (double)uhiutil::draw::uhi_draw_xscale;
-  int yc = (double)height / (double)uhiutil::draw::uhi_draw_yscale;
+  double xc = (double) width / (double) draw::uhi_draw_xscale;
+  int yc = (double) height / (double) draw::uhi_draw_yscale;
 
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
@@ -189,44 +190,35 @@ std::string CDrawArea::GetDurationString()
 void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h)
 {
   int width = 0,height = 0,dtxt = 0;
-  const int scale = uhiutil::cpu::max_cpu_t / uhiutil::draw::uhi_draw_yscale;
+  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
   Pango::FontDescription font;
   Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
 
-  font.set_family(uhiutil::draw::text_font_family);
+  font.set_family(draw::text_font_family);
   font.set_weight(Pango::WEIGHT_BOLD);
   font.set_style(Pango::STYLE_ITALIC);
-  font.set_size(uhiutil::draw::dtxtmax * PANGO_SCALE);
+  font.set_size(draw::dtxtmax * PANGO_SCALE);
   layout->set_font_description(font);
-  cr->move_to(uhiutil::draw::dofset,uhiutil::draw::dofset);
+  cr->move_to(draw::dofset,draw::dofset);
   layout->show_in_cairo_context(cr); // duration
 
   layout->unset_font_description();
   font.set_weight(Pango::WEIGHT_THIN);
   font.set_style(Pango::STYLE_NORMAL);
-  font.set_size(uhiutil::draw::dtxthin * PANGO_SCALE);
+  font.set_size(draw::dtxthin * PANGO_SCALE);
   layout->set_font_description(font);
 
-  layout->set_text(std::to_string(dtxt) + " °");
-  layout->get_pixel_size(width,height);
-  DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), h - (height + uhiutil::draw::dofset)); // start point
-
-  if(m_TmpWndCurrState == DAWndState::FULL) {
-	  dtxt = scale;
-      for(int br  = 1; br < (int)uhiutil::draw::uhi_draw_yscale ; dtxt = scale * (br + 1), br++) {
-    	 layout->set_text(std::to_string(dtxt) + " °");
-	     layout->get_pixel_size(width,height);
-	     DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), ( (h - ((h / uhiutil::draw::uhi_draw_yscale) * br)) - (height + uhiutil::draw::dofset / 2) )); // intermediate points
-      }
+  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
+		  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
+		    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
+	 layout->set_text(std::to_string(dtxt) + " °");
+     layout->get_pixel_size(width,height);
+     DADRAWTEXT(cr, layout, w - (width + draw::dofset),
+    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
+    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2)))); // temperature points
   }
-  else
-	  dtxt = uhiutil::cpu::max_cpu_t;
-
-  layout->set_text(std::to_string(dtxt) + " °");
-  layout->get_pixel_size(width,height);
-  DADRAWTEXT(cr, layout, w - (width + uhiutil::draw::dofset), uhiutil::draw::dofset); // max temperature
 
   layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
   layout->get_pixel_size(width,height);
-  DADRAWTEXT(cr, layout, uhiutil::draw::dofset,h - (height + uhiutil::draw::dofset)); // "page" max time duration
+  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
 }
