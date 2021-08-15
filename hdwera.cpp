@@ -111,7 +111,7 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   return true;
 }
 
-void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName ,bool setflag)
+void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag)
 {
     if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
@@ -119,6 +119,7 @@ void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName ,bool 
           Draw_Item di;
           di.DItem = item;
           di.DItName = ColorName;
+          di.DItSensor = SensorName;
           draw_temperatures.push_back(di);
           if(draw_temperatures.size() == 1) start_time_point = std::chrono::system_clock::now();
     }
@@ -189,36 +190,67 @@ std::string CDrawArea::GetDurationString()
 
 void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h)
 {
-  int width = 0,height = 0,dtxt = 0;
-  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
-  Pango::FontDescription font;
-  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
+	  int width = 0,height = 0,dtxt = 0;
+	  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
 
-  font.set_family(draw::text_font_family);
-  font.set_weight(Pango::WEIGHT_BOLD);
-  font.set_style(Pango::STYLE_ITALIC);
-  font.set_size(draw::dtxtmax * PANGO_SCALE);
-  layout->set_font_description(font);
-  cr->move_to(draw::dofset,draw::dofset);
-  layout->show_in_cairo_context(cr); // duration
+	  cr->save();
+	  Pango::FontDescription font;
+	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
 
-  layout->unset_font_description();
-  font.set_weight(Pango::WEIGHT_THIN);
-  font.set_style(Pango::STYLE_NORMAL);
-  font.set_size(draw::dtxthin * PANGO_SCALE);
-  layout->set_font_description(font);
+	  font.set_family(draw::text_font_family);
+	  font.set_weight(Pango::WEIGHT_BOLD);
+	  font.set_style(Pango::STYLE_ITALIC);
+	  font.set_size(draw::dtxtmax * PANGO_SCALE);
+	  layout->set_font_description(font);
+	  cr->move_to(draw::dofset,draw::dofset);
+	  layout->show_in_cairo_context(cr); // duration
 
-  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
-		  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
-		    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
-	 layout->set_text(std::to_string(dtxt) + " °");
-     layout->get_pixel_size(width,height);
-     DADRAWTEXT(cr, layout, w - (width + draw::dofset),
-    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
-    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2)))); // temperature points
-  }
+	  layout->unset_font_description();
+	  font.set_weight(Pango::WEIGHT_THIN);
+	  font.set_style(Pango::STYLE_NORMAL);
+	  font.set_size(draw::dtxthin * PANGO_SCALE);
+	  layout->set_font_description(font);
 
-  layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
-  layout->get_pixel_size(width,height);
-  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
+	  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
+			  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
+			    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
+		 layout->set_text(std::to_string(dtxt) + " °");
+	     layout->get_pixel_size(width,height);
+	     DADRAWTEXT(cr, layout, w - (width + draw::dofset),
+	    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
+	    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2) ))); // temperature points
+	  }
+
+	  layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
+	  layout->get_pixel_size(width,height);
+	  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
+
+	  if(m_TmpWndCurrState == DAWndState::FULL) {
+		   double tcvr = 0.0;
+		   dtxt = 1;
+	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
+	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
+	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
+
+	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
+
+	                	 layout->set_text((std::to_string(tcvr).substr(0,4) + " °").c_str());
+	                     layout->get_pixel_size(width,height);
+
+                         // ----------------  // too crowded  ----------------
+	                     //cr->move_to((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3);
+	                     //cr->arc((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3,width / 2, 0, 2 * M_PI);
+	                     // ----------------  // too crowded  ----------------
+
+	                     DADRAWTEXT(cr, layout,w - (width + draw::dofset), tcvr > uhiutil::cpu::max_cpu_t ? draw::dofset :
+	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset) )) - (height + draw::dofset)) );  // current temperature
+
+	                     layout->set_text(dit->DItSensor);
+	                     layout->get_pixel_size(width,height);
+	                     DADRAWTEXT(cr, layout,w / 2 - width / 2 ,(height * dtxt) - draw::dofset); // temperature source
+
+	              }
+	       }
+	  }
+	  cr->restore();
 }
