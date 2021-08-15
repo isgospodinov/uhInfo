@@ -111,7 +111,7 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   return true;
 }
 
-void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName ,bool setflag)
+void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag)
 {
     if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
@@ -119,6 +119,7 @@ void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName ,bool 
           Draw_Item di;
           di.DItem = item;
           di.DItName = ColorName;
+          di.DItSensor = SensorName;
           draw_temperatures.push_back(di);
           if(draw_temperatures.size() == 1) start_time_point = std::chrono::system_clock::now();
     }
@@ -225,14 +226,29 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
-	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
+		   double tcvr = 0.0;
+		   dtxt = 1;
+	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
 	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
-	                	 layout->set_text((std::to_string(((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t)).substr(0,4) + " °").c_str());
+
+	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
+
+	                	 layout->set_text((std::to_string(tcvr).substr(0,4) + " °").c_str());
 	                     layout->get_pixel_size(width,height);
-	                     cr->move_to((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3);
-	                     cr->arc((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3,width / 2, 0, 2 * M_PI);
-	                     DADRAWTEXT(cr, layout,w - (width + draw::dofset),(h - ((*dit->DItem)[0] * (h + draw::dofset) )) - (height + draw::dofset));
+
+                         // ----------------  // too crowded  ----------------
+	                     //cr->move_to((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3);
+	                     //cr->arc((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3,width / 2, 0, 2 * M_PI);
+	                     // ----------------  // too crowded  ----------------
+
+	                     DADRAWTEXT(cr, layout,w - (width + draw::dofset), tcvr > uhiutil::cpu::max_cpu_t ? draw::dofset :
+	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset) )) - (height + draw::dofset)) );  // current temperature
+
+	                     layout->set_text(dit->DItSensor);
+	                     layout->get_pixel_size(width,height);
+	                     DADRAWTEXT(cr, layout,w / 2 - width / 2 ,(height * dtxt) - draw::dofset); // temperature source
+
 	              }
 	       }
 	  }
