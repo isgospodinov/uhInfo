@@ -24,7 +24,7 @@ public:
   virtual ~CDrawArea() = default;
 
   void Redraw();
-  void SetUnsetDrawItem(DRAWVECTOR item, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
+  void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
@@ -33,6 +33,7 @@ private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
       std::string DItName = "",DItSensor = "";
+      double *sensormax = nullptr;
   };
 
   DRAWVECTOR tmpmon = nullptr;

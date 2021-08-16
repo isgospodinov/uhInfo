@@ -425,14 +425,15 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
     Gtk::TreePath path(path_string);
     Gtk::TreeModel::iterator iter = ptRefTreeModel->get_iter(path);
     CDrawArea::DRAWVECTOR dv = nullptr;
+    double *ps_max = nullptr;
 
     if(pSysensors && (*iter)[tColumns->tsensor_id] != -1)
-          dv = pSysensors->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id]);
+          dv = pSysensors->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id],&ps_max);
     else
-          dv = pUd2Manager->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id]);
+          dv = pUd2Manager->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id],&ps_max);
 
     if(dv)
-        m_DAtemperature.SetUnsetDrawItem(dv,(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
+        m_DAtemperature.SetUnsetDrawItem(dv,ps_max,(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
 }
 
 void CHWindow::On_CPUActivityAll_switch_changed()

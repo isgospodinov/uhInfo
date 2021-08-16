@@ -26,7 +26,7 @@ class CSensMon
 {
 public:
    virtual void PopulateTemperatureSelection(CHWindow *m_wnd) = 0;
-   virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid) = 0;
+   virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) = 0;
 protected:
    const std::string Print_Value(const float value) const;
    bool SetVisiblity(std::string clabel,std::string nodeid) const;
