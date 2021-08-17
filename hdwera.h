@@ -10,6 +10,7 @@
 #include <iomanip>
 
 class CHWindow;
+namespace draw = uhiutil::draw;
 
 class CDrawArea : public Gtk::DrawingArea
 {
@@ -23,7 +24,7 @@ public:
   CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
   virtual ~CDrawArea() = default;
 
-  void Redraw();
+  void Redraw() {get_window()->invalidate_rect(Gdk::Rectangle(0, 0, get_width(), get_height()), false);}
   void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
 
@@ -49,6 +50,13 @@ private:
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
   std::string DurationTimeString(std::chrono::seconds sec) const;
   std::string GetDurationString();
+  void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
+  Pango::FontDescription DA_DrawFont(bool fd = true) { Pango::FontDescription font; font.set_family(draw::text_font_family);
+		font.set_weight(fd ? Pango::WEIGHT_BOLD : Pango::WEIGHT_THIN);
+		font.set_style(fd ? Pango::STYLE_ITALIC : Pango::STYLE_NORMAL);
+		font.set_size((fd ? draw::dtxtmax : draw::dtxthin) * PANGO_SCALE);
+		return font;
+  }
 
   std::list<Draw_Item> draw_temperatures;
 };

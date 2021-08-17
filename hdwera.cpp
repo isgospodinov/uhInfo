@@ -9,7 +9,6 @@
 #include <cairomm/context.h>
 
 const Gtk::Switch *CDrawArea::l_CPUModeSwitch = nullptr,*CDrawArea::l_CPUCompareSwitch = nullptr;
-namespace draw = uhiutil::draw;
 
 CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
 {
@@ -23,11 +22,6 @@ CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *
 	  add_events(Gdk::BUTTON_PRESS_MASK);
 	  signal_button_press_event().connect(sigc::mem_fun(*uhiwnd,ldafp));
   }
-}
-
-void CDrawArea::Redraw()
-{
-   get_window()->invalidate_rect(Gdk::Rectangle(0, 0, get_width(), get_height()), false);
 }
 
 void CDrawArea::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int xyc,int dwidth,int dheight,bool X) const
@@ -193,37 +187,29 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 {
 	  int width = 0,height = 0,dtxt = 0;
 	  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
+	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
+	  Pango::FontDescription font = DA_DrawFont();
 
 	  cr->save();
-	  Pango::FontDescription font;
-	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
-
-	  font.set_family(draw::text_font_family);
-	  font.set_weight(Pango::WEIGHT_BOLD);
-	  font.set_style(Pango::STYLE_ITALIC);
-	  font.set_size(draw::dtxtmax * PANGO_SCALE);
 	  layout->set_font_description(font);
 	  cr->move_to(draw::dofset,draw::dofset);
 	  layout->show_in_cairo_context(cr); // duration
 
 	  layout->unset_font_description();
-	  font.set_weight(Pango::WEIGHT_THIN);
-	  font.set_style(Pango::STYLE_NORMAL);
-	  font.set_size(draw::dtxthin * PANGO_SCALE);
+	  font = DA_DrawFont(false);
 	  layout->set_font_description(font);
 
 	  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
 			  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
 			    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
-		 layout->set_text(std::to_string(dtxt) + " °");
-	     layout->get_pixel_size(width,height);
+		 DA_Text(layout, width, height, std::to_string(dtxt) + " °");
 	     DADRAWTEXT(cr, layout, w - (width + draw::dofset),
 	    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
 	    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2) ))); // temperature points
 	  }
 
-	  layout->set_text(std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
-	  layout->get_pixel_size(width,height);
+	  DA_Text(layout, width, height,
+			  std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
 	  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
@@ -234,20 +220,12 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
 
 	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
-
-	                	 layout->set_text((std::to_string(tcvr).substr(0, (tcvr >=100 ? 5 : 4)) + " °").c_str());
-	                     layout->get_pixel_size(width,height);
-
-                         // ----------------  // too crowded  ----------------
-	                     //cr->move_to((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3);
-	                     //cr->arc((w - (width )) + draw::dofset * 2, h - ((*dit->DItem)[0] * (h )) - draw::dofset * 3,width / 2, 0, 2 * M_PI);
-	                     // ----------------  // too crowded  ----------------
-
+	                	 DA_Text(layout, width, height, (std::to_string(tcvr).substr(0, (tcvr >= 100 ? 5 : 4)) + " °").c_str());
 	                     DADRAWTEXT(cr, layout,w - (width + draw::dofset), tcvr >= uhiutil::cpu::max_cpu_t ? draw::dofset :
 	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset) )) - (height + draw::dofset)) );  // current temperature
 
-	                     layout->set_text(dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,(tcvr >=100 ? 5 : 4)) + " °") : "N/A"));
-	                     layout->get_pixel_size(width,height);
+	                     DA_Text(layout, width, height,
+	                    		 dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,(tcvr >= 100 ? 5 : 4)) + " °") : "N/A"));
 	                     DADRAWTEXT(cr, layout,w / 2 - width / 2 ,(height * dtxt) - draw::dofset); // temperature source
 
 	              }
