@@ -31,7 +31,7 @@ namespace uhiutil {
    namespace calc {
        enum {bfr = 0,cfr,usg,dimension};
        const unsigned int draw_cpu_statistic = 10;
-       const unsigned int t_statistic_len = 421;   
+       const unsigned int t_statistic_len = 421;
        const int resetime = 4271;      
    }   
 
@@ -55,12 +55,13 @@ namespace uhiutil {
    
    namespace draw {
        const char *const text_font_family = "Arial";
-       const unsigned int dofset = 4;
+       const unsigned int dofset = 4,xoffset = 40;
        const unsigned int dtxtmax = 15;
        const unsigned int dtxthin = 8;
        const unsigned int dwaw = 100;
        const unsigned int dwah = 50;
        const unsigned int uhi_draw_yscale = 5,uhi_draw_xscale = 15;
+       const int HWmax = 510;
     }
 
    namespace monitor {

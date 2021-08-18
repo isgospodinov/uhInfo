@@ -112,6 +112,9 @@
 
 #define DADRAWTEXT(crt, ly, dw, dh) crt->move_to(dw,dh); \
                                      ly->show_in_cairo_context(crt)
+
+#define FULLAPPWND(w,h) w > draw::HWmax && h > draw::HWmax
+#define FULLAPPWNDMODE(w,h) m_TmpWndCurrState == DAWndState::FULL && FULLAPPWND(w,h)
                                 
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
