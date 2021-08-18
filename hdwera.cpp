@@ -26,26 +26,27 @@ CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *
 
 void CDrawArea::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int xyc,int dwidth,int dheight,bool X) const
 {
-  int cnt = xyc ;
-  while(cnt < (X ? dheight : dwidth)) {
-     crtx->move_to((X ? 0 : cnt),(X ? cnt : 0));
-     crtx->line_to((X ? dwidth : cnt),( X ? cnt : dheight));
-     cnt += xyc;
-  }
-  crtx->stroke();
+   int cnt = xyc;
+   while(cnt <= (X ? dheight : dwidth)) {
+	   crtx->move_to((X ? (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset - draw::dofset :  0) : cnt),(X ? cnt : 0));
+	   crtx->line_to((X ? dwidth : cnt),( X ? cnt : dheight));
+	   cnt += xyc;
+   }
+   crtx->stroke();
 }
 
-void CDrawArea::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,StatPaint pm) const
+void CDrawArea::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth,StatPaint pm) const
 { 
   if(DMode == Dm::TEMPERATUREDRAW && (tmpmon ? (*tmpmon).size() : 0) < 2) return;
 
-  crtx->move_to(0, (DMode == Dm::CPUDRAW ? (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0]  )  ) : (tmpmon ? (*tmpmon)[0] : 0)) * dheight);
+  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, (DMode == Dm::CPUDRAW ? (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0]  )  ) : (tmpmon ? (*tmpmon)[0] : 0)) * dheight);
   if(DMode == Dm::CPUDRAW) crtx->arc(0, (pm == StatPaint::USAGE ? (*valusg)[0] : (pm == StatPaint::FREQP ? (*valfreq)[0] : (*valfreqcmpr)[0])) * dheight, 1.1, 0, 2 * M_PI);
   for(long unsigned int br = 1; br < (DMode == Dm::CPUDRAW ? uhiutil::calc::draw_cpu_statistic : (tmpmon ? (((*tmpmon).size() < uhiutil::calc::t_statistic_len) ? (*tmpmon).size() : uhiutil::calc::t_statistic_len) : 0)) ;br++) {
        if(DMode == Dm::CPUDRAW) 
            crtx->arc(atvy * br, (pm == StatPaint::USAGE ? (*valusg)[br] : (pm == StatPaint::FREQP ? (*valfreq)[br] : (*valfreqcmpr)[br])) * dheight, 1.1, 0, 2 * M_PI);
-       else 
-           crtx->line_to(atvy * br, ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
+       else
+    	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0 ),
+    	               		                              ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
   }
   crtx->stroke(); 
 }
@@ -67,8 +68,8 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
 
-  DrawAxis_XY(cr,xc,width,height);
-  DrawAxis_XY(cr,yc,width,height,true);
+  DrawAxis_XY(cr,xc,width,height);      // X axis
+  DrawAxis_XY(cr,yc,width,height,true); // Y axis
 
   cr->unset_dash();
 
@@ -78,16 +79,16 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
 
       cr->set_source_rgb(0.0, 0.75, 1.0);
       cr->set_line_width(1.7);
-      DrawActivity(cr,xc,height,((l_cmsactive && CProc::m_CpuAltCalc) ? StatPaint::COMPAREFREQP : StatPaint::FREQP));
+      DrawActivity(cr,xc,height,0,((l_cmsactive && CProc::m_CpuAltCalc) ? StatPaint::COMPAREFREQP : StatPaint::FREQP));
 
       cr->set_source_rgb(0.40, 0.80, 0.67);
       cr->set_line_width(1.4);
-      DrawActivity(cr,xc,height,StatPaint::USAGE);
+      DrawActivity(cr,xc,height,0,StatPaint::USAGE);
       
       if(CProc::m_CpuAltCalc && l_csactive) {
           cr->set_source_rgb(0.90, 0.80, 0.40);
           cr->set_line_width(1.2);
-          DrawActivity(cr,xc,height,(l_cmsactive ? StatPaint::FREQP : StatPaint::COMPAREFREQP));
+          DrawActivity(cr,xc,height,0,(l_cmsactive ? StatPaint::FREQP : StatPaint::COMPAREFREQP));
       }
   }
   else
@@ -98,7 +99,7 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
                            tmpmon = dit->DItem;
                            Gdk::RGBA rgba(dit->DItName);
                            Gdk::Cairo::set_source_rgba(cr,rgba);
-                           DrawActivity(cr,xc,height);
+                           DrawActivity(cr,xc,height,width);
           }
       }
 
@@ -203,9 +204,9 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 			  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
 			    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
 		 DA_Text(layout, width, height, std::to_string(dtxt) + " °");
-	     DADRAWTEXT(cr, layout, w - (width + draw::dofset),
+	     DADRAWTEXT(cr, layout, (FULLAPPWNDMODE(w,h)) ? w - (draw::xoffset + width + draw::dofset) : w - (width + draw::dofset),
 	    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
-	    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2) ))); // temperature points
+	    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2)))); // temperature points
 	  }
 
 	  DA_Text(layout, width, height,
@@ -215,18 +216,19 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
 		   double tcvr = 0.0;
 		   dtxt = 1;
-	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
+	       for(std::list<Draw_Item>::const_iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
 	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
-
 	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
+
 	                	 DA_Text(layout, width, height, (std::to_string(tcvr).substr(0, (tcvr >= 100 ? 5 : 4)) + " °").c_str());
-	                     DADRAWTEXT(cr, layout,w - (width + draw::dofset), tcvr >= uhiutil::cpu::max_cpu_t ? draw::dofset :
-	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset) )) - (height + draw::dofset)) );  // current temperature
+	                     DADRAWTEXT(cr, layout,w - (((FULLAPPWND(w,h)) ? draw::xoffset  - draw::dofset : width  + draw::dofset)),
+	                    		 tcvr >= uhiutil::cpu::max_cpu_t ? draw::dofset :
+	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset))) - (height + draw::dofset)) );  // current temperature
 
 	                     DA_Text(layout, width, height,
 	                    		 dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,(tcvr >= 100 ? 5 : 4)) + " °") : "N/A"));
-	                     DADRAWTEXT(cr, layout,w / 2 - width / 2 ,(height * dtxt) - draw::dofset); // temperature source
+	                     DADRAWTEXT(cr,layout,w / 2 - width / 2,(height * dtxt) - draw::dofset); // temperature source
 
 	              }
 	       }

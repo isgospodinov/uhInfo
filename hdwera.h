@@ -46,12 +46,12 @@ private:
 
   virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
   void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int xyc,int dwidth,int dheight,bool X = false) const;
-  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,StatPaint pm = StatPaint::TEMPERATUREP) const ;
+  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const ;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
   std::string DurationTimeString(std::chrono::seconds sec) const;
   std::string GetDurationString();
-  void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
-  Pango::FontDescription DA_DrawFont(bool fd = true) { Pango::FontDescription font; font.set_family(draw::text_font_family);
+  void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) const {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
+  const Pango::FontDescription DA_DrawFont(bool fd = true)  const { Pango::FontDescription font; font.set_family(draw::text_font_family);
 		font.set_weight(fd ? Pango::WEIGHT_BOLD : Pango::WEIGHT_THIN);
 		font.set_style(fd ? Pango::STYLE_ITALIC : Pango::STYLE_NORMAL);
 		font.set_size((fd ? draw::dtxtmax : draw::dtxthin) * PANGO_SCALE);
