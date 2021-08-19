@@ -39,13 +39,13 @@ void CDrawArea::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double at
 { 
   if(DMode == Dm::TEMPERATUREDRAW && (tmpmon ? (*tmpmon).size() : 0) < 2) return;
 
-  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, (DMode == Dm::CPUDRAW ? (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0]  )  ) : (tmpmon ? (*tmpmon)[0] : 0)) * dheight);
+  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, (DMode == Dm::CPUDRAW ? (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0])) : (tmpmon ? (*tmpmon)[0] : 0)) * dheight);
   if(DMode == Dm::CPUDRAW) crtx->arc(0, (pm == StatPaint::USAGE ? (*valusg)[0] : (pm == StatPaint::FREQP ? (*valfreq)[0] : (*valfreqcmpr)[0])) * dheight, 1.1, 0, 2 * M_PI);
   for(long unsigned int br = 1; br < (DMode == Dm::CPUDRAW ? uhiutil::calc::draw_cpu_statistic : (tmpmon ? (((*tmpmon).size() < uhiutil::calc::t_statistic_len) ? (*tmpmon).size() : uhiutil::calc::t_statistic_len) : 0)) ;br++) {
        if(DMode == Dm::CPUDRAW) 
            crtx->arc(atvy * br, (pm == StatPaint::USAGE ? (*valusg)[br] : (pm == StatPaint::FREQP ? (*valfreq)[br] : (*valfreqcmpr)[br])) * dheight, 1.1, 0, 2 * M_PI);
        else
-    	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0 ),
+    	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),
     	               		                              ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
   }
   crtx->stroke(); 
@@ -93,7 +93,7 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   }
   else
       if(DMode == Dm::TEMPERATUREDRAW) {
-          xc = ((double)width / ((double)uhiutil::calc::t_statistic_len - 1.0));
+          xc = ((FULLAPPWNDMODE(width,height) ? ((double)width - (double)draw::xoffset) : (double)width) / ((double)uhiutil::calc::t_statistic_len - 1.0));
           cr->set_line_width(1.7);
           for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
                            tmpmon = dit->DItem;
@@ -210,7 +210,7 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  }
 
 	  DA_Text(layout, width, height,
-			  std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000)) + 1) + " s");
+			  std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000))) + " s");
 	  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
@@ -221,13 +221,13 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
 	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
 
-	                	 DA_Text(layout, width, height, (std::to_string(tcvr).substr(0, (tcvr >= 100 ? 5 : 4)) + " °").c_str());
+	                	 DA_Text(layout, width, height, (std::to_string(tcvr).substr(0,STRCOND(tcvr,5,4)) + " °").c_str());
 	                     DADRAWTEXT(cr, layout,w - (((FULLAPPWND(w,h)) ? draw::xoffset  - draw::dofset : width  + draw::dofset)),
 	                    		 tcvr >= uhiutil::cpu::max_cpu_t ? draw::dofset :
 	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset))) - (height + draw::dofset)) );  // current temperature
 
 	                     DA_Text(layout, width, height,
-	                    		 dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,(tcvr >= 100 ? 5 : 4)) + " °") : "N/A"));
+	                    		 dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,STRCOND(tcvr,5,4)) + " °") : "N/A"));
 	                     DADRAWTEXT(cr,layout,w / 2 - width / 2,(height * dtxt) - draw::dofset); // temperature source
 
 	              }

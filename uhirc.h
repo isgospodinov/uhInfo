@@ -115,6 +115,7 @@
 
 #define FULLAPPWND(w,h) w > draw::HWmax && h > draw::HWmax
 #define FULLAPPWNDMODE(w,h) m_TmpWndCurrState == DAWndState::FULL && FULLAPPWND(w,h)
+#define STRCOND(vl,gv,sv) (vl >= 100 ? gv : sv)
                                 
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
