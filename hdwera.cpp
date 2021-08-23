@@ -24,14 +24,32 @@ CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *
   }
 }
 
-void CDrawArea::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int xyc,int dwidth,int dheight,bool X) const
+void CDrawArea::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
 {
-   int cnt = xyc;
-   while(cnt <= (X ? dheight : dwidth)) {
-	   crtx->move_to((X ? (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset - draw::dofset :  0) : cnt),(X ? cnt : 0));
-	   crtx->line_to((X ? dwidth : cnt),( X ? cnt : dheight));
-	   cnt += xyc;
-   }
+	if(DMode == Dm::TEMPERATUREDRAW && !X) {
+	   double cw = (dwidth - (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0)) / 2;
+
+       for(int b = 1; b < (int) draw::uhi_draw_xscale ; b *= 2) {
+           double cl =  cw; // centering
+           int c = 0;
+
+           cl -= ((cw / (double)b) * (b - 1)); // offset
+
+		   while(c++ < b) {
+		       crtx->move_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),0);
+			   crtx->line_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),dheight);
+			   cl += ((cw / ((double)b / 2)));
+		   }
+       }
+	}
+	else {
+       int cnt = ((DMode == Dm::CPUDRAW  && !X) ? (double) dwidth / (double) draw::uhi_draw_xscale : (double) dheight / (double) draw::uhi_draw_yscale),up = cnt;
+       while(cnt <= (X ? dheight : dwidth)) {
+           crtx->move_to((X ? (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset - draw::dofset :  0) : cnt),(X ? cnt : 0));
+           crtx->line_to((X ? dwidth : cnt),(X ? cnt : dheight));
+           cnt += up;
+       }
+	}
    crtx->stroke();
 }
 
@@ -62,21 +80,19 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   Cairo::Matrix matrix(-1.0 , 0.0, 0.0, -1.0, width, height); // axes flipping
   cr->transform(matrix);// (0,0) -> (width,height):(width,0) -> (0,height):(0,height) -> (width,0):...
 
-  double xc = (double) width / (double) draw::uhi_draw_xscale;
-  int yc = (double) height / (double) draw::uhi_draw_yscale;
+  double xc = (DMode == Dm::CPUDRAW ? (double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0) :
+		  ((FULLAPPWNDMODE(width,height) ? ((double)width - (double)draw::xoffset) : (double)width) / ((double)uhiutil::calc::t_statistic_len - 1.0)));
 
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
 
-  DrawAxis_XY(cr,xc,width,height);      // X axis
-  DrawAxis_XY(cr,yc,width,height,true); // Y axis
+  DrawAxis_XY(cr,width,height);      // X axis
+  DrawAxis_XY(cr,width,height,true); // Y axis
 
   cr->unset_dash();
 
   if(DMode == Dm::CPUDRAW) {
-      xc = (double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0);
       bool l_cmsactive = l_CPUModeSwitch->get_active(),l_csactive = l_CPUCompareSwitch->get_active();
-
       cr->set_source_rgb(0.0, 0.75, 1.0);
       cr->set_line_width(1.7);
       DrawActivity(cr,xc,height,0,((l_cmsactive && CProc::m_CpuAltCalc) ? StatPaint::COMPAREFREQP : StatPaint::FREQP));
@@ -93,7 +109,6 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
   }
   else
       if(DMode == Dm::TEMPERATUREDRAW) {
-          xc = ((FULLAPPWNDMODE(width,height) ? ((double)width - (double)draw::xoffset) : (double)width) / ((double)uhiutil::calc::t_statistic_len - 1.0));
           cr->set_line_width(1.7);
           for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
                            tmpmon = dit->DItem;
@@ -191,7 +206,6 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
 	  Pango::FontDescription font = DA_DrawFont();
 
-	  cr->save();
 	  layout->set_font_description(font);
 	  cr->move_to(draw::dofset,draw::dofset);
 	  layout->show_in_cairo_context(cr); // duration
@@ -203,25 +217,26 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
 			  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?
 			    	                    br = (int) draw::uhi_draw_yscale : br++), dtxt = scale * br) {
-		 DA_Text(layout, width, height, std::to_string(dtxt) + " °");
-	     DADRAWTEXT(cr, layout, (FULLAPPWNDMODE(w,h)) ? w - (draw::xoffset + width + draw::dofset) : w - (width + draw::dofset),
+	       DA_Text(layout, width, height, std::to_string(dtxt) + " °");
+	       DADRAWTEXT(cr, layout, (FULLAPPWNDMODE(w,h)) ? w - (draw::xoffset + width + draw::dofset) : w - (width + draw::dofset),
 	    		(br == (int) draw::uhi_draw_yscale ? draw::dofset :
 	    				((h - ((h / draw::uhi_draw_yscale) * br)) - (height + draw::dofset / 2)))); // temperature points
 	  }
 
 	  DA_Text(layout, width, height,
-			  std::to_string((int)((uhiutil::calc::t_statistic_len - 1) * (float)((float)uhiutil::timer_interval / (float)1000))) + " s");
+			  std::to_string((int)std::ceil(((double)uhiutil::calc::t_statistic_len - 1) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
 	  DADRAWTEXT(cr, layout, draw::dofset,h - (height + draw::dofset)); // "page" max time duration
 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
-		   double tcvr = 0.0;
-		   dtxt = 1;
+	       double tcvr = 0.0;
+	       dtxt = 1;
+	       cr->save();
 	       for(std::list<Draw_Item>::const_iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
-	                	 Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
-	                	 tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
+	                     Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
+	                     tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
 
-	                	 DA_Text(layout, width, height, (std::to_string(tcvr).substr(0,STRCOND(tcvr,5,4)) + " °").c_str());
+	                     DA_Text(layout, width, height, (std::to_string(tcvr).substr(0,STRCOND(tcvr,5,4)) + " °").c_str());
 	                     DADRAWTEXT(cr, layout,w - (((FULLAPPWND(w,h)) ? draw::xoffset  - draw::dofset : width  + draw::dofset)),
 	                    		 tcvr >= uhiutil::cpu::max_cpu_t ? draw::dofset :
 	                    		                         ((h - ((*dit->DItem)[0] * (h + draw::dofset))) - (height + draw::dofset)) );  // current temperature
@@ -232,6 +247,12 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 
 	              }
 	       }
+	       cr->restore();
+	       if(FULLAPPWNDMODE(w,h)) {
+	 	       DA_Text(layout, width , height,
+	 	   	   std::to_string((int)std::ceil((((double)uhiutil::calc::t_statistic_len - 1) / (double)2) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
+	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
+	       }
+
 	  }
-	  cr->restore();
 }
