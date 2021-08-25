@@ -8,22 +8,34 @@ GTKMMLIBS = `pkg-config --libs gtkmm-3.0`
 UHIBFLAGS = -std=c++14 -Os -Wall# -g
 ELIBS = -pthread -ludisks2 -ldl
 
-all: $(PROGRAM)
+
+.PHONY: all
+
+all: buildafter
 
 %.o: %.cpp
 	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $^
 
-$(PROGRAM): $(OBJS)
+building: buildbefore
+	@$(MAKE) --no-print-directory realbuild
+
+realbuild: $(OBJS)
 	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
 	@mkdir -p $(BUILD)
 	@mv -f $(PROGRAM) $(BUILD)
+
+buildbefore:
+	bash install.sh -ib
+
+buildafter: building
+	bash install.sh -ia
 
 clean:
 	rm -rf $(OBJS)
 	rm -rf $(BUILD)		
 
 install:
-	bash install.sh -i	
+	bash install.sh -i
 
 uninstall:
 	bash install.sh -ui

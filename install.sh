@@ -13,6 +13,42 @@ showhelp()
   echo "(sudo make uninstall)"
 }
 
+before()
+{
+   if test -e /usr/include/udisks2/udisks ; then   
+      echo "** Udisks2 development files exist. **"
+      cnt=0
+      br=0
+      FILES="/usr/include/udisks2/udisks/*"
+      for file in $FILES; do
+          br=$( cat $file | grep '<udisks2' | wc -l )
+          cnt=$(($cnt + $br))
+      done
+#cnt=0
+      if [ "$cnt" = 0 ] ; then
+          echo "** But check failed "$cnt" **"
+          echo "** Go to '/usr/include/udisks2/udisks' directory end edit *.h files. **"
+          echo "** When you encounter '<udisks/' replace it with '<udisks2/udisks/'. **"
+          echo "** Save changes and build uhInfo. **"
+      else
+          echo "** And check passed "$cnt". **"
+      fi
+    else
+          echo "** Udisks2 development files don't exist. **"
+          echo "** Install Udisks2 development files. **"
+          echo "** Go to '/usr/include/udisks2/udisks' directory end edit *.h files. **"
+          echo "** When you encounter '<udisks/' replace it with '<udisks2/udisks/'. **"
+          echo "** Save changes and build uhInfo. **"
+    fi
+    
+    echo "** Build started. **"
+}
+
+after()
+{
+   echo "** Build complete. **"
+}
+
 check()
 {
    if ! [ -x build/uhInfo ] ; then
@@ -168,6 +204,10 @@ case $1 in
        ;;
   -ui ) uninstalluhI
         removeuhIconf
+       ;;
+  -ib ) before
+       ;;
+  -ia ) after
        ;;
   * ) showhelp
       ;;
