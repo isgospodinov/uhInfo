@@ -25,10 +25,10 @@ realbuild: $(OBJS)
 	@mv -f $(PROGRAM) $(BUILD)
 
 buildbefore:
-	bash install.sh -ib
+	@bash install.sh -ib
 
 buildafter: building
-	bash install.sh -ia
+	@bash install.sh -ia
 
 clean:
 	rm -rf $(OBJS)
