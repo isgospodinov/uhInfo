@@ -35,10 +35,10 @@ clean:
 	rm -rf $(BUILD)		
 
 install:
-	bash install.sh -i
+	@bash install.sh -i
 
 uninstall:
-	bash install.sh -ui
+	@bash install.sh -ui
 
 help:
-	bash install.sh
+	@bash install.sh

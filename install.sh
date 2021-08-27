@@ -2,43 +2,44 @@
 
 showhelp()
 {
-  echo "help :"
-  echo "To build just type (make)."
-  echo "To cleaning up type (make clean)."
-  echo "To get help : (make help)"
-  echo "To install or uninstall you must to be sudo!"
-  echo -n " 1) To install : "
-  echo "(sudo make install)"
-  echo -n " 2) To uninstall : "
-  echo "(sudo make uninstall)"
+   if [ "$#" = 0 ] ; then
+       echo "To build just type (make)."
+       echo "To cleaning up type (make clean)."
+       echo "To get help : (make help)"
+       echo "To install or uninstall you must to be sudo!"
+       echo -n " 1) To install : "
+       echo "(sudo make install)"
+       echo -n " 2) To uninstall : "
+       echo "(sudo make uninstall)"
+  else
+      echo "** Udisks2 development files "$1". **"
+      echo "$2"
+         if [[ "$#" > "2" ]] ; then
+             echo "** Go to '/usr/include/udisks2/udisks' directory end edit *.h files. **"
+             echo "** When you encounter '<udisks/' replace it with '<udisks2/udisks/'. **"
+             echo "** Save changes and build uhInfo. **"
+         fi
+   fi
 }
 
 before()
 {
    if test -e /usr/include/udisks2/udisks ; then   
-      echo "** Udisks2 development files exist. **"
       cnt=0
       br=0
       FILES="/usr/include/udisks2/udisks/*"
       for file in $FILES; do
-          br=$( cat $file | grep '<udisks2' | wc -l )
+          br=$( cat $file | grep '<udisks2/' | wc -l )
           cnt=$(($cnt + $br))
       done
 #cnt=0
       if [ "$cnt" = 0 ] ; then
-          echo "** But check failed "$cnt" **"
-          echo "** Go to '/usr/include/udisks2/udisks' directory end edit *.h files. **"
-          echo "** When you encounter '<udisks/' replace it with '<udisks2/udisks/'. **"
-          echo "** Save changes and build uhInfo. **"
+          showhelp "exist" "** But check failed "$cnt" **" ""
       else
-          echo "** And check passed "$cnt". **"
+          showhelp "exist" "** And check passed "$cnt". **"
       fi
     else
-          echo "** Udisks2 development files don't exist. **"
-          echo "** Install Udisks2 development files. **"
-          echo "** Go to '/usr/include/udisks2/udisks' directory end edit *.h files. **"
-          echo "** When you encounter '<udisks/' replace it with '<udisks2/udisks/'. **"
-          echo "** Save changes and build uhInfo. **"
+          showhelp "don't exist" "** Install Udisks2 development files. **" ""
     fi
     
     echo "** Build started. **"
@@ -212,4 +213,3 @@ case $1 in
   * ) showhelp
       ;;
 esac
- 
