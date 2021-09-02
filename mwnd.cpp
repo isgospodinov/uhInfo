@@ -383,6 +383,8 @@ void CHWindow::show_cpu_activity_all()
                  for(cpu_chain_el el : cpu_units_monit_chain)  {
                      el.cpuid_m_pbF->set_text("Frequency");
                      el.cpuid_m_pbF->set_fraction(0.0);
+                     el.cpuid_m_pbCF->set_text("Copr.Freq.");
+                     el.cpuid_m_pbCF->set_fraction(0.0);
                      el.cpuid_m_pbU->set_text("Usage");
                      el.cpuid_m_pbU->set_fraction(0.0);
                  }

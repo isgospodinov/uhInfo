@@ -46,6 +46,7 @@ private:
   void ShowHide_compare_elements(bool sv = false) const {
          std::for_each(cpu_units_monit_chain.begin(), cpu_units_monit_chain.end(), [sv](const cpu_chain_el &ce){ 
               if(ce.lCompareColor) ce.lCompareColor->set_visible(sv);
+              if(ce.cpuid_m_pbCF) ce.cpuid_m_pbCF->set_visible(sv);
               if(ce.lFirstSpace) ce.lFirstSpace->set_visible(sv);});
        }
 
