@@ -130,7 +130,7 @@
 using cpu_chain_el = struct _cpu_chain {
 	  std::string cpuid = "";
       int processor = -1,physid = -1,coreid = -1,cpuidn = -1;
-	  Gtk::ProgressBar *cpuid_m_pbF = nullptr, *cpuid_m_pbU = nullptr; 
+	  Gtk::ProgressBar *cpuid_m_pbF = nullptr, *cpuid_m_pbCF = nullptr, *cpuid_m_pbU = nullptr;
       CDrawArea *pDArea = nullptr;
       Gtk::Label *lCompareColor = nullptr, *lFirstSpace = nullptr;
 };

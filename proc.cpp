@@ -64,14 +64,14 @@ std::string CProc::ProcInfoInit()
                                                std::to_string(std::atoi(min.data())) + "MHz" + " / " + std::to_string(std::atoi(max.data())) + "MHz");
 }
 
-double CProc::FreqCalc(std::string &Fq)
+double CProc::FreqCalc(std::string &Fq, bool bc)
 {
       if(Fq.rfind('\x0A') != std::string::npos) Fq.pop_back();
 
       uhiutil::newline(Fq,":",Direction::RIGHT);
       double dres = std::stod(Fq);
       
-      Fq = "Freq. : " + std::to_string(std::atoi(Fq.data())) + " MHz";
+      Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
 
       if(dres > cpu_max_mhz) dres = cpu_max_mhz;
       else

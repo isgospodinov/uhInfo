@@ -21,7 +21,7 @@ std::string CProcUnits::ProcInfoInit()
        }
    }
 
-    // m_CpuAltCalc = false;
+   // m_CpuAltCalc = false;
 
    return init;
 }
@@ -46,16 +46,19 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
                 if(local_cd) cel->init_calc_el();
 
             	 std::getline(input,cline);
-            	 freqdc = FreqCalc(cline);
+            	 freqdc = FreqCalc(cline,(m_CpuAltCalc && bCpuAltCalc));
 
             	 if(m_CpuAltCalc) {
                     cline_compare = "cat /sys/devices/system/cpu/cpu" + std::to_string((*cel).cpunit) + "/cpufreq/scaling_cur_freq";
                     cline_compare = "cpu MHz\t: " + std::to_string((std::stod(uhiutil::execmd(cline_compare.data())) / (double) 1000));
-                    freqdc_compare = FreqCalc(cline_compare);
+                    freqdc_compare = FreqCalc(cline_compare,!(m_CpuAltCalc && bCpuAltCalc));
                 }
 
             	(*elV).cpuid_m_pbF->set_fraction(( (m_CpuAltCalc && bCpuAltCalc) ? freqdc_compare : freqdc));
                 (*elV).cpuid_m_pbF->set_text(( (m_CpuAltCalc && bCpuAltCalc) ? cline_compare : cline));
+
+                (*elV).cpuid_m_pbCF->set_fraction(( (m_CpuAltCalc && bCpuAltCalc) ? freqdc : freqdc_compare));
+                (*elV).cpuid_m_pbCF->set_text(( (m_CpuAltCalc && bCpuAltCalc) ? cline : cline_compare));
 
                 std::string cd = "cat /proc/stat | grep cpu" + std::to_string((*cel).cpunit);
                 std::string res  = uhiutil::execmd(cd.data());

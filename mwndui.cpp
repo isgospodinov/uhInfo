@@ -288,7 +288,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 
           for(std::list<unit_calc_el>::const_iterator ucEl = unclel->begin() ; ucEl != unclel->end() ; ucEl++)          
           {
-	           cpu_unit.cpuid = "cpu" + std::to_string(ucEl->cpunit) + "\n";
+	           cpu_unit.cpuid = "cpu" + std::to_string(ucEl->cpunit) +  "  :  ";
                cpu_unit.cpuidn = ucEl->cpunit;
                std::getline(instrproc, line);
                if(uhiutil::newline(line,"processor\t: ",Direction::RIGHTSKIP)) {
@@ -317,6 +317,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                Gtk::Label *lSpace = Gtk::manage(new Gtk::Label);
                cpu_unit.pDArea = Gtk::manage(new CDrawArea(nullptr,nullptr,Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg)));
                cpu_unit.cpuid_m_pbF = Gtk::manage(new Gtk::ProgressBar);
+               cpu_unit.cpuid_m_pbCF = Gtk::manage(new Gtk::ProgressBar);
                cpu_unit.cpuid_m_pbU = Gtk::manage(new Gtk::ProgressBar);
                cpu_unit.lCompareColor = Gtk::manage(new Gtk::Label);
                cpu_unit.lFirstSpace = Gtk::manage(new Gtk::Label);
@@ -338,6 +339,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                pLabelBox->pack_start(*pLabel, Gtk::PACK_SHRINK);
                pBox->pack_start(*pLabelBox, Gtk::PACK_SHRINK);
                pBox->pack_start(*cpu_unit.cpuid_m_pbF, Gtk::PACK_SHRINK);
+               pBox->pack_start(*cpu_unit.cpuid_m_pbCF, Gtk::PACK_SHRINK);
                pBox->pack_start(*cpu_unit.cpuid_m_pbU, Gtk::PACK_SHRINK);
                pBox->pack_start(*pDAreaBox);
                pBox->pack_start(*pLabelBoxCU, Gtk::PACK_SHRINK);
@@ -348,6 +350,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                pBox->override_background_color(Gdk::RGBA(uhiutil::ui::cpunits_bckcolor));
                pLabel->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
                cpu_unit.cpuid_m_pbF->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
+               cpu_unit.cpuid_m_pbCF->override_color(Gdk::RGBA(uhiutil::ui::stat_color_cmpr));
                cpu_unit.cpuid_m_pbU->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
                lCcpuColor->override_background_color(Gdk::RGBA(uhiutil::ui::stat_color_blue));
                lCcpuColor->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
@@ -367,6 +370,11 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_unit.cpuid_m_pbF->set_valign(Gtk::ALIGN_CENTER);
                cpu_unit.cpuid_m_pbF->set_text("Frequency");
                cpu_unit.cpuid_m_pbF->set_show_text();
+
+               cpu_unit.cpuid_m_pbCF->set_halign(Gtk::ALIGN_CENTER);
+               cpu_unit.cpuid_m_pbCF->set_valign(Gtk::ALIGN_CENTER);
+               cpu_unit.cpuid_m_pbCF->set_text("Compr.Freq.");
+               cpu_unit.cpuid_m_pbCF->set_show_text();
 
                cpu_unit.cpuid_m_pbU->set_halign(Gtk::ALIGN_CENTER);
                cpu_unit.cpuid_m_pbU->set_valign(Gtk::ALIGN_CENTER);
