@@ -116,7 +116,11 @@
 #define FULLAPPWND(w,h) w > draw::HWmax && h > draw::HWmax
 #define FULLAPPWNDMODE(w,h) m_TmpWndCurrState == DAWndState::FULL && FULLAPPWND(w,h)
 #define STRCOND(vl,gv,sv) (vl >= 100 ? gv : sv)
-                                
+
+#define CHECKBCF (m_CpuAltCalc && bCpuAltCalc)
+#define UIBCF(uiel,fraction,text) uiel->set_fraction(fraction); \
+	                              uiel->set_text(text)
+
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))

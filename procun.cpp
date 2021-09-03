@@ -46,25 +46,21 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
                 if(local_cd) cel->init_calc_el();
 
             	 std::getline(input,cline);
-            	 freqdc = FreqCalc(cline,(m_CpuAltCalc && bCpuAltCalc));
+            	 freqdc = FreqCalc(cline,CHECKBCF);
 
             	 if(m_CpuAltCalc) {
                     cline_compare = "cat /sys/devices/system/cpu/cpu" + std::to_string((*cel).cpunit) + "/cpufreq/scaling_cur_freq";
                     cline_compare = "cpu MHz\t: " + std::to_string((std::stod(uhiutil::execmd(cline_compare.data())) / (double) 1000));
-                    freqdc_compare = FreqCalc(cline_compare,!(m_CpuAltCalc && bCpuAltCalc));
+                    freqdc_compare = FreqCalc(cline_compare,!CHECKBCF);
                 }
 
-            	(*elV).cpuid_m_pbF->set_fraction(( (m_CpuAltCalc && bCpuAltCalc) ? freqdc_compare : freqdc));
-                (*elV).cpuid_m_pbF->set_text(( (m_CpuAltCalc && bCpuAltCalc) ? cline_compare : cline));
-
-                (*elV).cpuid_m_pbCF->set_fraction(( (m_CpuAltCalc && bCpuAltCalc) ? freqdc : freqdc_compare));
-                (*elV).cpuid_m_pbCF->set_text(( (m_CpuAltCalc && bCpuAltCalc) ? cline : cline_compare));
+            	UIBCF((*elV).cpuid_m_pbF,(CHECKBCF ? freqdc_compare : freqdc),(CHECKBCF ? cline_compare : cline));
+            	UIBCF((*elV).cpuid_m_pbCF,(CHECKBCF ? freqdc : freqdc_compare),(CHECKBCF ? cline : cline_compare));
 
                 std::string cd = "cat /proc/stat | grep cpu" + std::to_string((*cel).cpunit);
                 std::string res  = uhiutil::execmd(cd.data());
                 usgdc = UsageCalc(res,&(*cel).cpuid_mem_total,&(*cel).cpuid_mem_idle);
-                (*elV).cpuid_m_pbU->set_fraction(usgdc);
-                (*elV).cpuid_m_pbU->set_text(res);
+                UIBCF((*elV).cpuid_m_pbU,usgdc,res);
 
                 (*cel).set_data(freqdc,usgdc,freqdc_compare);
              }

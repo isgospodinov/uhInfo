@@ -123,10 +123,8 @@ double CProc::UsageCalc(std::string &Usge,LONG2INT *mem_tot,LONG2INT *mem_id)
 void CProc::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch,bool bCpuAltCalc)
 {
       std::string res = uhiutil::execmd("lscpu | grep -E \"CPU MHz\"");
-      pbF->set_fraction(FreqCalc(res));
-      pbF->set_text(res);
+      UIBCF(pbF,FreqCalc(res),res);
 
       res  = uhiutil::execmd("head -n1 /proc/stat");
-      pbU->set_fraction(UsageCalc(res));
-      pbU->set_text(res);
+      UIBCF(pbU,UsageCalc(res),res);
 }

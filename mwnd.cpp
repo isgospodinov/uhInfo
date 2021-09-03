@@ -334,11 +334,8 @@ void CHWindow::enhanced_system_info()
                   STATUSIMAGES_SET_INACTIVE;
                   if(sensors_printing_enable) {
                        sensors_printing_enable = false;
- 
-                       m_pbFreq.set_text("Frequency");
-                       m_pbFreq.set_fraction(0.0);
-                       m_pbUse.set_text("Usage");
-                       m_pbUse.set_fraction(0.0);
+                       UIBCF((&m_pbFreq),0.0,"Frequency");
+                       UIBCF((&m_pbUse),0.0,"Usage");
                        m_Label_VGA_cond_status.set_label("- / -");
 
                        std::string sysmess("Sensors activity turned off...\n");
@@ -381,12 +378,9 @@ void CHWindow::show_cpu_activity_all()
          m_sb_cpu_status.set_visible(false);
          if(pntProcessor) {
                  for(cpu_chain_el el : cpu_units_monit_chain)  {
-                     el.cpuid_m_pbF->set_text("Frequency");
-                     el.cpuid_m_pbF->set_fraction(0.0);
-                     el.cpuid_m_pbCF->set_text("Copr.Freq.");
-                     el.cpuid_m_pbCF->set_fraction(0.0);
-                     el.cpuid_m_pbU->set_text("Usage");
-                     el.cpuid_m_pbU->set_fraction(0.0);
+                     UIBCF(el.cpuid_m_pbF,0.0,"Frequency");
+                     UIBCF(el.cpuid_m_pbCF,0.0,"Copr.Freq.");
+                     UIBCF(el.cpuid_m_pbU,0.0,"Usage");
                  }
                  CPUCALCDATACTION(m_ClearCalcData);
          }
