@@ -69,6 +69,7 @@ bool CHWindow::on_DA_button_press_event(GdkEventButton* bntev)
 
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
+	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Temperature details"));
 
    return false;
 }
@@ -356,9 +357,9 @@ void CHWindow::show_cpu_activity_all()
      static bool remeber_activity = sensors_printing_enable;
      
      m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
+     bool cpumode = item_cpu->get_active();
 
-     if(item_cpu->get_active()) {
-         set_title("uhInfo - CPU units");
+     if(cpumode) {
          remeber_activity = sensors_printing_enable;
          MENUITESTAUS(false);
          REVEALERSTATUS(false);
@@ -368,7 +369,6 @@ void CHWindow::show_cpu_activity_all()
          StatusbarCpuText();
      }
      else {
-         set_title("uhInfo - Summary");
          MENUITESTAUS(remeber_activity);
          if(item_infomode && (pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb()))
                     item_infomode->set_sensitive(true);
@@ -386,6 +386,8 @@ void CHWindow::show_cpu_activity_all()
          }
      }
 
+     set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
+
 }
 
 void CHWindow::monitor_temperature()
@@ -394,9 +396,9 @@ void CHWindow::monitor_temperature()
 
     pSysensors->EraseStatisticsAll();
     pUd2Manager->EraseStatisticsAll();
+    bool tmode = item_temperature->get_active();
 
-    if(item_temperature->get_active())   {
-        set_title("uhInfo - Temperature monitor");
+    if(tmode) {
         TMPITSTAT(false);
         pSysensors->PopulateTemperatureSelection(this);
         if(pfDlg && pfDlg->GetInTmpMonStat())
@@ -406,7 +408,6 @@ void CHWindow::monitor_temperature()
         temperature_mode_status = true;
     }
     else {
-          set_title("uhInfo - Summary");
           TMPITSTAT(true);
           m_VPanedTrmpetature.set_visible(false);
           ptRefTreeModel->clear();
@@ -414,6 +415,8 @@ void CHWindow::monitor_temperature()
           if(pUd2Manager) pUd2Manager->PrintForceExternal();
           temperature_mode_status = false;
     }
+
+    set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
 }
 
 void CHWindow::OnTempToggled(const Glib::ustring &path_string)
