@@ -320,103 +320,96 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        }
 }
 
-void CHWindow::enhanced_system_info() 
+void CHWindow::enhanced_system_info()
 {
-       if(item_infomode) {
-             STATUSIMAGES_CLEAR;
-             if(item_infomode->get_active()) {
-                  m_sb_status.set_text("ON      ");
-                  STATUSIMAGES_SET_ACTIVE;
-                  if(!sensors_printing_enable) sensors_printing_enable = true;
-                  ENHGITESTAUS(true);
-             }
-             else {
-                  m_sb_status.set_text("OFF     ");
-                  STATUSIMAGES_SET_INACTIVE;
-                  if(sensors_printing_enable) {
-                       sensors_printing_enable = false;
-                       UIBCF((&m_pbFreq),0.0,"Frequency");
-                       UIBCF((&m_pbUse),0.0,"Usage");
-                       m_Label_VGA_cond_status.set_label("- / -");
-
-                       std::string sysmess("Sensors activity turned off...\n");
-                       unsigned int nchips = 0,nsensors = 0;
-                       CHIPSENSORSNUMBER(nchips,nsensors);
-
-                       sysmess.append(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected."); 
-
-                       (m_TextView.get_buffer())->set_text(sysmess);
-                  }
-                  ENHGITESTAUS(false);
-             }
+   if(item_infomode) {
+       STATUSIMAGES_CLEAR;
+       bool infomode = item_infomode->get_active();
+       m_sb_status.set_text((infomode ? "ON      " : "OFF     "));
+       if(infomode) {
+		   STATUSIMAGES_SET_ACTIVE;
+		   if(!sensors_printing_enable) sensors_printing_enable = infomode;
        }
+       else {
+		   STATUSIMAGES_SET_INACTIVE;
+		   if(sensors_printing_enable) {
+			   sensors_printing_enable = infomode;
+			   UIBCF((&m_pbFreq),0.0,"Frequency");
+			   UIBCF((&m_pbUse),0.0,"Usage");
+			   m_Label_VGA_cond_status.set_label("- / -");
+
+			   std::string sysmess("Sensors activity turned off...\n");
+			   unsigned int nchips = 0,nsensors = 0;
+			   CHIPSENSORSNUMBER(nchips,nsensors);
+			   sysmess.append(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected.");
+
+			   (m_TextView.get_buffer())->set_text(sysmess);
+		   }
+       }
+       ENHGITESTAUS(infomode);
+   }
 }
 
 void CHWindow::show_cpu_activity_all()
 {
-     static bool remeber_activity = sensors_printing_enable;
+   static bool remeber_activity = sensors_printing_enable;
      
-     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
-     bool cpumode = item_cpu->get_active();
+   m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
+   if(item_cpu) {
+       bool cpumode = item_cpu->get_active();
+       if(cpumode) {
+           remeber_activity = sensors_printing_enable;
+           StatusbarCpuText();
+       }
+       else {
+           if(pntProcessor) {
+               for(cpu_chain_el el : cpu_units_monit_chain)  {
+                   UIBCF(el.cpuid_m_pbF,0.0,"Frequency");
+                   UIBCF(el.cpuid_m_pbCF,0.0,"Copr.Freq.");
+                   UIBCF(el.cpuid_m_pbU,0.0,"Usage");
+               }
+               CPUCALCDATACTION(m_ClearCalcData);
+           }
+       }
 
-     if(cpumode) {
-         remeber_activity = sensors_printing_enable;
-         MENUITESTAUS(false);
-         REVEALERSTATUS(false);
-         m_VBoxCPUActivityAll.set_visible(true);
-         m_sb_cpu_labeltext.set_visible(true);
-         m_sb_cpu_status.set_visible(true);
-         StatusbarCpuText();
-     }
-     else {
-         MENUITESTAUS(remeber_activity);
-         if(item_infomode && (pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb()))
-                    item_infomode->set_sensitive(true);
-         REVEALERSTATUS(true);
-         m_VBoxCPUActivityAll.set_visible(false);
-         m_sb_cpu_labeltext.set_visible(false);
-         m_sb_cpu_status.set_visible(false);
-         if(pntProcessor) {
-                 for(cpu_chain_el el : cpu_units_monit_chain)  {
-                     UIBCF(el.cpuid_m_pbF,0.0,"Frequency");
-                     UIBCF(el.cpuid_m_pbCF,0.0,"Copr.Freq.");
-                     UIBCF(el.cpuid_m_pbU,0.0,"Usage");
-                 }
-                 CPUCALCDATACTION(m_ClearCalcData);
-         }
-     }
-
-     set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
-
+       MENUITESTAUS((cpumode ? !cpumode : remeber_activity));
+       if(!cpumode && item_infomode && (pSysensors->GetSensorNodesNumb() +
+    		                 pUd2Manager->GetSensorNodesNumb())) item_infomode->set_sensitive(!cpumode);
+       REVEALERSTATUS(!cpumode);
+       m_VBoxCPUActivityAll.set_visible(cpumode);
+       m_sb_cpu_labeltext.set_visible(cpumode);
+       m_sb_cpu_status.set_visible(cpumode);
+       set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
+   }
 }
 
 void CHWindow::monitor_temperature()
 {
-    if(!pSysensors) return;
+   if(!pSysensors) return;
 
-    pSysensors->EraseStatisticsAll();
-    pUd2Manager->EraseStatisticsAll();
-    bool tmode = item_temperature->get_active();
+   if(item_temperature) {
+        pSysensors->EraseStatisticsAll();
+        pUd2Manager->EraseStatisticsAll();
 
-    if(tmode) {
-        TMPITSTAT(false);
-        pSysensors->PopulateTemperatureSelection(this);
-        if(pfDlg && pfDlg->GetInTmpMonStat())
-            pUd2Manager->PopulateTemperatureSelection(this);
-        m_VPanedTrmpetature.set_visible(true);
-        Ud2printcache = "";
-        temperature_mode_status = true;
-    }
-    else {
-          TMPITSTAT(true);
-          m_VPanedTrmpetature.set_visible(false);
-          ptRefTreeModel->clear();
-          m_DAtemperature.EraseAll();
-          if(pUd2Manager) pUd2Manager->PrintForceExternal();
-          temperature_mode_status = false;
-    }
+		bool tmode = item_temperature->get_active();
+		TMPITSTAT(!tmode);
 
-    set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
+		if(tmode) {
+			pSysensors->PopulateTemperatureSelection(this);
+			if(pfDlg && pfDlg->GetInTmpMonStat())
+			    pUd2Manager->PopulateTemperatureSelection(this);
+			Ud2printcache = "";
+		}
+		else {
+			  ptRefTreeModel->clear();
+			  m_DAtemperature.EraseAll();
+			  if(pUd2Manager) pUd2Manager->PrintForceExternal();
+		}
+
+		m_VPanedTrmpetature.set_visible(tmode);
+		temperature_mode_status = tmode;
+		set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
+   }
 }
 
 void CHWindow::OnTempToggled(const Glib::ustring &path_string)
