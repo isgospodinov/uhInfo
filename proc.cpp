@@ -122,13 +122,13 @@ double CProc::UsageCalc(std::string &Usge,LONG2INT *mem_tot,LONG2INT *mem_id)
 
 void CProc::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch,bool bCpuAltCalc)
 {
-      std::string res(""),line("");
+      std::string res("");
       double cpucfq = 0.0;
 
-      std::istringstream instrm(uhiutil::execmd("cat /proc/cpuinfo  | grep 'cpu MHz'"));
-      while(std::getline(instrm, line)) {
-    	  uhiutil::newline(line,":",Direction::RIGHT);
-    	  cpucfq += std::stod(line);
+      std::istringstream instrm{uhiutil::execmd("cat /proc/cpuinfo  | grep 'cpu MHz'")};
+      while(std::getline(instrm, res)) {
+    	  uhiutil::newline(res,":",Direction::RIGHT);
+    	  cpucfq += std::stod(res);
       }
       res = std::to_string(cpucfq / cpu_units);
       UIBCF(pbF,FreqCalc(res),res);
