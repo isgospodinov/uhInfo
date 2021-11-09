@@ -3,9 +3,9 @@ PROGRAM = uhInfo
 CPPFILES = main.cpp hth.cpp mwnd.cpp mwndui.cpp smdialog.cpp util.cpp hInfapp.cpp hgpu.cpp hmonit.cpp proc.cpp procun.cpp sysens.cpp ud2mon.cpp hdwera.cpp prefsdlg.cpp sensmon.cpp aboutdlg.cpp
 OBJS = $(CPPFILES:.cpp=.o)
 BUILD = build
-GTKMMFLAGS = `pkg-config --cflags gtkmm-3.0`
-GTKMMLIBS = `pkg-config --libs gtkmm-3.0`
-UHIBFLAGS = -std=c++14 -Os -Wall# -g
+GTKMMFLAGS = `pkg-config --cflags gtkmm-4.0`
+GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
+UHIBFLAGS = -std=c++17 -Os -Wall# -g
 ELIBS = -pthread -ludisks2 -ldl
 
 

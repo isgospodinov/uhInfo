@@ -4,15 +4,32 @@ A small gnome desktop application for displaying configuration information and
 monitoring CPU and temperature statistics.Including CPU temperatures,voltage,
 activity,PCIE link status,HDD/SSD temperatures,fan speeds and other important
 system parameters readings under Linux.
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+---------------------------------------------------------------------------------
+-: [November 2021] :-  
+Note :
+After version 0.17(including),the project has been ported to gtkmm - 4.
+To build the project you will need to install gtkmm4 with all needed dependencies :
+ - gtk4
+ - sigc++-3.0
+ - glibmm >= 2.68
+ - pangomm >= 2.48
+ - cairomm >= 1.16
+    ... etc.
+end their corresponding devel(dev) packages of the respective distribution.
+Under Fedora Linux 35 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
+---------------------------------------------------------------------------------
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+For version 0.16 and lower : 
 ------------------------------------------------------
 Requirements :
   - GNOME desktop environment with gtkmm-3.0 >= 3.22.0
   - Udisks2 >= 2.7.6
 Strongly recommended :
   - lm_sensors(lm-sensors) >= 3.4.0
-------------------------------------------------------
+-------------------------------------------------------
 1) BUILDING and CLEANING projest
-- - - - - - - - - - - - - - - - - - - - - - - -
+- - - - - - - - - - - - - - - - - - - - - - - - - - - -
 IMPORTANT!
 To ensure proper project compilation you will need to install:
 - Fedora (33/34) : gtkmm30-devel lm_sensors-devel libudisks2-devel

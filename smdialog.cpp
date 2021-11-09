@@ -9,10 +9,9 @@
 #include "mwnd.h"
 using uhiutil::cpu::UhiDownCast;
 
-CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : Gtk::Dialog("Settings",p_wnd),
+CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : Gtk::Dialog("Settings",*p_wnd),
                      pmWnd(p_wnd),pSensors(&pS),pUd2mon(&pUd2)
 {
-    //add_events(Gdk::STRUCTURE_MASK);
     uhiutil::GetDesktopSize((unsigned int*) &dh,(unsigned int*) &dw);
 
     if(!dh || !dw) {
@@ -20,9 +19,12 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
         dh = uhiutil::def_desktop_height;
    }
 
-   scrollWindow.add(treeView);
-   get_content_area()->pack_start(scrollWindow);
+   scrollWindow.set_child(treeView);
+   get_content_area()->append(scrollWindow);
    treeView.set_model(pRefTreeModel);
+
+   scrollWindow.set_margin(7);
+   scrollWindow.set_expand();
 
    treeView.append_column_editable("+/-", vColumns->col_tcheck);
    treeView.append_column("Node", vColumns->tsensor_node);
@@ -37,11 +39,17 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    if(pColumn && pRenderer)
        pRenderer->signal_toggled().connect(sigc::mem_fun(*this,&CSmDialog::OnToggled));
 
-   get_vbox()->set_border_width(7);
-
-   signal_response().connect(sigc::mem_fun((CHWindow&)*p_wnd, fp) );
+   signal_response().connect(sigc::mem_fun((CHWindow&)*p_wnd, fp));
+   signal_close_request().connect(sigc::mem_fun(*this, &CSmDialog::Wnd_close_handler),false);
 
    get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+}
+
+bool CSmDialog::Wnd_close_handler()
+{
+	hide();
+	((CHWindow*)pmWnd)->smDlgResponse(1);
+	return true;
 }
 
 void CSmDialog::InitVision()
@@ -125,45 +133,45 @@ const std::string CSmDialog::GetInused(bool all) const
 
 void CSmDialog::OnToggled(const Glib::ustring &path_string)
 {
-   Gtk::TreePath path(path_string);
-   Gtk::TreeModel::iterator iter = pRefTreeModel->get_iter(path);
+	   Gtk::TreePath path(path_string);
+	   Gtk::TreeModel::iterator iter = pRefTreeModel->get_iter(path);
 
-   if((*iter)[vColumns->tsensor_node] == sensors::nud2) {
-       if(pUd2mon) {
-           for(std::list<Ud2_sens_node>::iterator it = pUd2mon->monitoring.begin(); it != pUd2mon->monitoring.end(); it++)  {
-                if(((*iter)[vColumns->tsensor_name] == Glib::ustring(it->ud2_model_name)) && ((*iter)[vColumns->tnode_id] == it->ud2_drv_id)) { 
-                    it->visible = (*iter)[vColumns->col_tcheck];
-                    ((!it->visible) ? ++pUd2mon->inactive_dev_number : --pUd2mon->inactive_dev_number);
-                    pUd2mon->dataPrint_forced = true;
-                    break;
-                }
-           }
-       }
-   }
-   else {
-       if(pSensors) {
-           bool break_it = false;
-           for(std::list<Chip_node>::iterator n = pSensors->monitoring.begin(); n != pSensors->monitoring.end(); n++)  {
-                if((*iter)[vColumns->tsensor_node] == Glib::ustring(n->chip_name.cnip_prefix) && ((*iter)[vColumns->tnode_id] == n->chip_id)) {
-                    for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
-                        if((*iter)[vColumns->tsensor_name] == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) { 
-                            sn->visible = (*iter)[vColumns->col_tcheck];
-                            ((!sn->visible) ? ++n->inactive_sensors_number : --n->inactive_sensors_number);
-                            break_it = true;
-                            break;
-                        }
-                    }
-                }
-                if(break_it) break;
-           }
-       } 
-   }
+	   if((*iter)[vColumns->tsensor_node] == sensors::nud2) {
+	       if(pUd2mon) {
+	           for(std::list<Ud2_sens_node>::iterator it = pUd2mon->monitoring.begin(); it != pUd2mon->monitoring.end(); it++)  {
+	                if(((Glib::ustring((*iter)[vColumns->tsensor_name])) == it->ud2_model_name) && ((Glib::ustring((*iter)[vColumns->tnode_id])) == it->ud2_drv_id)) {
+	                    it->visible = (*iter)[vColumns->col_tcheck];
+	                    ((!it->visible) ? ++pUd2mon->inactive_dev_number : --pUd2mon->inactive_dev_number);
+	                    pUd2mon->dataPrint_forced = true;
+	                    break;
+	                }
+	           }
+	       }
+	   }
+	   else {
+	       if(pSensors) {
+	           bool break_it = false;
+	           for(std::list<Chip_node>::iterator n = pSensors->monitoring.begin(); n != pSensors->monitoring.end(); n++)  {
+	                if((Glib::ustring((*iter)[vColumns->tsensor_node])) == Glib::ustring(n->chip_name.cnip_prefix) && ((Glib::ustring((*iter)[vColumns->tnode_id])) == Glib::ustring(n->chip_id))) {
+	                    for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
+	                        if((Glib::ustring((*iter)[vColumns->tsensor_name])) == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) {
+	                            sn->visible = (*iter)[vColumns->col_tcheck];
+	                            ((!sn->visible) ? ++n->inactive_sensors_number : --n->inactive_sensors_number);
+	                            break_it = true;
+	                            break;
+	                        }
+	                    }
+	                }
+	                if(break_it) break;
+	           }
+	       }
+	   }
 }
 
 void CSmDialog::on_show()
 {
-    int x = 0, y = 0;
-    pmWnd->get_position(x,y);
+    //int x = 0, y = 0;
+    //pmWnd->get_position(x,y);
 
     // !! move(... , ...) works effectively only after Gtk::Dialog::on_show() execution
     //MVWND(x,y,pmWnd->get_width(),get_width());
@@ -171,5 +179,5 @@ void CSmDialog::on_show()
     pRefTreeModel->clear();
     InitVision();
     Gtk::Dialog::on_show();
-    MVWND(x,y,pmWnd->get_width(),get_width());
+    //MVWND(x,y,pmWnd->get_width(),get_width());
 }

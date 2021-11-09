@@ -15,8 +15,7 @@ int main (int argc, char* argv[])
           if(std::atoi((std::string(uhiutil::execmd("pgrep -c uhInfo"))).data()) != 1)  return 0;
           else {	
                Glib::RefPtr<ChInfApp> app = ChInfApp::create("org.gtkmm.uhInfo");
-               CHWindow window; 		
-               return app->run(window);
+               return app->make_window_and_run<CHWindow>(argc, argv);
           }
        return 0;
 }

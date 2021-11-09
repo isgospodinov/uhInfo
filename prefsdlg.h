@@ -34,6 +34,8 @@ private:
    void InitVision();
    void InitData();
    virtual void on_show() override {Gtk::Dialog::on_show();}
+   bool Wnd_close_handler() {Gtk::Dialog::hide();return true;}
+
 };
 
 #endif // _PREFSDLG_H_

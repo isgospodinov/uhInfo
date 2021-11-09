@@ -19,9 +19,16 @@ CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *
               valfreqcmpr = dw_frec_cp;
   }
   else {
-	  add_events(Gdk::BUTTON_PRESS_MASK);
-	  signal_button_press_event().connect(sigc::mem_fun(*uhiwnd,ldafp));
+	  msbntpress = Gtk::GestureClick::create();
+	  msbntpress->set_button(GDK_BUTTON_PRIMARY);
+	  msbntpress->signal_pressed().connect(sigc::mem_fun(*uhiwnd,ldafp));
+	  add_controller(msbntpress);
+
+	  set_margin(2);
   }
+  set_draw_func(sigc::mem_fun(*this, &CDrawArea::on_draw));
+
+  set_expand();
 }
 
 void CDrawArea::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
@@ -66,13 +73,20 @@ void CDrawArea::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double at
     	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),
     	               		                              ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
   }
-  crtx->stroke(); 
+  crtx->stroke();
 }
 
-bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
+void CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int wdraw, int hdraw)
 {
-  Gtk::Allocation allocation = get_allocation(); 
+  Gtk::Allocation allocation = get_allocation();
   int width = allocation.get_width(),height = allocation.get_height();
+
+  cr->save();
+  Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{uhiutil::ui::cpunits_bckcolor});
+  cr->paint();
+  cr->restore();
+
+  cr->save();
   cr->set_source_rgb(1.0, 1.0, 1.0);
   if(DMode == Dm::TEMPERATUREDRAW)
           DrawStrings(cr,GetDurationString(),width,height);
@@ -117,13 +131,12 @@ bool CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr)
                            DrawActivity(cr,xc,height,width);
           }
       }
-
-  return true;
+  cr->restore();
 }
 
 void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag)
 {
-    if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
+	if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
     if(setflag)  {
           Draw_Item di;
@@ -157,7 +170,7 @@ std::string CDrawArea::DurationTimeString(std::chrono::seconds sec) const
     std::stringstream string_duration;
     string_duration.fill('0');
 
-    if(hc) 
+    if(hc)
         string_duration << h.count() << ":";
     else 
         string_duration << "0:";

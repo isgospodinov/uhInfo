@@ -75,7 +75,6 @@ void uhiutil::GetDesktopSize(unsigned int *Wh,  unsigned int *Ww)
   else
   	  sub = execmd("xdpyinfo | grep dimensions: | awk '{print $2}'");
 
-  //sub = "";
   if(sub != "") {
       pos1 = sub.find("x");
       w = sub.substr(0,pos1);

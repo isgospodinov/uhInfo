@@ -7,7 +7,7 @@
 
 ChInfApp::ChInfApp(const std::string &name) : Gtk::Application(name)
 {
-     Glib::set_application_name(name);
+     Glib::set_application_name(Glib::ustring{name});
 }
 
 Glib::RefPtr<ChInfApp> ChInfApp::create(const std::string &name)
@@ -22,5 +22,5 @@ void ChInfApp::on_startup()
 
 void ChInfApp::on_activate()
 {
-}
 
+}

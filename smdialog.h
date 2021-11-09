@@ -37,6 +37,8 @@ private:
    virtual void on_show() override;
    void InitVision();
    void OnToggled(const Glib::ustring &path_string);
+
+   bool Wnd_close_handler();
 };
 
 #endif // _SMDIALOG_H_

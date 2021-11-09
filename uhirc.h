@@ -32,13 +32,12 @@
 #define CONNECTIONCLOSE(connection) if(CONNECTIONSTATUS(connection)) \
                                                 connection->disconnect()
 
-#define CLEAR_THREAD_CONDITIONS if(m_Connection) {CONNECTIONCLOSE(m_Connection); m_Connection.reset();} \
-                                if(m_Dispatch) m_Dispatch.reset()
+#define CLEAR_THREAD_CONDITIONS if(m_Connection) {CONNECTIONCLOSE(m_Connection);}
           
-#define MVWND(x,y,pw,gw) if((x + 5 + pw + gw) > dw) \
+/*#define MVWND(x,y,pw,gw) if((x + 5 + pw + gw) > dw) \
                                 move(dw - gw, y); \
                          else \
-                                move((x + 5) + pw, y)
+                                move((x + 5) + pw, y)*/
 
 #define SIZEOF(obj) ((sizeof obj) / sizeof(char*))
 #define LIBCLOSE(lib) if(lib) {dlclose(lib);lib = nullptr;}
@@ -52,24 +51,24 @@
                             operation_status_image_pcie.clear(); \
                                   operation_status_image_sensors.clear()
 
-#define STATUSIMAGES_SET_ACTIVE operation_status_image_cpu.set(Gtk::Stock::REFRESH ,Gtk::BuiltinIconSize::ICON_SIZE_MENU); \
-                             operation_status_image_pcie.set(Gtk::Stock::REFRESH ,Gtk::BuiltinIconSize::ICON_SIZE_MENU); \
-                                 operation_status_image_sensors.set(Gtk::Stock::REFRESH ,Gtk::BuiltinIconSize::ICON_SIZE_MENU)
+#define STATUSIMAGES_SET_ACTIVE operation_status_image_cpu.set_from_icon_name("view-refresh"); \
+                             operation_status_image_pcie.set_from_icon_name("view-refresh"); \
+                                 operation_status_image_sensors.set_from_icon_name("view-refresh");
 
-#define STATUSIMAGES_SET_INACTIVE operation_status_image_cpu.set(Gtk::Stock::CLOSE ,Gtk::BuiltinIconSize::ICON_SIZE_MENU); \
-                                operation_status_image_pcie.set(Gtk::Stock::CLOSE ,Gtk::BuiltinIconSize::ICON_SIZE_MENU); \
-                                     operation_status_image_sensors.set(Gtk::Stock::CLOSE ,Gtk::BuiltinIconSize::ICON_SIZE_MENU)
+#define STATUSIMAGES_SET_INACTIVE operation_status_image_cpu.set_from_icon_name("window-close"); \
+                                operation_status_image_pcie.set_from_icon_name("window-close"); \
+                                     operation_status_image_sensors.set_from_icon_name("window-close")
 
-#define ENHGITESTAUS(fsat) item_options->set_sensitive(fsat); \
-                           item_manage->set_sensitive(fsat); \
-                           item_temperature->set_sensitive(fsat && temperature_monitoring_enabled)
+#define ENHGITESTAUS(fsat) item_options->set_enabled(fsat); \
+                           item_manage->set_enabled(fsat); \
+                           item_temperature->set_enabled(fsat && temperature_monitoring_enabled)
 
-#define MENUITESTAUS(ia) item_infomode->set_active(ia); \
-                            item_infomode->set_sensitive(ia); \
+#define MENUITESTAUS(ia) item_infomode->change_state(ia); \
+                            item_infomode->set_enabled(ia); \
                             ENHGITESTAUS(ia)
 
-#define SMDLGMISTAT(flag) item_cpu->set_sensitive(flag); \
-                          item_infomode->set_sensitive(flag); \
+#define SMDLGMISTAT(flag) item_cpu->set_enabled(flag); \
+                          item_infomode->set_enabled(flag); \
                           ENHGITESTAUS(flag)
 
 #define TMPITSTAT(flag) \
@@ -83,10 +82,10 @@
           m_Frame_Disks.set_visible(flag); \
           m_Frame_OS.set_visible(flag); \
           m_BlinkGrid.set_visible(!flag); \
-          item_cpu->set_sensitive(flag); \
-          item_infomode->set_sensitive(flag); \
-          item_options->set_sensitive(flag); \
-          item_manage->set_sensitive(flag)
+          item_cpu->set_enabled(flag); \
+          item_infomode->set_enabled(flag); \
+          item_options->set_enabled(flag); \
+          item_manage->set_enabled(flag)
 
 #define TEMPERATUREWNDVIEW(wndstat) \
 		  m_status_bar.set_visible(wndstat); \
@@ -96,9 +95,6 @@
 
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()
-
-#define REVEALERSTATUS(status) m_Revealer.set_visible(status); \
-                                m_Revealer.set_reveal_child(status)
 
 #define CONNECTIONSET *(new sigc::connection)
 
@@ -136,7 +132,7 @@ using cpu_chain_el = struct _cpu_chain {
       int processor = -1,physid = -1,coreid = -1,cpuidn = -1;
 	  Gtk::ProgressBar *cpuid_m_pbF = nullptr, *cpuid_m_pbCF = nullptr, *cpuid_m_pbU = nullptr;
       CDrawArea *pDArea = nullptr;
-      Gtk::Label *lCompareColor = nullptr, *lFirstSpace = nullptr;
+      Gtk::Label *lCompareColor = nullptr;
 };
 
 using CModelBaseUhiColumns = struct ModelBaseUhiColumns : public Gtk::TreeModel::ColumnRecord {

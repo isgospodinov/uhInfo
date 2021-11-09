@@ -8,6 +8,7 @@
 
 #include "util.h"
 #include <iomanip>
+#include <chrono>
 
 class CHWindow;
 namespace draw = uhiutil::draw;
@@ -17,14 +18,16 @@ class CDrawArea : public Gtk::DrawingArea
 public:
   using StatPaint = enum class PaintMode {FREQP,COMPAREFREQP,USAGE,TEMPERATUREP};
   using TmpWndState = enum class DAWndState {NORMAL,FULL};
-  using fp_lDASR = bool (CHWindow::*)(GdkEventButton*);
+  using fp_lDASR = void (CHWindow::*)(int, double, double);
   using DRAWVECTOR = const std::vector<double>*;
   using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
-    
+
+  Glib::RefPtr<Gtk::GestureClick> msbntpress;
+
   CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
   virtual ~CDrawArea() = default;
 
-  void Redraw() {get_window()->invalidate_rect(Gdk::Rectangle(0, 0, get_width(), get_height()), false);}
+  void Redraw() {queue_draw();}
   void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
 
@@ -44,7 +47,7 @@ private:
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
 
-  virtual bool on_draw(const Cairo::RefPtr<Cairo::Context>& cr) override;
+  void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int wdraw, int hdraw);
   void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const;
   void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const ;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
@@ -52,8 +55,8 @@ private:
   std::string GetDurationString();
   void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) const {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
   const Pango::FontDescription DA_DrawFont(bool fd = true)  const { Pango::FontDescription font; font.set_family(draw::text_font_family);
-		font.set_weight(fd ? Pango::WEIGHT_BOLD : Pango::WEIGHT_THIN);
-		font.set_style(fd ? Pango::STYLE_ITALIC : Pango::STYLE_NORMAL);
+		font.set_weight(fd ? Pango::Weight::BOLD : Pango::Weight::THIN);
+		font.set_style(fd ? Pango::Style::ITALIC : Pango::Style::NORMAL);
 		font.set_size((fd ? draw::dtxtmax : draw::dtxthin) * PANGO_SCALE);
 		return font;
   }

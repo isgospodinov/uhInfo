@@ -14,48 +14,45 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
 
    InitVision();
    InitData();
+   signal_close_request().connect(sigc::mem_fun(*this, &CPrefsDlg::Wnd_close_handler),false);
    cb_MaxTmp.signal_changed().connect(sigc::mem_fun(*this,&CPrefsDlg::on_MaxTmp_changed));
-   ch_NativeFq.signal_clicked().connect(sigc::mem_fun(*this,&CPrefsDlg::on_NativeFq_changed));
+   ch_NativeFq.signal_toggled().connect(sigc::mem_fun(*this,&CPrefsDlg::on_NativeFq_changed));
    get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 void CPrefsDlg::InitVision()
 {
-   get_content_area()->pack_start(fr_All);
-   fr_All.add(box_all);
-   box_all.set_orientation(Gtk::ORIENTATION_VERTICAL);
-   box_MaxTmp.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-   box_InTmpMon.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-   box_AllInput.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-   box_SaveImp.set_orientation(Gtk::ORIENTATION_HORIZONTAL);
-   box_NativeFq.set_orientation(Gtk::ORIENTATION_HORIZONTAL);   
+   get_content_area()->append(fr_All);
+   fr_All.set_child(box_all);
+   fr_All.set_margin(8);
+   box_MaxTmp.set_margin(4);
+   box_all.set_orientation(Gtk::Orientation::VERTICAL);
+   box_MaxTmp.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_InTmpMon.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_AllInput.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_SaveImp.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_NativeFq.set_orientation(Gtk::Orientation::HORIZONTAL);
 
+   box_InTmpMon.append(ch_InTmpMon);
+   box_AllInput.append(ch_AllInput);
+   box_SaveImp.append(ch_SaveImp);
+   box_NativeFq.append(ch_NativeFq);
+   box_MaxTmp.append(l_MaxTemp);
+   box_MaxTmp.append(cb_MaxTmp);
 
-   box_InTmpMon.pack_start(ch_InTmpMon, Gtk::PACK_SHRINK);
-   box_AllInput.pack_start(ch_AllInput, Gtk::PACK_SHRINK);
-   box_SaveImp.pack_start(ch_SaveImp, Gtk::PACK_SHRINK);
-   box_NativeFq.pack_start(ch_NativeFq, Gtk::PACK_SHRINK);      
-   box_MaxTmp.pack_start(l_MaxTemp, Gtk::PACK_SHRINK);
-   box_MaxTmp.pack_start(cb_MaxTmp, Gtk::PACK_SHRINK);
+   box_all.append(box_InTmpMon);
+   box_all.append(box_AllInput);
+   box_all.append(box_SaveImp);
+   box_all.append(box_NativeFq);
+   box_all.append(box_MaxTmp);
 
-   box_all.pack_start(box_InTmpMon, Gtk::PACK_SHRINK);
-   box_all.pack_start(box_AllInput, Gtk::PACK_SHRINK);
-   box_all.pack_start(box_SaveImp, Gtk::PACK_SHRINK);
-   box_all.pack_start(box_NativeFq, Gtk::PACK_SHRINK);         
-   box_all.pack_start(box_MaxTmp, Gtk::PACK_SHRINK);
+   box_MaxTmp.set_halign(Gtk::Align::CENTER);
+   box_MaxTmp.set_valign(Gtk::Align::CENTER);
+   box_all.set_halign(Gtk::Align::CENTER);
+   box_all.set_valign(Gtk::Align::CENTER);
 
-   box_MaxTmp.set_border_width(4);
-   box_InTmpMon.set_border_width(4);
-   box_AllInput.set_border_width(4);
-   box_SaveImp.set_border_width(4);
-   box_NativeFq.set_border_width(4);   
-
-   box_MaxTmp.set_halign(Gtk::ALIGN_CENTER);
-   box_MaxTmp.set_valign(Gtk::ALIGN_CENTER);
-   box_all.set_halign(Gtk::ALIGN_CENTER);
-   box_all.set_valign(Gtk::ALIGN_CENTER);
-
-   get_vbox()->set_border_width(8);
+   fr_All.set_expand();
+   box_all.set_expand();
 }
 
 void CPrefsDlg::InitData()

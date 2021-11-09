@@ -11,12 +11,12 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
 					   m_DAtemperature(this,&CHWindow::on_DA_button_press_event)
 {
-  m_DABox_Temperature.pack_start(m_DAtemperature);// ! moved from mwndui.cpp
-  add(m_VBoxAll);
+  m_DABox_Temperature.append(m_DAtemperature);// ! moved from mwndui.cpp
+  set_child(m_VBoxAll);
 
   Glib::RefPtr<Gtk::StyleContext> refStyleContext = get_style_context();
   refStyleContext->add_provider(css_prov, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  Pango::FontDescription  font_desc = refStyleContext->get_font();
+  Pango::FontDescription font_desc = get_pango_context()->get_font_description();
   Glib::ustring font_family = font_desc.get_family();
   font_desc.set_size(uhiutil::ui::app_font_size * PANGO_SCALE);
   int font_size = font_desc.get_size();
@@ -26,7 +26,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 
   Glib::RefPtr<Gtk::TextBuffer> tgBuff = m_TextView.get_buffer();
   tgBuff->create_tag(uhiutil::ui::active_tag)->property_foreground() = "red";
-  tgBuff->create_tag(uhiutil::ui::max_tag)->property_weight() = Pango::WEIGHT_BOLD;
+  tgBuff->create_tag(uhiutil::ui::max_tag)->property_weight() = Pango::Weight::BOLD;
   for(int index = 0; index < (int)SIZEOF(clrID); tgBuff->create_tag(clrID[index])->property_background() = clrID[index],index++);
 
   InitVision();
@@ -45,7 +45,6 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
       if(ptRend) ptColumn->add_attribute(*ptRend,"cell-background", 2);
   }
 
-  show_all_children();
   m_VBoxCPUActivityAll.set_visible(false);
   m_sb_cpu_labeltext.set_visible(false);
   m_sb_cpu_status.set_visible(false);
@@ -55,9 +54,15 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
 }
 
-bool CHWindow::on_DA_button_press_event(GdkEventButton* bntev)
+void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 {
-	if(bntev->type != GDK_2BUTTON_PRESS || bntev->button != 1) return false;
+	Glib::RefPtr<Gdk::Event> evbntpress = m_DAtemperature.msbntpress->get_last_event(m_DAtemperature.msbntpress->get_current_sequence());
+
+	if(!evbntpress) return;
+	else {
+	   Gdk::Event::Type et = evbntpress->get_event_type();
+	   if(!((et != Gdk::Event::Type::BUTTON_PRESS) && (et != Gdk::Event::Type::PAD_BUTTON_PRESS)) && npress != 2) return;
+	}
 
 	CDrawArea::TmpWndState state = CDrawArea::DAWndState::NORMAL;
 	bool visiblity = true;
@@ -70,8 +75,6 @@ bool CHWindow::on_DA_button_press_event(GdkEventButton* bntev)
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
 	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Temperature details"));
-
-   return false;
 }
 
 void CHWindow::InitVision()
@@ -79,7 +82,6 @@ void CHWindow::InitVision()
   InitUI();
 
   set_title("uhInfo - Summary");
-  set_border_width(2);
 
   int width = 0, height = 0,posit = 0;
   std::string cmd("");
@@ -137,7 +139,7 @@ void CHWindow::init_units_activity_vision() // init all cpu units activity visio
 
           // One core,one thread.No sense.
           if(cpunits < 2) {
-                 item_cpu->set_sensitive(false);
+                 item_cpu->set_enabled(false);
                  return;
           }
 
@@ -193,9 +195,7 @@ void CHWindow::QuitTasks() const
 
 void CHWindow::Posthreadnotify()
 {
-    FinishThreadAndClear();
-
-    Glib::RefPtr<Gtk::TextBuffer> TVBuff = m_TextView.get_buffer();
+	Glib::RefPtr<Gtk::TextBuffer> TVBuff = m_TextView.get_buffer();
     std::string sysmess = TVBuff->get_text();
 
     unsigned int nchips = 0,nsensors = 0;
@@ -225,15 +225,21 @@ void CHWindow::Posthreadnotify()
     sensors_printing_enable  = (nchips ? true : false);
 
     if(item_infomode) {
-           item_infomode->set_active(sensors_printing_enable); // init again
-           item_infomode->set_sensitive(sensors_printing_enable);
+           item_infomode->set_enabled(sensors_printing_enable); // init again
+           item_infomode->change_state(sensors_printing_enable);
+           m_sb_status.set_text((sensors_printing_enable ? "ON      " : "OFF     ")); //ADD?
+           if(sensors_printing_enable) { //ADD?
+                 STATUSIMAGES_CLEAR;
+                 STATUSIMAGES_SET_ACTIVE;
+           }
+
     }
 
-    if(item_manage) item_manage->set_sensitive(sensors_printing_enable);
+    if(item_manage) item_manage->set_enabled(sensors_printing_enable);
 
-    if(item_temperature) item_temperature->set_sensitive(temperature_monitoring_enabled);
+    if(item_temperature) item_temperature->set_enabled(temperature_monitoring_enabled);
 
-    if(item_options) item_options->set_sensitive(sensors_printing_enable);
+    if(item_options) item_options->set_enabled(sensors_printing_enable);
 
     if(smDlg) smDlg->SetDefSize();
 
@@ -242,14 +248,19 @@ void CHWindow::Posthreadnotify()
     
      if(!c_Timer)
              c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
+
+     FinishThreadAndClear();
 }
 
 bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
 
+      bool state{false};
+      item_cpu->get_state(state);
+
       // --------------- cpu units activity calc ---------------
-      if(item_cpu->get_active()) {
+      if(state) {
            if(pntProcessor) {
                  std::lock_guard<std::mutex> lock(mutex_print);
                  pntProcessor->CalcFrecqUsage(nullptr,nullptr,&cpu_units_monit_chain,m_CPUModeSwitch.get_active()); // all units
@@ -263,7 +274,7 @@ bool CHWindow::uhI_Timer(int TmNo)
       }
 
       if(sensors_printing_enable) {
-                sensors_print(((condition == 5 || pUd2Manager->dataPrint_forced) ? true : false),pfDlg->GetInTmpMonStat());
+                sensors_print(((condition == 5 || pUd2Manager->dataPrint_forced) ? true : false),/*ENBLtrue*/pfDlg->GetInTmpMonStat());
                 if(pUd2Manager->dataPrint_forced)  {
                        pUd2Manager->dataPrint_forced = false;
                        if(condition != 5) condition = 5;
@@ -284,15 +295,17 @@ bool CHWindow::uhI_Timer(int TmNo)
 
 void CHWindow::sensors_print(bool Ud2print,bool extension)
 {
-       std::lock_guard<std::mutex> lock(mutex_print);
+	   std::lock_guard<std::mutex> lock(mutex_print);
+       bool state{false};
+       item_temperature->get_state(state);
        const bool blink_global_stat = m_BlinkSwitch.get_active();
        Glib::RefPtr<Gtk::TextBuffer> buff = m_TextView.get_buffer();
        buff->erase(buff->begin(),buff->end());
        
        buff->insert(buff->get_iter_at_line(buff->get_line_count()),"  Detected sensors :    \n");
 
-       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,pfDlg->GetAllInputStat());
-       if(temperature_mode_status)
+       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,/*ENBL true*/pfDlg->GetAllInputStat());
+      if(temperature_mode_status)
                           m_DAtemperature.Redraw();
 
        if((Ud2print && !temperature_mode_status) || (temperature_mode_status && extension))
@@ -301,8 +314,8 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        if(!temperature_mode_status) buff->insert(buff->get_iter_at_line(buff->get_line_count()),Ud2printcache);
 
        if(buff->get_text() == "  Detected sensors :    \n") {
-           if(item_temperature && !temperature_mode_status && item_temperature->get_sensitive())
-                                     item_temperature->set_sensitive(false);
+           if(item_temperature && !temperature_mode_status && state)
+                                     item_temperature->set_enabled(false);
 
            unsigned int nchips = 0,nsensors = 0;
            CHIPSENSORSNUMBER(nchips,nsensors);
@@ -310,10 +323,10 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        }
        else {
            if(item_temperature && !temperature_mode_status) {
-                           if(!item_temperature->get_sensitive()) item_temperature->set_sensitive(extension && !smDlg_shown);
+                           if(!state) item_temperature->set_enabled(extension && !smDlg_shown);
                            else {
-                               if(!extension && item_temperature->get_sensitive()) {
-                                           item_temperature->set_sensitive(temperature_monitoring_enabled);
+                               if(!extension && state) {
+                                           item_temperature->set_enabled(temperature_monitoring_enabled);
                                }
                            }
            }
@@ -324,7 +337,10 @@ void CHWindow::enhanced_system_info()
 {
    if(item_infomode) {
        STATUSIMAGES_CLEAR;
-       bool infomode = item_infomode->get_active();
+	   bool infomode{false};
+	   item_infomode->get_state(infomode);
+	   infomode = !infomode;
+	   item_infomode->change_state(infomode);
        m_sb_status.set_text((infomode ? "ON      " : "OFF     "));
        if(infomode) {
 		   STATUSIMAGES_SET_ACTIVE;
@@ -356,7 +372,10 @@ void CHWindow::show_cpu_activity_all()
      
    m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
    if(item_cpu) {
-       bool cpumode = item_cpu->get_active();
+	   bool cpumode{false};
+	   item_cpu->get_state(cpumode);
+	   cpumode = !cpumode;
+	   item_cpu->change_state(cpumode);
        if(cpumode) {
            remeber_activity = sensors_printing_enable;
            StatusbarCpuText();
@@ -374,25 +393,31 @@ void CHWindow::show_cpu_activity_all()
 
        MENUITESTAUS((cpumode ? !cpumode : remeber_activity));
        if(!cpumode && item_infomode && (pSysensors->GetSensorNodesNumb() +
-    		                 pUd2Manager->GetSensorNodesNumb())) item_infomode->set_sensitive(!cpumode);
-       REVEALERSTATUS(!cpumode);
+    		                 pUd2Manager->GetSensorNodesNumb())) item_infomode->set_enabled(!cpumode);
+
+       m_Revealer.set_visible(!cpumode);
        m_VBoxCPUActivityAll.set_visible(cpumode);
        m_sb_cpu_labeltext.set_visible(cpumode);
        m_sb_cpu_status.set_visible(cpumode);
        set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
+       m_sb_status.set_text((!cpumode ? (sensors_printing_enable ? "ON      " : "OFF     ") : "OFF     ")); //ADD?
    }
 }
 
 void CHWindow::monitor_temperature()
 {
-   if(!pSysensors) return;
+	if(!pSysensors) return;
 
    if(item_temperature) {
-        pSysensors->EraseStatisticsAll();
-        pUd2Manager->EraseStatisticsAll();
+       pSysensors->EraseStatisticsAll();
+       pUd2Manager->EraseStatisticsAll();
 
-		bool tmode = item_temperature->get_active();
-		TMPITSTAT(!tmode);
+ 	   bool tmode{false};
+ 	   item_temperature->get_state(tmode);
+ 	   tmode = !tmode;
+ 	   item_temperature->change_state(tmode);
+
+	   TMPITSTAT(!tmode);
 
 		if(tmode) {
 			pSysensors->PopulateTemperatureSelection(this);
@@ -406,15 +431,15 @@ void CHWindow::monitor_temperature()
 			  if(pUd2Manager) pUd2Manager->PrintForceExternal();
 		}
 
-		m_VPanedTrmpetature.set_visible(tmode);
-		temperature_mode_status = tmode;
-		set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
+	   m_VPanedTrmpetature.set_visible(tmode);
+	   temperature_mode_status = tmode;
+	   set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
    }
 }
 
 void CHWindow::OnTempToggled(const Glib::ustring &path_string)
 {
-    Gtk::TreePath path(path_string);
+	Gtk::TreePath path(path_string);
     Gtk::TreeModel::iterator iter = ptRefTreeModel->get_iter(path);
     CDrawArea::DRAWVECTOR dv = nullptr;
     double *ps_max = nullptr;
@@ -426,11 +451,12 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
 
     if(dv)
         m_DAtemperature.SetUnsetDrawItem(dv,ps_max,(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
+
 }
 
 void CHWindow::On_CPUActivityAll_switch_changed()
 {
-     CPUMNGBTNSTATE(m_CPUModeSwitch);
+	 CPUMNGBTNSTATE(m_CPUModeSwitch);
      CPUMNGBTNSTATE(m_CPUCompareSwitch);
         
     StatusbarCpuText();

@@ -22,6 +22,8 @@ class CHWindow : public CInitThread, public UIHWindow
 public:
   CHWindow();
 
+  void smDlgResponse(int id) {smDlg_shown = false;SMDLGMISTAT(true);}
+
   const std::shared_ptr<CSysens> pSysensors;
   const std::shared_ptr<Ud2mon> pUd2Manager;
   const std::unique_ptr<CProc> pntProcessor;
@@ -39,32 +41,29 @@ private:
   void Posthreadnotify();// Dispatcher handler.
   void init_units_activity_vision();
   void InitVision();
-  void smDlgResponse(int id) {smDlg_shown = false;SMDLGMISTAT(true);}
   bool uhI_Timer(int TmNo);
   void RedrawActivity(){for(std::list<cpu_chain_el>::iterator chnel = cpu_units_monit_chain.begin(); chnel != cpu_units_monit_chain.end(); chnel++) (*chnel).pDArea->Redraw();}
   void OnTempToggled(const Glib::ustring &path_string);
   void ShowHide_compare_elements(bool sv = false) const {
          std::for_each(cpu_units_monit_chain.begin(), cpu_units_monit_chain.end(), [sv](const cpu_chain_el &ce){ 
               if(ce.lCompareColor) ce.lCompareColor->set_visible(sv);
-              if(ce.cpuid_m_pbCF) ce.cpuid_m_pbCF->set_visible(sv);
-              if(ce.lFirstSpace) ce.lFirstSpace->set_visible(sv);});
+              if(ce.cpuid_m_pbCF) ce.cpuid_m_pbCF->set_visible(sv);});
        }
 
   virtual void enhanced_system_info() override;
-  virtual void show_cpu_activity_all() override;  
-  virtual void manage_sensors() override {if(smDlg){SMDLGMISTAT(false);smDlg_shown = true;smDlg->show_all();smDlg->present();}} 
-  virtual void monitor_temperature() override;  
-  virtual void get_preferences() const override {if(pfDlg){pfDlg->show_all();pfDlg->present();}}  
-            
+  virtual void show_cpu_activity_all() override;
+  virtual void manage_sensors() override {if(smDlg){SMDLGMISTAT(false);smDlg_shown = true;smDlg->present();}}
+  virtual void monitor_temperature() override;
+  virtual void get_preferences() const override {if(pfDlg){pfDlg->present();}}
   virtual void Wnd_show_handler() override {m_VPanedTrmpetature.set_position((get_height() - 110) / 2);}
   virtual void on_quit_button_clicked() override {QuitTasks();hide();}
   virtual void On_CPUActivityAll_switch_changed() override;
   virtual void On_Compare_mode_switch_changed() override;
   virtual void On_NativeFq_changed() override {pfDlg->SetFqState(m_CPUNativeFqSwitch.get_active());}
   virtual void on_gpus_selection_changed() override {if(pGpus)m_Label_VGA.set_text(pGpus->GpuStatus(m_Gpus.get_active_row_number()));}
-  virtual bool on_delete_event(GdkEventAny* any_event) override {QuitTasks();return false;}
-  virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->run();}
-  bool on_DA_button_press_event(GdkEventButton* bntev);
+  bool Wnd_close_handler() override {QuitTasks();return false;}
+  virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
+  void on_DA_button_press_event(int npress, double x, double y);
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };

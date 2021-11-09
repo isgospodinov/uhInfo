@@ -8,7 +8,7 @@
 void CInitThread::FinishThreadAndClear()
 {
     if(th_fstate.valid() && !th_fstate.get())
-                 CLEAR_THREAD_CONDITIONS;
+                              CLEAR_THREAD_CONDITIONS;
 }
 
 void CInitThread::CreateThread(CHWindow *m_wnd) 
