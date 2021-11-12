@@ -25,7 +25,7 @@ protected:
   Glib::RefPtr<Gio::SimpleAction> item_infomode,item_cpu,item_temperature,item_manage,item_options;
   Gtk::Frame m_Frame_MOBO,m_Frame_Memory,m_Frame_CPU,m_Frame_VGA,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network,m_Frame_Disks,m_Frame_CPUFrecq,m_Frame_VGA_pcie,m_Frame_OS,m_Frame_Sensors; // Data.
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
-  Gtk::Box m_VBoxAll,m_VBoxMenu,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_DABox_Temperature,m_Box_TmpControls;
+  Gtk::Box m_VBoxAll,m_VBoxMenu,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
   Gtk::Grid m_gridVGA_cond,m_StatusBar_Grid_condit;
   Gtk::Box m_ButtonBox;
   Gtk::Button m_ButtonQuit;
@@ -40,7 +40,7 @@ protected:
   Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch;
 
   Gtk::FlowBox m_Fbox_CPUActivityAll;
-  Gtk::Frame m_Frame_CPUActivityAll;
+  Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature;
 
   Gtk::ProgressBar m_pbFreq,m_pbUse;
   Gtk::Separator m_separator;
@@ -58,6 +58,8 @@ protected:
 
   std::mutex mutex_print;
   std::unique_ptr<sigc::connection> c_Timer{nullptr};
+
+  CDrawArea m_DAtemperature;
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain);
@@ -77,6 +79,7 @@ protected:
   virtual void On_CPUActivityAll_switch_changed() = 0;
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
+  virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
 
   virtual ~UIHWindow() = default;
 };

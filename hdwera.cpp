@@ -10,7 +10,7 @@
 
 const Gtk::Switch *CDrawArea::l_CPUModeSwitch = nullptr,*CDrawArea::l_CPUCompareSwitch = nullptr;
 
-CDrawArea::CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
+CDrawArea::CDrawArea(UIHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm,const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg) : DMode(dwm)
 {
   set_size_request(draw::dwaw,draw::dwah);
   if(dwm == Dm::CPUDRAW) {
@@ -76,16 +76,8 @@ void CDrawArea::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double at
   crtx->stroke();
 }
 
-void CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int wdraw, int hdraw)
+void CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
-  Gtk::Allocation allocation = get_allocation();
-  int width = allocation.get_width(),height = allocation.get_height();
-
-  cr->save();
-  Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{uhiutil::ui::cpunits_bckcolor});
-  cr->paint();
-  cr->restore();
-
   cr->save();
   cr->set_source_rgb(1.0, 1.0, 1.0);
   if(DMode == Dm::TEMPERATUREDRAW)

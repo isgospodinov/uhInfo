@@ -7,9 +7,9 @@
 #include "procun.h"
 
 UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
-                         m_TextView(), m_TreeView(m_refTreeModel), m_temperatureTreeView(ptRefTreeModel), m_Gpus()
+                         m_TextView(), m_TreeView(m_refTreeModel), m_temperatureTreeView(ptRefTreeModel), m_Gpus(),
+						 m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
 {
-
    Glib::RefPtr<Gtk::Builder> m_refBuilder = Gtk::Builder::create();
    m_refBuilder->add_from_string(res_uhIfo_menubar);
 
@@ -34,7 +34,7 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_Box_TmpControls.append(m_ScrolledWindowTemperatures);
 
   m_VPanedTrmpetature.set_start_child(m_Box_TmpControls);
-  m_VPanedTrmpetature.set_end_child(m_DABox_Temperature);
+  m_VPanedTrmpetature.set_end_child(m_DAFrame_Temperature);
 
   m_temperatureTreeView.append_column_editable("+/-", tColumns->col_tcheck);
   m_temperatureTreeView.append_column("Color", tColumns->color);
@@ -74,6 +74,8 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_Frame_Sensors.set_child(m_ScrolledWindow);
 
   m_Frame_CPUActivityAll.set_child(m_Fbox_CPUActivityAll);
+
+  m_DAFrame_Temperature.set_child(m_DAtemperature);
 
   m_VBoxCPU.append(m_Label_CPU);
   m_VBoxCPU.append(m_Frame_CPUFrecq);
@@ -205,6 +207,7 @@ void UIHWindow::InitUI()
   m_Frame_CPUFrecq.set_margin_end(14);
   m_Frame_CPUFrecq.set_margin_bottom(2);
   m_ScrolledWindow.set_margin_top(4);
+  m_DAFrame_Temperature.set_margin(2);
 
   m_VBoxCPUActivityAll.set_margin(4);
   m_CPUModeGrid.set_margin(4);
@@ -291,14 +294,6 @@ void UIHWindow::InitUI()
   m_CPUNativeFqSwitch.set_halign(Gtk::Align::START);
   m_BlinkLabel.set_halign(Gtk::Align::START);
   m_BlinkSwitch.set_halign(Gtk::Align::END);
-
-  /*m_DABox_Temperature.override_background_color(Gdk::RGBA(uhiutil::ui::cpunits_bckcolor));
-  m_sb_cpu_status.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));
-  m_sb_status.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));
-  m_pbFreq.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));
-  m_pbUse.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));
-  m_Label_VGA_cond_status.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));
-  m_TextView.override_color(Gdk::RGBA(uhiutil::ui::sensors_color));*/
   
   STATUSIMAGES_SET_INACTIVE;
   SET_CUSTOM_LABELS;
@@ -395,18 +390,6 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
                sc->add_class("yw_cls");
 
-               /*pBox->override_background_color(Gdk::RGBA(uhiutil::ui::cpunits_bckcolor));
-               pLabel->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
-               cpu_unit.cpuid_m_pbF->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
-               cpu_unit.cpuid_m_pbCF->override_color(Gdk::RGBA(uhiutil::ui::stat_color_cmpr));
-               cpu_unit.cpuid_m_pbU->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
-               lCcpuColor->override_background_color(Gdk::RGBA(uhiutil::ui::stat_color_blue));
-               lCcpuColor->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
-               cpu_unit.lCompareColor->override_background_color(Gdk::RGBA(uhiutil::ui::stat_color_cmpr));
-               cpu_unit.lCompareColor->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));
-               lUsageColor->override_background_color(Gdk::RGBA(uhiutil::ui::stat_color_green));
-               lUsageColor->override_color(Gdk::RGBA(uhiutil::ui::cpunits_color));*/
-
                pLabelBoxCU->set_halign(Gtk::Align::CENTER);
                pLabelBoxCU->set_valign(Gtk::Align::CENTER);
 
@@ -428,6 +411,10 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                m_Fbox_CPUActivityAll.insert(*pUnitFrame, -1);
                cpu_units_monit_chain.push_back(cpu_unit);
           }
+
+		  sc = m_DAFrame_Temperature.get_style_context();
+		  sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
+		  sc->add_class("ls_cls");
 
           CDrawArea::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrawArea::l_CPUCompareSwitch = &m_CPUCompareSwitch;

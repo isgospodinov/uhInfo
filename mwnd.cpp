@@ -8,10 +8,8 @@ using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
-					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
-					   m_DAtemperature(this,&CHWindow::on_DA_button_press_event)
+					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov))
 {
-  m_DABox_Temperature.append(m_DAtemperature);// ! moved from mwndui.cpp
   set_child(m_VBoxAll);
 
   Glib::RefPtr<Gtk::StyleContext> refStyleContext = get_style_context();
@@ -227,8 +225,8 @@ void CHWindow::Posthreadnotify()
     if(item_infomode) {
            item_infomode->set_enabled(sensors_printing_enable); // init again
            item_infomode->change_state(sensors_printing_enable);
-           m_sb_status.set_text((sensors_printing_enable ? "ON      " : "OFF     ")); //ADD?
-           if(sensors_printing_enable) { //ADD?
+           m_sb_status.set_text((sensors_printing_enable ? "ON      " : "OFF     ")); //ADD
+           if(sensors_printing_enable) { //ADD
                  STATUSIMAGES_CLEAR;
                  STATUSIMAGES_SET_ACTIVE;
            }
@@ -274,7 +272,7 @@ bool CHWindow::uhI_Timer(int TmNo)
       }
 
       if(sensors_printing_enable) {
-                sensors_print(((condition == 5 || pUd2Manager->dataPrint_forced) ? true : false),/*ENBLtrue*/pfDlg->GetInTmpMonStat());
+                sensors_print(((condition == 5 || pUd2Manager->dataPrint_forced) ? true : false),pfDlg->GetInTmpMonStat());
                 if(pUd2Manager->dataPrint_forced)  {
                        pUd2Manager->dataPrint_forced = false;
                        if(condition != 5) condition = 5;
@@ -304,7 +302,7 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        
        buff->insert(buff->get_iter_at_line(buff->get_line_count()),"  Detected sensors :    \n");
 
-       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,/*ENBL true*/pfDlg->GetAllInputStat());
+       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,pfDlg->GetAllInputStat());
       if(temperature_mode_status)
                           m_DAtemperature.Redraw();
 
@@ -323,9 +321,9 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        }
        else {
            if(item_temperature && !temperature_mode_status) {
-                           if(!state) item_temperature->set_enabled(extension && !smDlg_shown);
+                           if(!state) item_temperature->set_enabled(/*extension &&*/ !smDlg_shown);
                            else {
-                               if(!extension && state) {
+                               if(!extension/* && state*/) {
                                            item_temperature->set_enabled(temperature_monitoring_enabled);
                                }
                            }
@@ -400,7 +398,7 @@ void CHWindow::show_cpu_activity_all()
        m_sb_cpu_labeltext.set_visible(cpumode);
        m_sb_cpu_status.set_visible(cpumode);
        set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
-       m_sb_status.set_text((!cpumode ? (sensors_printing_enable ? "ON      " : "OFF     ") : "OFF     ")); //ADD?
+       m_sb_status.set_text((!cpumode ? (sensors_printing_enable ? "ON      " : "OFF     ") : "OFF     ")); //ADD
    }
 }
 

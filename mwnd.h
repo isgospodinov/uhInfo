@@ -34,8 +34,6 @@ private:
   const std::unique_ptr<CSmDialog> smDlg;
   const std::unique_ptr<CAboutDlg> abtDlg;
 
-  CDrawArea m_DAtemperature; // ! moved from mwndui.h
-
   void sensors_print(bool Ud2print,bool extension);
   void QuitTasks() const;
   void Posthreadnotify();// Dispatcher handler.
@@ -63,7 +61,7 @@ private:
   virtual void on_gpus_selection_changed() override {if(pGpus)m_Label_VGA.set_text(pGpus->GpuStatus(m_Gpus.get_active_row_number()));}
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
-  void on_DA_button_press_event(int npress, double x, double y);
+  virtual void on_DA_button_press_event(int npress, double x, double y) override;
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };

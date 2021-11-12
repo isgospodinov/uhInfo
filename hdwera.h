@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <chrono>
 
-class CHWindow;
+class UIHWindow;
 namespace draw = uhiutil::draw;
 
 class CDrawArea : public Gtk::DrawingArea
@@ -18,13 +18,13 @@ class CDrawArea : public Gtk::DrawingArea
 public:
   using StatPaint = enum class PaintMode {FREQP,COMPAREFREQP,USAGE,TEMPERATUREP};
   using TmpWndState = enum class DAWndState {NORMAL,FULL};
-  using fp_lDASR = void (CHWindow::*)(int, double, double);
+  using fp_lDASR = void (UIHWindow::*)(int, double, double);
   using DRAWVECTOR = const std::vector<double>*;
   using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
 
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
 
-  CDrawArea(CHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
+  CDrawArea(UIHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
   virtual ~CDrawArea() = default;
 
   void Redraw() {queue_draw();}
@@ -47,7 +47,7 @@ private:
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
 
-  void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int wdraw, int hdraw);
+  void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
   void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const;
   void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const ;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);

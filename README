@@ -18,6 +18,7 @@ To build the project you will need to install gtkmm4 with all needed dependencie
     ... etc.
 end their corresponding devel(dev) packages of the respective distribution.
 Under Fedora Linux 35 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
+On openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel
 ---------------------------------------------------------------------------------
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 For version 0.16 and lower : 
