@@ -16,6 +16,8 @@ protected:
   //Overrides of default signal handlers:
   virtual void on_startup() override;
   virtual void on_activate() override;
+
+  void on_application_quit();
 public:
   static Glib::RefPtr<ChInfApp> create(const std::string &name);
   virtual ~ChInfApp() = default;

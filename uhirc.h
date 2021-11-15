@@ -91,7 +91,7 @@
 		  m_status_bar.set_visible(wndstat); \
 	      m_VBoxVLeft.set_visible(wndstat);  \
 	      m_Box_TmpControls.set_visible(wndstat); \
-	      m_VBoxMenu.set_visible(wndstat)
+	      set_show_menubar(wndstat)
 
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()

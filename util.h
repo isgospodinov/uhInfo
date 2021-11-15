@@ -145,48 +145,4 @@ const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin
 	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;} " \
 	      ".ls_cls {background: #778899; color: #000000; } " };
 
-//Untrue menubar
-const char* const res_uhIfo_menubar = {
-  "<interface>"
-  "  <menu id='uhIfomenubar'>"
-  "    <submenu>"
-  "      <attribute name='label'>Manage</attribute>"
-  "        <item>"
-  "          <attribute name='label'>Extended info</attribute>"
-  "          <attribute name='action'>win.extinfo</attribute>"
-  "        </item>"
-  "        <item>"
-  "          <attribute name='label'>CPU activity</attribute>"
-  "          <attribute name='action'>win.cpuactivity</attribute>"
-  "        </item>"
-  "        <item>"
-  "          <attribute name='label'>Quit</attribute>"
-  "          <attribute name='action'>win.quitapp</attribute>"
-  "        </item>"
-  "    </submenu>"
-  "    <submenu>"
-  "      <attribute name='label'>Sensors</attribute>"
-  "      <item>"
-  "        <attribute name='label'>Sensors settings</attribute>"
-  "        <attribute name='action'>win.sensorset</attribute>"
-  "      </item>"
-  "      <item>"
-  "        <attribute name='label'>t° monitor</attribute>"
-  "        <attribute name='action'>win.tmpmonit</attribute>"
-  "      </item>"
-  "    </submenu>"
-  "    <submenu>"
-  "      <attribute name='label'>Application</attribute>"
-  "      <item>"
-  "        <attribute name='label'>Preferences</attribute>"
-  "        <attribute name='action'>win.prefs</attribute>"
-  "      </item>"
-  "      <item>"
-  "        <attribute name='label'>About...</attribute>"
-  "        <attribute name='action'>win.about</attribute>"
-  "      </item>"
-  "    </submenu>"
-  "  </menu>"
-  "</interface>"};
-
 #endif // _UTIL_H_

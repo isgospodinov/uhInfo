@@ -49,6 +49,8 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   m_BlinkGrid.set_visible(false);
   m_VPanedTrmpetature.set_visible(false);
 
+  set_show_menubar(true);
+
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
 }
 
@@ -312,18 +314,21 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        if(!temperature_mode_status) buff->insert(buff->get_iter_at_line(buff->get_line_count()),Ud2printcache);
 
        if(buff->get_text() == "  Detected sensors :    \n") {
-           if(item_temperature && !temperature_mode_status && state)
+           if(item_temperature && !temperature_mode_status /*&& state*/)
                                      item_temperature->set_enabled(false);
 
            unsigned int nchips = 0,nsensors = 0;
            CHIPSENSORSNUMBER(nchips,nsensors);
-           buff->insert(buff->get_iter_at_line(buff->get_line_count()),(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected.\n " + (!temperature_mode_status ? "All" : "Temperature")  + " sensors are deselected."));
+           buff->insert(buff->get_iter_at_line(buff->get_line_count()),(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected.\n " +
+        		 (!temperature_mode_status ? "All" : "Temperature")  + " sensors are deselected." + (temperature_mode_status ? "\nLook at:\n  Sensors -> Sensors settings\n  Application -> Preferences" : "")));
        }
        else {
            if(item_temperature && !temperature_mode_status) {
-                           if(!state) item_temperature->set_enabled(/*extension &&*/ !smDlg_shown);
+                           if(!state)  {
+                        	   item_temperature->set_enabled(!smDlg_shown /*&& extension*/);
+                           }
                            else {
-                               if(!extension/* && state*/) {
+                               if(!extension && state) {
                                            item_temperature->set_enabled(temperature_monitoring_enabled);
                                }
                            }

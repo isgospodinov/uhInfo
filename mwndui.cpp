@@ -10,17 +10,6 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
                          m_TextView(), m_TreeView(m_refTreeModel), m_temperatureTreeView(ptRefTreeModel), m_Gpus(),
 						 m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
 {
-   Glib::RefPtr<Gtk::Builder> m_refBuilder = Gtk::Builder::create();
-   m_refBuilder->add_from_string(res_uhIfo_menubar);
-
-   //Get&Set the menubar:
-   Glib::RefPtr<Glib::Object> menuobject = m_refBuilder->get_object("uhIfomenubar");
-   Glib::RefPtr<Gio::Menu> menu = std::dynamic_pointer_cast<Gio::Menu>(menuobject);
-   if(menu){
-	   Gtk::PopoverMenuBar *menubar = Gtk::make_managed<Gtk::PopoverMenuBar>(menu);
-	   m_VBoxMenu.append(*menubar);
-   }
-
    m_CPUModeGrid.attach(m_CPUModeLabel, 0, 1, 1, 1);
    m_CPUModeGrid.attach(m_CPUModeSwitch, 1, 1, 1, 1);
    m_CPUModeGrid.attach(m_CPUNativeFqLabel, 2, 1, 1, 1);
@@ -144,7 +133,6 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
 
   m_Revealer.append(m_HPaned);
 
-  m_VBoxAll.append(m_VBoxMenu);
   m_VBoxAll.append(m_Revealer);
   m_VBoxAll.append(m_VBoxCPUActivityAll);
   m_VBoxAll.append(m_separator);
@@ -167,13 +155,12 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_CPUCompareSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_Compare_mode_switch_changed));
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
-   item_infomode = add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info), false);
-   item_cpu = add_action_bool("cpuactivity",sigc::mem_fun(*this,&UIHWindow::show_cpu_activity_all), false);
+   item_infomode = add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info));
+   item_cpu = add_action_bool("cpuactivity",sigc::mem_fun(*this,&UIHWindow::show_cpu_activity_all));
    item_temperature = add_action_bool("tmpmonit",sigc::mem_fun(*this,&UIHWindow::monitor_temperature), false);
    item_manage = add_action("sensorset",sigc::mem_fun(*this,&UIHWindow::manage_sensors));
    item_options = add_action("prefs",sigc::mem_fun(*this,&UIHWindow::get_preferences));
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
-   add_action("quitapp", sigc::mem_fun(*this,&UIHWindow::on_quit_button_clicked));
 }
  
 void UIHWindow::InitUI()
@@ -235,7 +222,6 @@ void UIHWindow::InitUI()
   m_sb_cpu_status.set_text("N/A     ");
   m_sb_status.set_text("OFF     ");
 
-  m_VBoxMenu.set_orientation(Gtk::Orientation::VERTICAL);
   m_HPaned.set_orientation(Gtk::Orientation::HORIZONTAL);
   m_VBoxVRight.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBoxVLeft.set_orientation(Gtk::Orientation::VERTICAL);
