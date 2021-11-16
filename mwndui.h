@@ -22,7 +22,7 @@ public:
   bool temperature_monitoring_enabled = false;
   Gtk::Label m_Label_MOBO,m_Label_Memory,m_Label_CPU,m_Label_Monitors,m_Label_Audio,m_Label_Network,m_Label_OS;
 protected:
-  Glib::RefPtr<Gio::SimpleAction> item_infomode{nullptr},item_cpu,item_temperature,item_manage,item_options;
+  Glib::RefPtr<Gio::SimpleAction> item_infomode{nullptr},item_cpu{nullptr},item_temperature{nullptr},item_manage{nullptr},item_options{nullptr};
   Gtk::Frame m_Frame_MOBO,m_Frame_Memory,m_Frame_CPU,m_Frame_VGA,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network,m_Frame_Disks,m_Frame_CPUFrecq,m_Frame_VGA_pcie,m_Frame_OS,m_Frame_Sensors; // Data.
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
   Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
