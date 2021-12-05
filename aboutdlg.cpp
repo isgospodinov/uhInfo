@@ -9,7 +9,7 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
                           nB("Close"),lB("http://www.uhinfo.free.bg/","Go to uhInfo website"),lbGH("https://github.com/isgospodinov/uhInfo","uhInfo on GitHub"),
 						  m_copyright("Copyright© Ivailo Gospodinov"),m_label("     ")
 {
-	get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	uhiutil::set_css_style(get_style_context(),*cp);
 	PreInitVision();
 }
 

@@ -350,31 +350,13 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                pDArFrame->set_margin(2);
                pBox->set_margin(4);
 
-               sc = pUnitFrame->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("ls_cls");
-
-               sc = cpu_unit.cpuid_m_pbF->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("ls_cls");
-               sc = cpu_unit.cpuid_m_pbCF->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("ls_cls");
-               sc = cpu_unit.cpuid_m_pbU->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("ls_cls");
-
-               sc = lCcpuColor->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("bl_cls");
-
-               sc = lUsageColor->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("gn_cls");
-
-               sc = cpu_unit.lCompareColor->get_style_context();
-               sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-               sc->add_class("yw_cls");
+               uhiutil::set_css_style(pUnitFrame->get_style_context(),prv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbF->get_style_context(),prv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbCF->get_style_context(),prv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbU->get_style_context(),prv,"ls_cls");
+               uhiutil::set_css_style(lCcpuColor->get_style_context(),prv,"bl_cls");
+               uhiutil::set_css_style(lUsageColor->get_style_context(),prv,"gn_cls");
+               uhiutil::set_css_style(cpu_unit.lCompareColor->get_style_context(),prv,"yw_cls");
 
                pLabelBoxCU->set_halign(Gtk::Align::CENTER);
                pLabelBoxCU->set_valign(Gtk::Align::CENTER);
@@ -398,9 +380,9 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_units_monit_chain.push_back(cpu_unit);
           }
 
-		  sc = m_DAFrame_Temperature.get_style_context();
-		  sc->add_provider(prv, GTK_STYLE_PROVIDER_PRIORITY_USER);
-		  sc->add_class("ls_cls");
+          uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),prv,"ls_cls");
+          uhiutil::set_css_style(m_pbUse.get_style_context(),prv,"fu_cls");
+          uhiutil::set_css_style(m_pbFreq.get_style_context(),prv,"fu_cls");
 
           CDrawArea::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrawArea::l_CPUCompareSwitch = &m_CPUCompareSwitch;

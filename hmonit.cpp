@@ -5,7 +5,6 @@
 
 #include "hmonit.h"
 #include "uhirc.h"
-#include <iostream>
 #include <bitset>
 #include <cstring>
 

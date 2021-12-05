@@ -22,7 +22,21 @@ namespace uhiutil {
    bool ExistenceVerification(const char *path);
    bool newline(std::string &in_line,const char* in_find,Direction drct);
    std::string GetUserName();
-   
+
+   inline void set_css_style(const Glib::RefPtr<Gtk::StyleContext> &dsc,const Glib::RefPtr<Gtk::CssProvider> &dsp,const char* const style = nullptr,const Glib::RefPtr< Pango::Context> dpc = nullptr) {
+	   dsc->add_provider(dsp, GTK_STYLE_PROVIDER_PRIORITY_USER);
+	   if(style) dsc->add_class(style);
+       if(dpc) {
+	      Pango::FontDescription font_desc = dpc->get_font_description();
+	      Glib::ustring font_family = font_desc.get_family();
+	      font_desc.set_size(10 * PANGO_SCALE);
+	      int font_size = font_desc.get_size();
+	      const std::string css = "* {\n" +     (font_family.empty() ? "" : "    font-family: " + font_desc.get_family() + ";\n") +
+	        (font_size == 0 ? "" : "    font-size: " + std::to_string(font_size / PANGO_SCALE) + "pt;\n") + "}";
+	      dsp->load_from_data(css);
+       }
+   }
+
    const unsigned int timer_interval = 1500;
    const unsigned int timer_id = 0;
    const unsigned int max_size = 1024;
@@ -38,13 +52,7 @@ namespace uhiutil {
    namespace ui {     
        const char *const active_tag = "sensor_in_monitor";
        const char *const max_tag = "sensor_max";
-       const char *const sensors_color = "midnight blue";
-       const char *const cpunits_color = "White";
-       const char *const stat_color_cmpr = "DarkKhaki";
-       const char *const cpunits_bckcolor = "Light Slate Grey";
-       const char *const stat_color_blue = "Deep Sky Blue";
-       const char *const stat_color_green = "Medium Aquamarine";       
-       const unsigned int app_font_size = 10;
+       //const unsigned int app_font_size = 10;
    }
 
    namespace cpu {
@@ -140,9 +148,10 @@ const char *const clrID[] = {
   "Yellow Green"
 };
 
-const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;} " \
-	      ".gn_cls {background: #66CCAA; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;} " \
-	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;} " \
-	      ".ls_cls {background: #778899; color: #000000; } " };
+const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
+	      ".gn_cls {background: #66CCAA; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
+	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
+	      ".ls_cls {background: #778899; color: #000000; }" \
+	      ".fu_cls {color: #000000; }" };
 
 #endif // _UTIL_H_

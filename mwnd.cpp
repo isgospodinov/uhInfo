@@ -12,15 +12,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 {
   set_child(m_VBoxAll);
 
-  Glib::RefPtr<Gtk::StyleContext> refStyleContext = get_style_context();
-  refStyleContext->add_provider(css_prov, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-  Pango::FontDescription font_desc = get_pango_context()->get_font_description();
-  Glib::ustring font_family = font_desc.get_family();
-  font_desc.set_size(uhiutil::ui::app_font_size * PANGO_SCALE);
-  int font_size = font_desc.get_size();
-  const std::string css = "* {\n" +     (font_family.empty() ? "" : "    font-family: " + font_desc.get_family() + ";\n") +
-    (font_size == 0 ? "" : "    font-size: " + std::to_string(font_size / PANGO_SCALE) + "pt;\n") + "}";
-  css_prov->load_from_data(css);
+  uhiutil::set_css_style(get_style_context(),css_prov,nullptr,get_pango_context());
 
   Glib::RefPtr<Gtk::TextBuffer> tgBuff = m_TextView.get_buffer();
   tgBuff->create_tag(uhiutil::ui::active_tag)->property_foreground() = "red";

@@ -54,7 +54,12 @@ private:
   virtual void monitor_temperature() override;
   virtual void get_preferences() const override {if(pfDlg){pfDlg->present();}}
   virtual void Wnd_show_handler() override {m_VPanedTrmpetature.set_position((get_height() - 110) / 2);}
-  virtual void on_quit_button_clicked() override {QuitTasks();hide();}
+  virtual void on_quit_button_clicked() override {
+	                QuitTasks();
+                    Glib::RefPtr<Gtk::Application> app = get_application();
+                    if(app) app->quit();
+                    else hide();
+  }
   virtual void On_CPUActivityAll_switch_changed() override;
   virtual void On_Compare_mode_switch_changed() override;
   virtual void On_NativeFq_changed() override {pfDlg->SetFqState(m_CPUNativeFqSwitch.get_active());}

@@ -6,7 +6,6 @@
 #ifndef _PROC_H_
 #define _PROC_H_
 
-#include <iostream>
 #include <stdio.h>
 #include <string>
 #include <sstream>

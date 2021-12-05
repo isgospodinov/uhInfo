@@ -42,7 +42,7 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    signal_response().connect(sigc::mem_fun((CHWindow&)*p_wnd, fp));
    signal_close_request().connect(sigc::mem_fun(*this, &CSmDialog::Wnd_close_handler),false);
 
-   get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+   uhiutil::set_css_style(get_style_context(),*cp);
 }
 
 bool CSmDialog::Wnd_close_handler()

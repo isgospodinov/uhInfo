@@ -4,7 +4,6 @@
  */
 
 #include "prefsdlg.h"
-#include <iostream>
 
 CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : Gtk::Dialog("Preferences",*mWnd,true),pmWnd(mWnd),
                      ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
@@ -17,7 +16,7 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
    signal_close_request().connect(sigc::mem_fun(*this, &CPrefsDlg::Wnd_close_handler),false);
    cb_MaxTmp.signal_changed().connect(sigc::mem_fun(*this,&CPrefsDlg::on_MaxTmp_changed));
    ch_NativeFq.signal_toggled().connect(sigc::mem_fun(*this,&CPrefsDlg::on_NativeFq_changed));
-   get_style_context()->add_provider(*cp, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+   uhiutil::set_css_style(get_style_context(),*cp);
 }
 
 void CPrefsDlg::InitVision()
