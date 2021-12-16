@@ -48,6 +48,7 @@ private:
     std::list<Ud2_sens_node> monitoring;
     long unsigned int inactive_dev_number = 0;
     bool get_ud2_print_status() const {return (inactive_dev_number == monitoring.size());}
+    void media_detect(UDisksDrive *dr,bool m2[]) const;
 };
 
 #endif // _UD2MON_H_

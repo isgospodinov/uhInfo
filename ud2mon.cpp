@@ -5,10 +5,11 @@
 
 #include "ud2mon.h"
 #include "mwnd.h"
+#include <cstring>
 
 void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,CallbackMode mode)
 {
-   const gchar *obj_path = g_dbus_object_get_object_path(pObject),*linkname = nullptr,*sk = nullptr;
+   const gchar *obj_path = g_dbus_object_get_object_path(pObject),*linkname = nullptr;
    if(!g_str_has_prefix(obj_path, sensors::idd_path)) 
                                        return;
    GDBusObject *pobj = nullptr;
@@ -16,7 +17,7 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
    UDisksBlock *blok_dev = nullptr;
    UDisksDrive *drive = nullptr;
    UDisksDriveAta *ata_drive = nullptr;
-   bool dev_present = false,coldplug = false,hotplug = false,fixed = false,removable = false;
+   bool dt[] = {false, false, false}; //dt[0]- optical, dt[1] - usb, dt[2] - dev_present
    unsigned int dcnt = 1;
 
    g_object_get(G_DBUS_OBJECT(pObject), "block", &blok_dev, "partition-table", &partition, nullptr);
@@ -32,8 +33,7 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
              return;
         }
 
-        GETSPECIFICITY(sk,drive);
-        if(g_strrstr(udisks_drive_get_connection_bus(drive),"usb")) {coldplug = false;hotplug = removable = true;}
+        media_detect(drive,dt);
 
         linkname = udisks_block_get_device(blok_dev);
         if(partition || (mode == CallbackMode::REMOVE)) {
@@ -41,7 +41,7 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
              for(Gtk::TreeModel::Children::iterator iter = children.begin();iter != children.end(); dcnt++,iter++)
              {
                   if((*iter)[m_wnd->dColumns->sys_link] == linkname) {
-                            dev_present = true;
+                            dt[2]/*dev_present*/ = true;
                             if(mode == CallbackMode::ADD) break;
                             else { // CallbackMode::REMOVE
                                    iter = m_wnd->m_refTreeModel->erase(iter);
@@ -49,16 +49,16 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
                             }
                   }
 
-                  if(mode == CallbackMode::REMOVE && dev_present && iter != children.end()) (*iter)[m_wnd->dColumns->No] = dcnt;
+                  if(mode == CallbackMode::REMOVE && dt[2]/*dev_present*/ && iter != children.end()) (*iter)[m_wnd->dColumns->No] = dcnt;
              }
 
-             if(mode == CallbackMode::ADD && !dev_present) {
+             if(mode == CallbackMode::ADD && !dt[2]/*dev_present*/) {
                     Gtk::TreeRow row = *(m_wnd->m_refTreeModel->append());
                     row[m_wnd->dColumns->No] = dcnt;
                     row[m_wnd->dColumns->sys_link] = linkname;
                     row[m_wnd->dColumns->device_name] = udisks_drive_get_model(drive);
-                    row[m_wnd->dColumns->type] = (coldplug ? (fixed ? "Disk" : (removable ? "CD/DVD" : "Unknown" )) : (hotplug ? "Drive" : "Unknown" ));
-                    row[m_wnd->dColumns->specificity] =  std::string((hotplug ? " hotplug " : "" )) + std::string((coldplug ? " coldplug " : "" )) + std::string((fixed ? " fixed " : "" )) + std::string((removable ? " removable " : "" ));
+                    row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (partition ? "Disk" : "Unknown"))));
+                    row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (partition ? "coldplug fixed" : "Unknown"))));
              }
 
              //if(CallbackMode::ADD && ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive)) {
@@ -86,14 +86,14 @@ void Ud2mon::SensorsDetect()
 {
       Gtk::TreeRow row;
       unsigned int cnounter = 1;
-      bool coldplug = false,hotplug = false,fixed = false,removable = false;
+      bool dt[] = {false,false}; //dt[0]- optical, dt[1] - usb
       GDBusObjectManager *Ud2Manager = nullptr;
       UDisksPartitionTable *partition = nullptr;
       UDisksBlock *blok_dev = nullptr;
       UDisksDrive *drive = nullptr;
       UDisksDriveAta *ata_drive = nullptr;
       GList *objects = nullptr, *obj_list= nullptr;
-      const gchar *obj_path = nullptr,*ud2drvmodel = nullptr,*sk = nullptr;
+      const gchar *obj_path = nullptr,*ud2drvmodel = nullptr;
       GDBusObject *pobj = nullptr;
 
       if(Ud2Cl) {
@@ -119,18 +119,16 @@ void Ud2mon::SensorsDetect()
                     g_clear_object(&blok_dev);
                     continue;
                 }
-
-                GETSPECIFICITY(sk,drive);
-                if(g_strrstr(udisks_drive_get_connection_bus(drive),"usb")) {coldplug = false; hotplug = removable = true;} //skipping usb boot drive stick settings (coldplug?)
-
-                if((partition && (coldplug || hotplug)) || (coldplug && removable)) {
+                
+        	    media_detect(drive,dt);
+                
+                if(partition || dt[0]/*optical*/) {
                     row = *(m_wnd->m_refTreeModel->append());
                     row[m_wnd->dColumns->No] = cnounter++;
                     row[m_wnd->dColumns->sys_link] = udisks_block_get_device(blok_dev);
                     row[m_wnd->dColumns->device_name] = (ud2drvmodel = udisks_drive_get_model(drive));
-                    row[m_wnd->dColumns->type] = (coldplug ? (fixed ? "Disk" : (removable ? "CD/DVD" : "Unknown" )) : (hotplug ? "Drive" : "Unknown" ));
-                    row[m_wnd->dColumns->specificity] =  std::string((hotplug ? " hotplug " : "" )) + std::string((coldplug ? " coldplug " : "" )) + std::string((fixed ? " fixed " : "" )) + std::string((removable ? " removable " : "" ));
-
+                    row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (partition ? "Disk" : "Unknown"))));
+                    row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (partition ? "coldplug fixed" : "Unknown"))));
                     if(ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive)) {
                           const char *drid = udisks_drive_get_serial(drive);
                           bool visnode = SetVisiblity(std::string(ud2drvmodel),std::string(drid));
@@ -141,6 +139,7 @@ void Ud2mon::SensorsDetect()
                 }
                 g_clear_object(&drive);
                 g_object_unref(pobj);
+                dt[0] = dt[1] = false;
           }
           if(obj_path) obj_path = nullptr;
           if(blok_dev) g_clear_object(&blok_dev);
@@ -236,4 +235,22 @@ CDrawArea::DRAWVECTOR Ud2mon::SensorStatisticToggle(bool status,Glib::ustring co
     }
 
    return nullptr;
+}
+
+inline void Ud2mon::media_detect(UDisksDrive *dr,bool m2[]) const
+{
+	//m2[0]- optical, m2[1] - usb
+    const gchar *const *mcd = udisks_drive_get_media_compatibility(dr);
+    if(mcd) {
+        int cp = 0;
+        while(mcd[cp] && std::strlen(mcd[cp])) {
+             if(g_strstr_len(mcd[cp], -1, "optical")) {
+	             m2[0] = true;
+	             break;
+             }
+             ++cp;
+        }
+    }
+
+    if(g_strrstr(udisks_drive_get_connection_bus(dr),"usb")) m2[1] = true;
 }
