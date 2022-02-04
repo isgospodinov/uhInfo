@@ -8,8 +8,6 @@ GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 UHIBFLAGS = -std=c++17 -Os -Wall# -g
 ELIBS = -pthread -ludisks2 -ldl #-B/usr/local/libexec/mold
 
-TH := $(nproc) 
-
 .PHONY: all
 
 all: buildafter
