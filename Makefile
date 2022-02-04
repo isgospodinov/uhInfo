@@ -6,8 +6,9 @@ BUILD = build
 GTKMMFLAGS = `pkg-config --cflags gtkmm-4.0`
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 UHIBFLAGS = -std=c++17 -Os -Wall# -g
-ELIBS = -pthread -ludisks2 -ldl
+ELIBS = -pthread -ludisks2 -ldl #-B/usr/local/libexec/mold
 
+TH := $(nproc) 
 
 .PHONY: all
 
@@ -17,9 +18,12 @@ all: buildafter
 	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $^
 
 building: buildbefore
-	@$(MAKE) --no-print-directory realbuild
+	@$(MAKE) --no-print-directory --jobs$(nproc) realbuild
 
-realbuild: $(OBJS)
+potmsg: 
+	@echo 'Building,wait a few seconds ...'
+
+realbuild: $(OBJS) potmsg
 	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
 	@mkdir -p $(BUILD)
 	@mv -f $(PROGRAM) $(BUILD)
