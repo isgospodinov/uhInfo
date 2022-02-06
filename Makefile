@@ -8,6 +8,9 @@ GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 UHIBFLAGS = -std=c++17 -Os -Wall# -g
 ELIBS = -pthread -ludisks2 -ldl #-B/usr/local/libexec/mold
 
+DT := $(shell date +%s)
+EBTH = $(shell nproc)
+
 .PHONY: all
 
 all: buildafter
@@ -15,13 +18,16 @@ all: buildafter
 %.o: %.cpp
 	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $^
 
-building: buildbefore
-	@$(MAKE) --no-print-directory --jobs$(nproc) realbuild
-
-potmsg: 
-	@echo 'Building,wait a few seconds ...'
-
-realbuild: $(OBJS) potmsg
+bmsg:
+	@echo 'Building with $(EBTH) threads'
+	
+cmsg:
+	@echo '$(shell printf "Build time : $(shell expr $(shell date +%s) - $(DT))s\n" )'
+	
+building: buildbefore bmsg
+	@$(MAKE) --no-print-directory --jobs $(EBTH) realbuild
+	
+realbuild: $(OBJS)
 	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
 	@mkdir -p $(BUILD)
 	@mv -f $(PROGRAM) $(BUILD)
@@ -29,7 +35,7 @@ realbuild: $(OBJS) potmsg
 buildbefore:
 	@bash install.sh -ib
 
-buildafter: building
+buildafter: building cmsg
 	@bash install.sh -ia
 
 clean:
