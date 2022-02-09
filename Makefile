@@ -1,38 +1,46 @@
 CPP = g++
-PROGRAM = uhInfo
-CPPFILES = main.cpp hth.cpp mwnd.cpp mwndui.cpp smdialog.cpp util.cpp hInfapp.cpp hgpu.cpp hmonit.cpp proc.cpp procun.cpp sysens.cpp ud2mon.cpp hdwera.cpp prefsdlg.cpp sensmon.cpp aboutdlg.cpp
+CPPFILES = $(wildcard *.cpp)
 OBJS = $(CPPFILES:.cpp=.o)
 BUILD = build
+PROGRAM = $(BUILD)/uhInfo
 GTKMMFLAGS = `pkg-config --cflags gtkmm-4.0`
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 UHIBFLAGS = -std=c++17 -Os -Wall# -g
-ELIBS = -pthread -ludisks2 -ldl #-B/usr/local/libexec/mold
-
+ELIBS = -lpthread -ludisks2 -ldl
+#MAXJ =
 DT := $(shell date +%s)
-EBTH = $(shell nproc)
+EBTH = $(shell expr  $(shell nproc) - 1 )
 
 .PHONY: all
 
 all: buildafter
 
 %.o: %.cpp
-	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $^
+	$(CPP) -c $(GTKMMFLAGS) $(UHIBFLAGS) $< 
 
-bmsg:
+check: 
+ifeq ($(origin MAXJ), undefined)
+  ifeq ($(EBTH), 0)
+    EBTH = 1
+  endif
+else
+    EBTH = $(shell nproc)
+endif
+
+bmsg: check
 	@echo 'Building with $(EBTH) threads'
-	
+
 cmsg:
-	@echo '$(shell printf "Build time : $(shell expr $(shell date +%s) - $(DT))s\n" )'
+	@echo '$(shell printf "Build time : %ds" $(shell expr $(shell date +%s) - $(DT)))'
 	
 building: buildbefore bmsg
-	@$(MAKE) --no-print-directory --jobs $(EBTH) realbuild
+	@$(MAKE) --no-builtin-variables --no-print-directory --jobs $(EBTH) realbuild
 	
 realbuild: $(OBJS)
-	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
+	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS) 
+	
+buildbefore:  
 	@mkdir -p $(BUILD)
-	@mv -f $(PROGRAM) $(BUILD)
-
-buildbefore:
 	@bash install.sh -ib
 
 buildafter: building cmsg
