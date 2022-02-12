@@ -1,8 +1,8 @@
 CPP = g++
-CPPFILES = $(wildcard *.cpp)
-OBJS = $(CPPFILES:.cpp=.o)
+CPPFILES = $(wildcard src/*.cpp)
+OBJS = $(CPPFILES:src/%.cpp=%.o)
 BUILD = build
-PROGRAM = $(BUILD)/uhInfo
+PROGRAM = uhInfo
 GTKMMFLAGS = `pkg-config --cflags gtkmm-4.0`
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 UHIBFLAGS = -std=c++17 -Os -Wall# -g
@@ -15,8 +15,9 @@ EBTH = $(shell expr  $(shell nproc) - 1 )
 
 all: buildafter
 
-%.o: %.cpp
-	$(CPP) -c $(GTKMMFLAGS) $(UHIBFLAGS) $< 
+%.o:src/%.cpp
+	@touch $@
+	$(CPP) -c $(GTKMMFLAGS) $(UHIBFLAGS) $<
 
 check: 
 ifeq ($(origin MAXJ), undefined)
@@ -37,7 +38,8 @@ building: buildbefore bmsg
 	@$(MAKE) --no-builtin-variables --no-print-directory --jobs $(EBTH) realbuild
 	
 realbuild: $(OBJS)
-	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS) 
+	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
+	@mv -f $(PROGRAM) $(BUILD)
 	
 buildbefore:  
 	@mkdir -p $(BUILD)
@@ -47,8 +49,8 @@ buildafter: building cmsg
 	@bash install.sh -ia
 
 clean:
-	rm -rf $(OBJS)
 	rm -rf $(BUILD)		
+	rm -rf $(OBJS)
 
 install:
 	@bash install.sh -i
