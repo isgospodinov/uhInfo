@@ -66,7 +66,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
-	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Temperature details"));
+	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Selected temperatures"));
 }
 
 void CHWindow::InitVision()

@@ -18,6 +18,8 @@ private:
    Gtk::LinkButton lB,lbGH;
    Gtk::Grid m_CGrid,m_AGrid;
    Gtk::Label m_copyright,m_label;
+
+   const Glib::RefPtr<Gdk::Pixbuf> uhi_img;
    Gtk::Image m_Image;
 
    void bt_quit_clicked(){hide();}
