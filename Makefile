@@ -14,8 +14,7 @@ DT := $(shell date +%s)
 all: bldaf
 
 $(BUILD)/%.o:src/%.cpp
-	$(CPP) -c $(GTKMMFLAGS) $(UHIBFLAGS) $<
-	@mv -f  $(@F) $(BUILD)
+	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $<
 
 cmsg:
 	@echo '$(shell printf "** Build time : %ds **" $(shell expr $(shell date +%s) - $(DT)))'
