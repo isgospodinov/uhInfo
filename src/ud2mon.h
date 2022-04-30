@@ -38,6 +38,15 @@ public :
      virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
      void EraseStatisticsAll(){for(std::list<Ud2_sens_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistic();}}
 
+     void Set_visible_tmp_sens_count(bool stat) {
+  	   visible_tmp_sens_count = 0;
+         for(Ud2_sens_node it : monitoring)  {
+         	   if(it.visible && stat) {
+         		visible_tmp_sens_count ++;
+         	   }
+         }
+     }
+
      virtual ~Ud2mon() override = default;
 
      Ud2mon(CHWindow *p_wnd) : m_wnd(p_wnd){}
