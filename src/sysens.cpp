@@ -89,6 +89,7 @@ void CSysens::SensorsDetect(bool *flag)
 
              while((feature = (sysens_get_features)(chpname, &feature_count)) != 0) {
                  std::string lbl((sysens_get_label)(chpname, feature));
+
                  sensors_subfeature_type subfeat_type = SENSORS_SUBFEATURE_UNKNOWN;
 
                  switch(feature->type) {
@@ -118,6 +119,12 @@ void CSysens::SensorsDetect(bool *flag)
                             bool visnode = SetVisiblity(lbl,chnd.chip_id);
                             chnd.sensors.push_back(Sensor_node(subfeature->number,lbl,feature->type,visnode));
                             if(!visnode) ++chnd.inactive_sensors_number;
+
+                            if(!sVcore_val && ((int)chnd.sensors.back().label.find("Vcore") != -1)) {
+                            	           sVcore_val = &chnd.sensors.back().max;
+                            }
+
+
                         }
                  }
 
@@ -137,11 +144,11 @@ void CSysens::SensorsDetect(bool *flag)
   } //LibSensorsOpen 
 }
 
-void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced)
+void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced,unsigned int tmp_in_sens_count)
 {
    static bool blink = true;
 
-   if(!blink && !printmode) blink = true;   
+   if(!blink && !printmode) blink = true;
 
    double value = 0.0,ctemp = 0.0;
    sensors_chip_name cn;
@@ -156,7 +163,11 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
 	                cn.addr = n->chip_name.cnip_addr;
 	                cn.path = (char*) n->chip_name.cnip_path.data();
                     for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {//sensors
-                           if(!sn->visible || (printmode && sn->sntype != SENSORS_FEATURE_TEMP) || (!printmode && !advanced && sn->sntype == SENSORS_FEATURE_IN && ((int)sn->label.find("Vcore") == -1))) continue;
+                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && VCORECHECK) || (printmode && tmp_in_sens_count == 0) ||
+                        		                                                              (!printmode && !advanced && SNTP(SENSORS_FEATURE_IN) && VCORECHECK)) {
+                        	   if(sVcore_val && !VCORECHECK) *sVcore_val = 0.0;
+                        	   continue;
+                           }
                            (sysens_get_value)(&cn, sn->feature_number, &value);
                            if(!chipisset) {
                                     itxbf = txtbuff->insert(itxbf,"  " + n->chip_name.cnip_prefix + "\n");
@@ -166,14 +177,20 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            if(sn->t_statistic_active && (!blink_global_status || blink)) {itxbf = txtbuff->insert(itxbf," ");itxbf = txtbuff->insert_with_tag(itxbf,"      ",sn->statistic_color);itxbf = txtbuff->insert(itxbf," ");}                           
                            else itxbf = txtbuff->insert(itxbf,"        ");
                            
-                           if(sn->t_statistic_active) itxbf = txtbuff->insert_with_tag(itxbf,sn->label,uhiutil::ui::active_tag);                           
+                           if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && !VCORECHECK)) itxbf = txtbuff->insert_with_tag(itxbf,sn->label,
+                        		                                                                                                                sn->t_statistic_active ? uhiutil::ui::active_tag : uhiutil::ui::max_tag);
                            else itxbf = txtbuff->insert(itxbf,sn->label);
                            
                            itxbf = txtbuff->insert(itxbf," : ");
                            
                            switch(sn->sntype) {
                                  case SENSORS_FEATURE_IN:
-                                     itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));
+                                	 if(sn->t_statistic_active || (printmode && !VCORECHECK)){
+                                		 itxbf = txtbuff->insert_with_tag(itxbf,((std::to_string(value)).substr(0,5) + "V\n"),uhiutil::ui::active_tag);
+
+                                		 if(sVcore_val && !sn->t_statistic_active) *sVcore_val = value ;
+                                	 }
+                                	 else itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));
                                      break;
                                  case SENSORS_FEATURE_FAN: 
                                      itxbf = txtbuff->insert(itxbf,(std::to_string((int)value) + "rpm\n"));

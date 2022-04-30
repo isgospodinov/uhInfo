@@ -111,6 +111,10 @@
 #define UIBCF(uiel,fraction,text) uiel->set_fraction(fraction); \
 	                              uiel->set_text(text)
 
+#define VCORECHECK ((int)sn->label.find("Vcore") == -1)
+
+#define SNTP(type) (sn->sntype == type)
+
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))
@@ -135,7 +139,7 @@ using CModelBaseUhiColumns = struct ModelBaseUhiColumns : public Gtk::TreeModel:
       ModelBaseUhiColumns(UhiModelType setcolumns = UhiModelType::DISK) {if(setcolumns == UhiModelType::DISK)add_uhi_columns();}
 
       Gtk::TreeModelColumn<unsigned int> No;
-      Gtk::TreeModelColumn<Glib::ustring> sys_link,device_name,type,color,color_name,tsensor_node,tsensor_name,tnode_id,specificity;
+      Gtk::TreeModelColumn<Glib::ustring> sys_link,device_name,type,color,color_name,tsensor_node,tsensor_name,tnode_id,specificity,description;
       Gtk::TreeModelColumn<bool> col_tcheck;
       Gtk::TreeModelColumn<int> tsensor_id;
 protected:
@@ -145,7 +149,7 @@ protected:
 using CModelUhiColumns = struct ModelUhiColumns : public CModelBaseUhiColumns {
       ModelUhiColumns(UhiModelType setcolumns = UhiModelType::TEMPERATURE) : ModelBaseUhiColumns(setcolumns) {if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::SENSORS)add_uhi_columns(setcolumns);}
 private:
-      void add_uhi_columns(UhiModelType setcolumns) {add(col_tcheck); if(setcolumns == UhiModelType::TEMPERATURE) {add(color); add(color_name);}  add(tsensor_node); add(tsensor_name); add(tnode_id); add(tsensor_id);}
+      void add_uhi_columns(UhiModelType setcolumns) {add(col_tcheck); if(setcolumns == UhiModelType::TEMPERATURE) {add(color); add(color_name);}  add(tsensor_node); add(tsensor_name); add(description); add(tnode_id); add(tsensor_id);}
 };
 
 using uhimc_unique_ptr = std::unique_ptr<CModelBaseUhiColumns>;

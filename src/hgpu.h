@@ -6,7 +6,6 @@
 #ifndef _HGPUS_H_
 #define _HGPUS_H_
 
-//#include <iostream>
 #include <stdio.h>
 #include <string>
 #include <sstream>

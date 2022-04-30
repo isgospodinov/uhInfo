@@ -51,9 +51,23 @@ public :
     unsigned int GetSensorsDetectedNumb() const;
     void SensorsDetect(bool *flag);
     virtual void PopulateTemperatureSelection(CHWindow *m_wnd) override;
-    void PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced);
+    void PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced,unsigned int tmp_in_sens_count);
     void EraseStatisticsAll(){for(std::list<Chip_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistics();}}
     virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
+    const double*const* GetVcoreValAccess() const {return &sVcore_val;}
+
+    void Set_visible_tmp_sens_count(bool stat) {
+ 	    visible_tmp_sens_count = 0;
+        for(Chip_node n : monitoring)  {
+            for(Sensor_node sn : n.sensors) {
+                 if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
+                 if(sn.sntype == SENSORS_FEATURE_TEMP) {
+                 	if(sn.visible) visible_tmp_sens_count ++;
+                 }
+            }
+        }
+    }
+
 private:
     // ------------- Skipping libsensors runtime dependency -------------
     sensors::fp_sInit      sysens_init;
@@ -65,6 +79,7 @@ private:
     sensors::fp_sValue     sysens_get_value;
     // ------------- Skipping libsensors runtime dependency -------------
 
+    double *sVcore_val = nullptr;
     void *libsensh = nullptr;
     std::list<Chip_node> monitoring;
     bool LibSensorsOpen(const char * filename);

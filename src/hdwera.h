@@ -33,6 +33,7 @@ public:
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
   TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
+  const double*const *v_core_val = nullptr;
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;

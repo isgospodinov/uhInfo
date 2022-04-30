@@ -27,8 +27,10 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    scrollWindow.set_expand();
 
    treeView.append_column_editable("+/-", vColumns->col_tcheck);
+   treeView.append_column("Type", vColumns->description);
    treeView.append_column("Node", vColumns->tsensor_node);
    treeView.append_column("Sensor", vColumns->tsensor_name);
+
 
    Gtk::CellRendererToggle* pRenderer = nullptr;
    Gtk::TreeViewColumn* pColumn = treeView.get_column(0);
@@ -54,29 +56,41 @@ bool CSmDialog::Wnd_close_handler()
 
 void CSmDialog::InitVision()
 {
+	pRefTreeModel->clear();
    if(pSensors) {
+	   pSensors->visible_tmp_sens_count = 0;
        bool stat = ((CHWindow*)pmWnd)->pfDlg->GetAllInputStat();
        for(Chip_node n : pSensors->monitoring)  {
            for(Sensor_node sn : n.sensors) {
                 if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
                 Gtk::TreeModel::Row row = *(pRefTreeModel->append());
                 row[vColumns->col_tcheck] = sn.visible;
+                if(sn.sntype == SENSORS_FEATURE_TEMP) {
+                	if(sn.visible) pSensors->visible_tmp_sens_count ++;
+                }
                 row[vColumns->tsensor_node] = n.chip_name.cnip_prefix;
                 row[vColumns->tsensor_name] = sn.label;
                 row[vColumns->tnode_id] = n.chip_id;
                 row[vColumns->tsensor_id] = sn.feature_number;
+                row[vColumns->description] = (sn.sntype == SENSORS_FEATURE_IN ? "   V" : (sn.sntype == SENSORS_FEATURE_TEMP ? "  °t" : ( sn.sntype == SENSORS_FEATURE_POWER ? "  W" : ( sn.sntype ==  SENSORS_FEATURE_FAN ? "  ☼" : "   -"))));
            }
        }
    }
 
    if(pUd2mon) {
+	   pUd2mon->visible_tmp_sens_count = 0;
+	   bool l_stat = ((CHWindow*)pmWnd)->pfDlg->GetInTmpMonStat();
        for(Ud2_sens_node it : pUd2mon->monitoring)  {
            Gtk::TreeModel::Row row = *(pRefTreeModel->append());
            row[vColumns->col_tcheck] = it.visible;
+       	   if(it.visible && l_stat) {
+       		    pUd2mon->visible_tmp_sens_count ++;
+       	   }
            row[vColumns->tsensor_node] = sensors::nud2;
            row[vColumns->tsensor_name] = it.ud2_model_name;
            row[vColumns->tnode_id] = it.ud2_drv_id;
            row[vColumns->tsensor_id] = it.index;
+           row[vColumns->description] = "  °t" ;
        }
    }
 }
@@ -138,10 +152,11 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 
 	   if((*iter)[vColumns->tsensor_node] == sensors::nud2) {
 	       if(pUd2mon) {
+	    	   bool l_stat = ((CHWindow*)pmWnd)->pfDlg->GetInTmpMonStat();
 	           for(std::list<Ud2_sens_node>::iterator it = pUd2mon->monitoring.begin(); it != pUd2mon->monitoring.end(); it++)  {
 	                if(((Glib::ustring((*iter)[vColumns->tsensor_name])) == it->ud2_model_name) && ((Glib::ustring((*iter)[vColumns->tnode_id])) == it->ud2_drv_id)) {
 	                    it->visible = (*iter)[vColumns->col_tcheck];
-	                    ((!it->visible) ? ++pUd2mon->inactive_dev_number : --pUd2mon->inactive_dev_number);
+	                    ((!it->visible) ? (++pUd2mon->inactive_dev_number,(l_stat ? --pUd2mon->visible_tmp_sens_count : 0)) : (--pUd2mon->inactive_dev_number,(l_stat ? ++pUd2mon->visible_tmp_sens_count : 0)));
 	                    pUd2mon->dataPrint_forced = true;
 	                    break;
 	                }
@@ -156,7 +171,12 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	                    for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
 	                        if((Glib::ustring((*iter)[vColumns->tsensor_name])) == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) {
 	                            sn->visible = (*iter)[vColumns->col_tcheck];
-	                            ((!sn->visible) ? ++n->inactive_sensors_number : --n->inactive_sensors_number);
+
+	                            if(!VCORECHECK && !sn->visible/* && pSensors->sVcore_val*/) {
+	                            	*pSensors->sVcore_val = 0.0;
+	                            }
+
+	                            ((!sn->visible) ? (++n->inactive_sensors_number,(SNTP(SENSORS_FEATURE_TEMP) ? --pSensors->visible_tmp_sens_count : 0)) : (--n->inactive_sensors_number,(sn->sntype == SENSORS_FEATURE_TEMP ? ++pSensors->visible_tmp_sens_count : 0)));
 	                            break_it = true;
 	                            break;
 	                        }
@@ -176,7 +196,7 @@ void CSmDialog::on_show()
     // !! move(... , ...) works effectively only after Gtk::Dialog::on_show() execution
     //MVWND(x,y,pmWnd->get_width(),get_width());
 
-    pRefTreeModel->clear();
+    // pRefTreeModel->clear();
     InitVision();
     Gtk::Dialog::on_show();
     //MVWND(x,y,pmWnd->get_width(),get_width());
