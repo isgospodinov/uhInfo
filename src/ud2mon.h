@@ -13,7 +13,7 @@
 
 using Ud2_sens_node = struct _Ud2_sens_node : public Sensor_statistic{
       _Ud2_sens_node(UDisksDriveAta *const atadrv,const char *mn,const char *dnm,bool vz) : Sensor_statistic(vz), ud2_model_name(mn), ud2_drv_id(dnm),
-                ata_drive(new (UDisksDriveAta *const){atadrv},[](UDisksDriveAta *const *drv){if(drv){g_clear_object(const_cast<UDisksDriveAta **>(drv));delete drv;}}) {}                                           
+                ata_drive(new (UDisksDriveAta *const){atadrv},[](UDisksDriveAta *const *drv){if(drv){g_clear_object(const_cast<UDisksDriveAta **>(drv));delete drv;}}){}
       int index = -1;
       const char *ud2_model_name,*ud2_drv_id;
       std::shared_ptr<UDisksDriveAta *const> ata_drive;
@@ -37,15 +37,6 @@ public :
      virtual void PopulateTemperatureSelection(CHWindow *m_wnd) override;
      virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
      void EraseStatisticsAll(){for(std::list<Ud2_sens_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistic();}}
-
-     void Set_visible_tmp_sens_count(bool stat) {
-  	   visible_tmp_sens_count = 0;
-         for(Ud2_sens_node it : monitoring)  {
-         	   if(it.visible && stat) {
-         		visible_tmp_sens_count ++;
-         	   }
-         }
-     }
 
      virtual ~Ud2mon() override = default;
 

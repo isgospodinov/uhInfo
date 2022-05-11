@@ -295,7 +295,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
           std::istringstream instrproc(uhiutil::execmd("cat /proc/cpuinfo | egrep 'processor|physical id|core id'"));
           cpu_chain_el cpu_unit;
 
-          for(std::list<unit_calc_el>::const_iterator ucEl = unclel->begin() ; ucEl != unclel->end() ; ucEl++)          
+          for(std::list<unit_calc_el>::const_iterator ucEl = unclel->begin(); ucEl != unclel->end(); ucEl++)
           {
 	           cpu_unit.cpuid = "cpu" + std::to_string(ucEl->cpunit) +  "  :  ";
                cpu_unit.cpuidn = ucEl->cpunit;

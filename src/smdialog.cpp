@@ -58,16 +58,12 @@ void CSmDialog::InitVision()
 {
 	pRefTreeModel->clear();
    if(pSensors) {
-	   pSensors->visible_tmp_sens_count = 0;
        bool stat = ((CHWindow*)pmWnd)->pfDlg->GetAllInputStat();
        for(Chip_node n : pSensors->monitoring)  {
            for(Sensor_node sn : n.sensors) {
                 if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
                 Gtk::TreeModel::Row row = *(pRefTreeModel->append());
                 row[vColumns->col_tcheck] = sn.visible;
-                if(sn.sntype == SENSORS_FEATURE_TEMP) {
-                	if(sn.visible) pSensors->visible_tmp_sens_count ++;
-                }
                 row[vColumns->tsensor_node] = n.chip_name.cnip_prefix;
                 row[vColumns->tsensor_name] = sn.label;
                 row[vColumns->tnode_id] = n.chip_id;
@@ -78,14 +74,9 @@ void CSmDialog::InitVision()
    }
 
    if(pUd2mon) {
-	   pUd2mon->visible_tmp_sens_count = 0;
-	   bool l_stat = ((CHWindow*)pmWnd)->pfDlg->GetInTmpMonStat();
        for(Ud2_sens_node it : pUd2mon->monitoring)  {
            Gtk::TreeModel::Row row = *(pRefTreeModel->append());
            row[vColumns->col_tcheck] = it.visible;
-       	   if(it.visible && l_stat) {
-       		    pUd2mon->visible_tmp_sens_count ++;
-       	   }
            row[vColumns->tsensor_node] = sensors::nud2;
            row[vColumns->tsensor_name] = it.ud2_model_name;
            row[vColumns->tnode_id] = it.ud2_drv_id;

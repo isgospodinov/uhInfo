@@ -237,11 +237,8 @@ void CHWindow::Posthreadnotify()
 
     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
     ShowHide_compare_elements();
-    
-    pSysensors->Set_visible_tmp_sens_count(pfDlg->GetAllInputStat());
-    pUd2Manager->Set_visible_tmp_sens_count(pfDlg->GetInTmpMonStat());
 
-    m_DAtemperature.v_core_val = pSysensors->GetVcoreValAccess();
+    m_DAtemperature.DA_SetVcoreValAccess(pSysensors->GetVcoreValAccess());
 
      if(!c_Timer)
              c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
@@ -302,7 +299,7 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        buff->insert(buff->get_iter_at_line(buff->get_line_count()),"  Detected sensors :    \n");
 
        pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,pfDlg->GetAllInputStat(),pSysensors->visible_tmp_sens_count + (pfDlg->GetInTmpMonStat() ? pUd2Manager->visible_tmp_sens_count : 0));
-      if(temperature_mode_status)
+       if(temperature_mode_status)
                           m_DAtemperature.Redraw();
 
        if((Ud2print && !temperature_mode_status) || (temperature_mode_status && extension))

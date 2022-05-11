@@ -177,8 +177,11 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            if(sn->t_statistic_active && (!blink_global_status || blink)) {itxbf = txtbuff->insert(itxbf," ");itxbf = txtbuff->insert_with_tag(itxbf,"      ",sn->statistic_color);itxbf = txtbuff->insert(itxbf," ");}                           
                            else itxbf = txtbuff->insert(itxbf,"        ");
                            
-                           if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && !VCORECHECK)) itxbf = txtbuff->insert_with_tag(itxbf,sn->label,
-                        		                                                                                                                sn->t_statistic_active ? uhiutil::ui::active_tag : uhiutil::ui::max_tag);
+                           if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && !VCORECHECK)) {
+                        	   itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "- - - - - - - - - - -\n        "),uhiutil::ui::active_tag);
+                        	   itxbf = txtbuff->insert_with_tag(itxbf,sn->label,
+                        		                                   sn->t_statistic_active ? uhiutil::ui::active_tag : uhiutil::ui::max_tag);
+                           }
                            else itxbf = txtbuff->insert(itxbf,sn->label);
                            
                            itxbf = txtbuff->insert(itxbf," : ");
@@ -187,7 +190,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                  case SENSORS_FEATURE_IN:
                                 	 if(sn->t_statistic_active || (printmode && !VCORECHECK)){
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,((std::to_string(value)).substr(0,5) + "V\n"),uhiutil::ui::active_tag);
-
+                                		 itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "        - - - - - - - - - - -\n") , uhiutil::ui::active_tag);
                                 		 if(sVcore_val && !sn->t_statistic_active) *sVcore_val = value ;
                                 	 }
                                 	 else itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));
@@ -227,6 +230,7 @@ void CSysens::PopulateTemperatureSelection(CHWindow *m_wnd)
    if(libsensh) {
        Glib::RefPtr<Gtk::ListStore> pTM = m_wnd->ptRefTreeModel;
        int index = 0,indexlimit =  SIZEOF(clrID);
+       visible_tmp_sens_count = 0;
        for(Chip_node n : monitoring)  {
               for(Sensor_node sn : n.sensors) {
                     if(sn.sntype == SENSORS_FEATURE_TEMP && sn.visible) {
@@ -238,6 +242,7 @@ void CSysens::PopulateTemperatureSelection(CHWindow *m_wnd)
                         row[m_wnd->tColumns->tsensor_id] = sn.feature_number;
                         row[m_wnd->tColumns->color_name] = clrID[index++];
                         if(index == indexlimit) index = 0;
+                        visible_tmp_sens_count ++;
                     }
               }
        }

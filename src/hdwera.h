@@ -30,10 +30,10 @@ public:
   void Redraw() {queue_draw();}
   void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
+  void DA_SetVcoreValAccess(const double *const* vcv){v_core_val = vcv;}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
   TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
-  const double*const *v_core_val = nullptr;
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
@@ -44,13 +44,14 @@ private:
   DRAWVECTOR tmpmon = nullptr;
   const TUDRAWVECTOR *valfreq = nullptr, *valfreqcmpr = nullptr, *valusg = nullptr;
   DrawMode DMode;
+  const double *const* v_core_val = nullptr;
 
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
 
   void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
   void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const;
-  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const ;
+  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
   std::string DurationTimeString(std::chrono::seconds sec) const;
   std::string GetDurationString();

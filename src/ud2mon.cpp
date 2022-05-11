@@ -210,6 +210,7 @@ void Ud2mon::PopulateTemperatureSelection(CHWindow *m_wnd)
 {
    Glib::RefPtr<Gtk::ListStore> pTM = m_wnd->ptRefTreeModel;
    int index = SIZEOF(clrID) - 1;
+   visible_tmp_sens_count = 0;
    for(Ud2_sens_node sn : monitoring) {
            if(sn.visible) {
                   Gtk::TreeModel::Row row = *(pTM->append());
@@ -220,6 +221,7 @@ void Ud2mon::PopulateTemperatureSelection(CHWindow *m_wnd)
                   row[m_wnd->tColumns->tsensor_id] = sn.index;
                   row[m_wnd->tColumns->color_name] = clrID[index--];
                   if(index == 0) index = SIZEOF(clrID) - 1;
+                  visible_tmp_sens_count ++;
            }
    }
 }
