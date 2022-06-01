@@ -6,7 +6,7 @@
 #include "mwnd.h"
 using uhiutil::cpu::UhiDownCast;
 
-CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens),pUd2Manager(new Ud2mon(this)),
+CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov))
 {
@@ -237,8 +237,6 @@ void CHWindow::Posthreadnotify()
 
     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
     ShowHide_compare_elements();
-
-    m_DAtemperature.DA_SetVcoreValAccess(pSysensors->GetVcoreValAccess());
 
      if(!c_Timer)
              c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);

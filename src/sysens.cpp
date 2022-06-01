@@ -6,7 +6,7 @@
 #include "sysens.h"
 #include "mwnd.h"
 
-CSysens::CSysens()
+CSysens::CSysens (double **const DAVcoreVal) : sVcore_val(DAVcoreVal)
 {
    bool libopen = false;
    for(unsigned int l = 0; !libopen && l < SIZEOF(Libs); libopen = LibSensorsOpen(Libs[l]),l++);
@@ -120,8 +120,8 @@ void CSysens::SensorsDetect(bool *flag)
                             chnd.sensors.push_back(Sensor_node(subfeature->number,lbl,feature->type,visnode));
                             if(!visnode) ++chnd.inactive_sensors_number;
 
-                            if(!sVcore_val && ((int)chnd.sensors.back().label.find("Vcore") != -1)) {
-                            	           sVcore_val = &chnd.sensors.back().max;
+                            if(!*sVcore_val && ((int)chnd.sensors.back().label.find("Vcore") != -1)) {
+                            	           *sVcore_val = &chnd.sensors.back().max;
                             }
 
 
@@ -165,7 +165,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                     for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {//sensors
                            if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && VCORECHECK) || (printmode && tmp_in_sens_count == 0) ||
                         		                                                              (!printmode && !advanced && SNTP(SENSORS_FEATURE_IN) && VCORECHECK)) {
-                        	   if(sVcore_val && !VCORECHECK) *sVcore_val = 0.0;
+                        	   if(*sVcore_val && !VCORECHECK) **sVcore_val = 0.0;
                         	   continue;
                            }
                            (sysens_get_value)(&cn, sn->feature_number, &value);
@@ -191,7 +191,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                 	 if(sn->t_statistic_active || (printmode && !VCORECHECK)){
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,((std::to_string(value)).substr(0,5) + "V\n"),uhiutil::ui::active_tag);
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "        - - - - - - - - - - -\n") , uhiutil::ui::active_tag);
-                                		 if(sVcore_val && !sn->t_statistic_active) *sVcore_val = value ;
+                                		 if(*sVcore_val && !sn->t_statistic_active) **sVcore_val = value ;
                                 	 }
                                 	 else itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));
                                      break;

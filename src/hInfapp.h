@@ -15,7 +15,7 @@ protected:
 
   virtual void on_startup() override;
 
-  void on_application_quit() {quit();}
+  void on_application_quit();
 public:
   static Glib::RefPtr<ChInfApp> create(const std::string &name);
   virtual ~ChInfApp() = default;

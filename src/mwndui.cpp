@@ -109,7 +109,7 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_ButtonBox.append(m_ButtonQuit);
 
   Gtk::Box *pBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
-  Gtk::Image *bqImg = Gtk::manage(new Gtk::Image);
+  Gtk::Image *bqImg = Gtk::make_managed<Gtk::Image>();
   Gtk::Label *bqLabel = Gtk::make_managed<Gtk::Label>("Quit");
   bqImg->set_from_icon_name("application-exit");
   bqLabel->set_hexpand();
@@ -155,11 +155,6 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_CPUCompareSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_Compare_mode_switch_changed));
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
-   item_infomode = add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info));
-   item_cpu = add_action_bool("cpuactivity",sigc::mem_fun(*this,&UIHWindow::show_cpu_activity_all));
-   item_temperature = add_action_bool("tmpmonit",sigc::mem_fun(*this,&UIHWindow::monitor_temperature), false);
-   item_manage = add_action("sensorset",sigc::mem_fun(*this,&UIHWindow::manage_sensors));
-   item_options = add_action("prefs",sigc::mem_fun(*this,&UIHWindow::get_preferences));
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
 }
  
@@ -315,18 +310,20 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                             }
                    }
                }
-      
-               Gtk::Box *pBox = Gtk::manage(new Gtk::Box(Gtk::Orientation::VERTICAL));
-               Gtk::Frame *pUnitFrame = Gtk::manage(new Gtk::Frame);
-               Gtk::Frame *pDArFrame = Gtk::manage(new Gtk::Frame);
-               Gtk::Box *pLabelBoxCU = Gtk::manage(new Gtk::Box(Gtk::Orientation::HORIZONTAL));
-               Gtk::Label *lCcpuColor = Gtk::manage(new Gtk::Label);
-               Gtk::Label *lUsageColor = Gtk::manage(new Gtk::Label);
-               cpu_unit.pDArea = Gtk::manage(new CDrawArea(nullptr,nullptr,Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg)));
-               cpu_unit.cpuid_m_pbF = Gtk::manage(new Gtk::ProgressBar);
-               cpu_unit.cpuid_m_pbCF = Gtk::manage(new Gtk::ProgressBar);
-               cpu_unit.cpuid_m_pbU = Gtk::manage(new Gtk::ProgressBar);
-               cpu_unit.lCompareColor = Gtk::manage(new Gtk::Label);
+
+               Gtk::Box *pBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
+			   Gtk::Frame *pUnitFrame = Gtk::make_managed<Gtk::Frame>();
+			   Gtk::Frame *pDArFrame = Gtk::make_managed<Gtk::Frame>();
+			   Gtk::Box *pLabelBoxCU = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+			   Gtk::Label *lCcpuColor = Gtk::make_managed<Gtk::Label>();
+			   Gtk::Label *lUsageColor = Gtk::make_managed<Gtk::Label>();
+
+               cpu_unit.pDArea = Gtk::make_managed<CDrawArea>(nullptr,nullptr,Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg));
+
+               cpu_unit.cpuid_m_pbF = Gtk::make_managed<Gtk::ProgressBar>();
+               cpu_unit.cpuid_m_pbCF = Gtk::make_managed<Gtk::ProgressBar>();
+               cpu_unit.cpuid_m_pbU = Gtk::make_managed<Gtk::ProgressBar>();
+               cpu_unit.lCompareColor = Gtk::make_managed<Gtk::Label>();
 
                lCcpuColor->set_text("  freq  ");
                cpu_unit.lCompareColor->set_text(" compr ");

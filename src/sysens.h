@@ -43,7 +43,7 @@ using Chip_node = struct _Chip_node {
 class CSysens : public CSensMon
 {
 public :
-    CSysens();
+    CSysens(double **const DAVcoreVal);
     virtual ~CSysens() override;
 
     friend class CSmDialog;
@@ -54,7 +54,6 @@ public :
     void PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced,unsigned int tmp_in_sens_count);
     void EraseStatisticsAll(){for(std::list<Chip_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistics();}}
     virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
-    const double *const* GetVcoreValAccess() const {return &sVcore_val;}
 private:
     // ------------- Skipping libsensors runtime dependency -------------
     sensors::fp_sInit      sysens_init;
@@ -66,7 +65,7 @@ private:
     sensors::fp_sValue     sysens_get_value;
     // ------------- Skipping libsensors runtime dependency -------------
 
-    double *sVcore_val = nullptr;
+    double **const sVcore_val = nullptr;
     void *libsensh = nullptr;
     std::list<Chip_node> monitoring;
     bool LibSensorsOpen(const char * filename);

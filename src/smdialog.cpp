@@ -163,8 +163,8 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	                        if((Glib::ustring((*iter)[vColumns->tsensor_name])) == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) {
 	                            sn->visible = (*iter)[vColumns->col_tcheck];
 
-	                            if(!VCORECHECK && !sn->visible/* && pSensors->sVcore_val*/) {
-	                            	*pSensors->sVcore_val = 0.0;
+	                            if(!VCORECHECK && !sn->visible && *pSensors->sVcore_val) {
+	                            	**pSensors->sVcore_val = 0.0;
 	                            }
 
 	                            ((!sn->visible) ? (++n->inactive_sensors_number,(SNTP(SENSORS_FEATURE_TEMP) ? --pSensors->visible_tmp_sens_count : 0)) : (--n->inactive_sensors_number,(sn->sntype == SENSORS_FEATURE_TEMP ? ++pSensors->visible_tmp_sens_count : 0)));

@@ -215,15 +215,13 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	  cr->move_to(draw::dofset,draw::dofset);
 	  layout->show_in_cairo_context(cr); // duration
 
-
-	  if(FULLAPPWNDMODE(w,h) && *v_core_val && **v_core_val && !(duration == "0:00:00")) {
+	  if(FULLAPPWNDMODE(w,h) && DA_VcoreVal && *DA_VcoreVal && !(duration == "0:00:00")) {
 		  cr->save();
 		  cr->set_source_rgb(0.8, 0.2, 0.4);
-		  DA_Text(layout, width , height,"\nVcore : " + (std::to_string(**v_core_val)).substr(0,5) + "V");
+		  DA_Text(layout, width , height,"\nVcore : " + (std::to_string(*DA_VcoreVal)).substr(0,5) + "V");
 		  DADRAWTEXT(cr, layout, draw::dofset,0); // Vcore
 		  cr->restore();
 	  }
-
 
 	  layout->unset_font_description();
 	  font = DA_DrawFont(false);

@@ -30,7 +30,7 @@ public:
   void Redraw() {queue_draw();}
   void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
-  void DA_SetVcoreValAccess(const double *const* vcv){v_core_val = vcv;}
+  double**const GetDAVcoreAccess() {return &DA_VcoreVal;}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
   TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
@@ -44,7 +44,7 @@ private:
   DRAWVECTOR tmpmon = nullptr;
   const TUDRAWVECTOR *valfreq = nullptr, *valfreqcmpr = nullptr, *valusg = nullptr;
   DrawMode DMode;
-  const double *const* v_core_val = nullptr;
+  double *DA_VcoreVal = nullptr;
 
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
