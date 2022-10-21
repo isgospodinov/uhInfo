@@ -13,17 +13,20 @@ To build the project you will need to install gtkmm4 with all needed dependencie
 Requirements :
   - GNOME 41 desktop environment or higher with gtkmm-4.0 >= 4.4.0
   - same as for version 0.16 and lower
-Under Fedora Linux 35/36 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
+Under Fedora Linux 36/37 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
 On openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel
 -: [June 2022] :-
 Note :
-Ubuntu 22.04 :
+Ubuntu 22.04 LTS :
 Currently there is no (lib)gtkmm-4(.0)(-dev) package available,so :
 1) To install gtkmm4.0 & set up the required dependencies follow this guide :
 https://terminalroot.com/how-to-install-gtkmm-4-on-ubuntu-2204/
 It will take you no more than 10 min.
 2) After that : sudo apt-get install libsensors4-dev libudisks2-dev
 3) Same as for version 0.16 and lower
+-: [October 2022] :-
+Note :
+Ubuntu 22.10 : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev
 ---------------------------------------------------------------------------------
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 For version 0.16 and lower : 
