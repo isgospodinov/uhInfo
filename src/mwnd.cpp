@@ -22,8 +22,6 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   InitVision();
 
   tgBuff->set_text("Init application...");
-  m_status_bar.push("Everything at a glance...", m_status_bar.get_context_id("Statusbar"));
-
 
   Gtk::CellRendererToggle* ptRenderer = UhiDownCast<Gtk::CellRenderer,Gtk::CellRendererToggle>((m_temperatureTreeView.get_column(0))->get_first_cell());
   if(ptRenderer)

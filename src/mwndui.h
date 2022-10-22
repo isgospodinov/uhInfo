@@ -50,8 +50,7 @@ protected:
 
   Gtk::ProgressBar m_pbFreq,m_pbUse;
   Gtk::Separator m_separator;
-  Gtk::Statusbar m_status_bar;
-  Gtk::Label m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status;
+  Gtk::Label m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status,m_status_bar;
 
   bool smDlg_shown = false,sensors_printing_enable = false,temperature_mode_status = false;
 

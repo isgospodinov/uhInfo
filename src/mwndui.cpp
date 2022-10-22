@@ -7,8 +7,8 @@
 #include "procun.h"
 
 UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
-                         m_TextView(), m_TreeView(m_refTreeModel), m_temperatureTreeView(ptRefTreeModel), m_Gpus(),
-						 m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
+                         m_status_bar("  Everything at a glance..."), m_TextView(), m_TreeView(m_refTreeModel),
+						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
 {
    m_CPUModeGrid.attach(m_CPUModeLabel, 0, 1, 1, 1);
    m_CPUModeGrid.attach(m_CPUModeSwitch, 1, 1, 1, 1);
@@ -255,6 +255,7 @@ void UIHWindow::InitUI()
 
   m_TextView.set_editable(false);
 
+  m_status_bar.set_halign(Gtk::Align::START);
   m_sb_cpu_labeltext.set_halign(Gtk::Align::START);
   m_sb_cpu_status.set_halign(Gtk::Align::START);
   m_sb_labeltext.set_halign(Gtk::Align::START);

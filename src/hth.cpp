@@ -81,6 +81,8 @@ std::string CInitThread::GetDevices(DeviceType dType) const
         }
         else
             if(uhiutil::newline(line,"Realtek Semiconductor Co., Ltd.",Direction::RIGHT)) line = ("Realtek " +  line);
+            else
+            	if(uhiutil::newline(line,"Broadcom Inc. and subsidiaries",Direction::RIGHT)) line = ("Broadcom Inc. " +  line);
 
         uhiutil::newline(line,"(rev",Direction::LEFT);
         ret += line;
