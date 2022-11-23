@@ -115,6 +115,9 @@
 
 #define SNTP(type) (sn->sntype == type)
 
+#define CLRMNG(v) ((CHWindow*)plMw)->v
+#define TCOLUMNS(v) CLRMNG(tColumns)->v
+
 /*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))
@@ -134,7 +137,7 @@ using cpu_chain_el = struct _cpu_chain {
 };
 
 using CModelBaseUhiColumns = struct ModelBaseUhiColumns : public Gtk::TreeModel::ColumnRecord {
-      using UhiModelType = enum class LocalTypes {TEMPERATURE,DISK,SENSORS};
+      using UhiModelType = enum class LocalTypes {TEMPERATURE,DISK,SENSORS,COLOR};
 
       ModelBaseUhiColumns(UhiModelType setcolumns = UhiModelType::DISK) {if(setcolumns == UhiModelType::DISK)add_uhi_columns();}
 
@@ -147,9 +150,11 @@ protected:
 };
 
 using CModelUhiColumns = struct ModelUhiColumns : public CModelBaseUhiColumns {
-      ModelUhiColumns(UhiModelType setcolumns = UhiModelType::TEMPERATURE) : ModelBaseUhiColumns(setcolumns) {if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::SENSORS)add_uhi_columns(setcolumns);}
+      ModelUhiColumns(UhiModelType setcolumns = UhiModelType::TEMPERATURE) : ModelBaseUhiColumns(setcolumns) {
+    	  if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::SENSORS || setcolumns == UhiModelType::COLOR)add_uhi_columns(setcolumns);}
 private:
-      void add_uhi_columns(UhiModelType setcolumns) {add(col_tcheck); if(setcolumns == UhiModelType::TEMPERATURE) {add(color); add(color_name);}  add(tsensor_node); add(tsensor_name); add(description); add(tnode_id); add(tsensor_id);}
+      void add_uhi_columns(UhiModelType setcolumns) {if(setcolumns != UhiModelType::COLOR) add(col_tcheck); if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::COLOR) {add(color); add(color_name);}
+                                                                                                       if(setcolumns != UhiModelType::COLOR) {add(tsensor_node); add(tsensor_name); add(description); add(tnode_id); add(tsensor_id);}}
 };
 
 using uhimc_unique_ptr = std::unique_ptr<CModelBaseUhiColumns>;

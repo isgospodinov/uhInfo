@@ -8,7 +8,8 @@ using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
-					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov))
+					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
+					   clrDlg(new ClrDialog(this,&css_prov))
 {
   set_child(m_VBoxAll);
 
@@ -32,6 +33,9 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
       Gtk::CellRenderer *ptRend = ptColumn->get_first_cell();
       if(ptRend) ptColumn->add_attribute(*ptRend,"cell-background", 2);
   }
+
+  m_temperatureTreeView.set_activate_on_single_click();
+  m_temperatureTreeView.signal_row_activated().connect(sigc::mem_fun(*this, &CHWindow::On_Temperature_Row_Activated));
 
   m_VBoxCPUActivityAll.set_visible(false);
   m_sb_cpu_labeltext.set_visible(false);
@@ -231,7 +235,8 @@ void CHWindow::Posthreadnotify()
 
     if(item_options) item_options->set_enabled(sensors_printing_enable);
 
-    if(smDlg) smDlg->SetDefSize();
+    if(smDlg)  smDlg->SetDefSize();
+    if(clrDlg) clrDlg->SetDefSize();
 
     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
     ShowHide_compare_elements();
@@ -434,7 +439,7 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
 {
 	Gtk::TreePath path(path_string);
     Gtk::TreeModel::iterator iter = ptRefTreeModel->get_iter(path);
-    CDrawArea::DRAWVECTOR dv = nullptr;
+    CDrawArea::DRAWVECTORPLUS dv{nullptr,nullptr};
     double *ps_max = nullptr;
 
     if(pSysensors && (*iter)[tColumns->tsensor_id] != -1)
@@ -442,8 +447,8 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
     else
           dv = pUd2Manager->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id],&ps_max);
 
-    if(dv)
-        m_DAtemperature.SetUnsetDrawItem(dv,ps_max,(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
+    if(dv.dvc && dv.dsn)
+        m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
 
 }
 
@@ -464,4 +469,13 @@ void CHWindow::On_Compare_mode_switch_changed()
           CPUMNGBTNSTATE(m_CPUModeSwitch);
           CPUMNGBTNSTATE(m_CPUCompareSwitch);
     }
+}
+
+void CHWindow::On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column)
+{
+    if(clrDlg && column->get_title() == Glib::ustring("Color"))
+	{
+		 m_Box_TmpControls.set_sensitive(false);
+	     clrDlg->show();
+	}
 }

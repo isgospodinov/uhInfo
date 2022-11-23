@@ -4,6 +4,7 @@ A small gnome desktop application for displaying configuration information and
 monitoring CPU and temperature statistics.Including CPU temperatures,voltage,
 activity,PCIE link status,HDD/SSD temperatures,fan speeds and other important
 system parameters readings under Linux.
+To get a general visual idea,see the project's wiki page.
 - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ---------------------------------------------------------------------------------
 -: [November 2021] :-  

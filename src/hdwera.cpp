@@ -118,7 +118,7 @@ void CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int 
           cr->set_line_width(1.7);
           for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
                            tmpmon = dit->DItem;
-                           Gdk::RGBA rgba(dit->DItName);
+                           Gdk::RGBA rgba(*dit->DItName);
                            Gdk::Cairo::set_source_rgba(cr,rgba);
                            DrawActivity(cr,xc,height,width);
           }
@@ -126,14 +126,14 @@ void CDrawArea::on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int 
   cr->restore();
 }
 
-void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag)
+void CDrawArea::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag)
 {
 	if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
     if(setflag)  {
           Draw_Item di;
-          di.DItem = item;
-          di.DItName = ColorName;
+          di.DItem = item->dvc;
+          di.DItName = item->dsn;
           di.DItSensor = SensorName;
           di.sensormax = max;
           draw_temperatures.push_back(di);
@@ -141,7 +141,7 @@ void CDrawArea::SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring Col
     }
     else {
         for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
-            if(item == dit->DItem) {
+              if(item->dvc == dit->DItem) {
                 draw_temperatures.erase(dit);
                 break;
             }
@@ -246,7 +246,7 @@ void CDrawArea::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string 
 	       cr->save();
 	       for(std::list<Draw_Item>::const_iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
-	                     Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{dit->DItName});
+	                     Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{*dit->DItName});
 	                     tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
 
 	                     DA_Text(layout, width, height, (std::to_string(tcvr).substr(0,STRCOND(tcvr,5,4)) + " °").c_str());

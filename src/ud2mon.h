@@ -35,7 +35,7 @@ public :
      std::string PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status);
      void PrintForceExternal(bool pforce = true) {dataPrint_forced = pforce;}
      virtual void PopulateTemperatureSelection(CHWindow *m_wnd) override;
-     virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
+     virtual CDrawArea::DRAWVECTORPLUS SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
      void EraseStatisticsAll(){for(std::list<Ud2_sens_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistic();}}
 
      virtual ~Ud2mon() override = default;

@@ -249,7 +249,7 @@ void CSysens::PopulateTemperatureSelection(CHWindow *m_wnd)
    }
 }
 
-CDrawArea::DRAWVECTOR CSysens::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
+CDrawArea::DRAWVECTORPLUS CSysens::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
 {
    if(libsensh) {
        for(std::list<Chip_node>::iterator n = monitoring.begin(); n != monitoring.end(); n++)  {
@@ -257,13 +257,13 @@ CDrawArea::DRAWVECTOR CSysens::SensorStatisticToggle(bool status,Glib::ustring c
                 for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
                     if(Glib::ustring(sn->label) == sensor && sn->feature_number == sensorid) { 
                         sn->SetStatisticFeatures(status,color);
-                        *max = &sn->max;
-                        return &sn->t_statistic;
+                        if(max) *max = &sn->max;
+                        return {&sn->t_statistic,&sn->statistic_color};
                     }
                 }
             }
        }
    }
 
-   return nullptr;
+   return {nullptr,nullptr};
 }

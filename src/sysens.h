@@ -53,7 +53,7 @@ public :
     virtual void PopulateTemperatureSelection(CHWindow *m_wnd) override;
     void PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced,unsigned int tmp_in_sens_count);
     void EraseStatisticsAll(){for(std::list<Chip_node>::iterator chn = monitoring.begin(); chn != monitoring.end(); chn++) {chn->EraseStatistics();}}
-    virtual CDrawArea::DRAWVECTOR SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
+    virtual CDrawArea::DRAWVECTORPLUS SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) override;
 private:
     // ------------- Skipping libsensors runtime dependency -------------
     sensors::fp_sInit      sysens_init;

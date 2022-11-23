@@ -20,6 +20,10 @@ public:
   using TmpWndState = enum class DAWndState {NORMAL,FULL};
   using fp_lDASR = void (UIHWindow::*)(int, double, double);
   using DRAWVECTOR = const std::vector<double>*;
+  using DRAWVECTORPLUS = struct {
+	         DRAWVECTOR dvc;
+	         const std::string* dsn;
+  };
   using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
 
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
@@ -28,7 +32,7 @@ public:
   virtual ~CDrawArea() = default;
 
   void Redraw() {queue_draw();}
-  void SetUnsetDrawItem(DRAWVECTOR item, double *max, Glib::ustring ColorName, Glib::ustring SensorName, bool setflag);
+  void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   double**const GetDAVcoreAccess() {return &DA_VcoreVal;}
 
@@ -37,7 +41,8 @@ public:
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
-      std::string DItName = "",DItSensor = "";
+      const std::string* DItName = nullptr;
+      std::string DItSensor = "";
       double *sensormax = nullptr;
   };
 

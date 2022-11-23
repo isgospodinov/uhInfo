@@ -15,6 +15,7 @@
 #include "hmonit.h"
 #include "prefsdlg.h"
 #include "aboutdlg.h"
+#include "clrdialog.h"
 
 class CHWindow : public CInitThread, public UIHWindow
 {
@@ -34,6 +35,12 @@ public:
 private:
   const std::unique_ptr<CSmDialog> smDlg;
   const std::unique_ptr<CAboutDlg> abtDlg;
+  const std::unique_ptr<ClrDialog> clrDlg;
+
+  friend void ClrDialog::OnColorChoiceToggled(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
+  friend bool ClrDialog::Wnd_close_handler();
+
+  void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
   void sensors_print(bool Ud2print,bool extension);
   void Posthreadnotify();// Dispatcher handler.
