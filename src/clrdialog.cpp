@@ -32,6 +32,7 @@ bool ClrDialog::Wnd_close_handler()
 {
 	CLRMNG(m_temperatureTreeView).get_selection()->unselect_all();
 	CLRMNG(m_Box_TmpControls).set_sensitive(true);
+	CLRMNG(item_temperature)->set_enabled(true);
 	hide();
 	return true;
 }
@@ -67,4 +68,11 @@ void ClrDialog::InitVision()
           Gtk::CellRenderer *ptRend = (ptColumn->get_first_cell());
           if(ptRend) ptColumn->add_attribute(*ptRend,"cell-background", 1);
       }
+}
+
+void ClrDialog::on_show()
+{
+	Gtk::Dialog::on_show();
+	CLRMNG(item_temperature)->set_enabled(false);
+	treeView.get_selection()->unselect_all();
 }

@@ -39,6 +39,7 @@ private:
 
   friend void ClrDialog::OnColorChoiceToggled(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
   friend bool ClrDialog::Wnd_close_handler();
+  friend void ClrDialog::on_show();
 
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
