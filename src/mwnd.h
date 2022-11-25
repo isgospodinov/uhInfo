@@ -37,7 +37,6 @@ private:
   const std::unique_ptr<CAboutDlg> abtDlg;
   const std::unique_ptr<ClrDialog> clrDlg;
 
-  friend void ClrDialog::OnColorChoiceToggled(const Gtk::TreeModel::Path&, Gtk::TreeViewColumn*);
   friend bool ClrDialog::Wnd_close_handler();
   friend void ClrDialog::on_show();
 

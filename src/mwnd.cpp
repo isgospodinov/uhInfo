@@ -478,4 +478,6 @@ void CHWindow::On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gt
 		 m_Box_TmpControls.set_sensitive(false);
 	     clrDlg->show();
 	}
+
+    m_temperatureTreeView.get_selection()->unselect_all();
 }

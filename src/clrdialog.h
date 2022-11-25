@@ -26,6 +26,8 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TreeView treeView;
    const Gtk::Window *const plMw = nullptr;
+   std::string* cName = nullptr;
+   Gtk::TreeModel::iterator citl{nullptr};
 
    void InitVision();
 };
