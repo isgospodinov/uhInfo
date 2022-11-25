@@ -17,7 +17,7 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
 void CAboutDlg::PreInitVision()
 {
      set_title("About...");
-     set_secondary_text("Application version : 0.18\n");
+     set_secondary_text("Application version : 0.19\n");
      m_Image.set_size_request(uhi_img->get_height(),uhi_img->get_width());
 
      m_CGrid.attach(m_Image,0, 2, 1, 1);
