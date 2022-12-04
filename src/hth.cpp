@@ -56,7 +56,7 @@ std::string CInitThread::MOBO_Info() const
                              uhiutil::newline(line,"v6/7th",Direction::LEFT);
                    }
                    else
-                       if(uhiutil::newline(line,"[AMD/ATI]",Direction::RIGHT))
+                	   if(uhiutil::newline(line,"[AMD",Direction::RIGHT))
                              line = ("AMD " +  line);
                    break;
             }

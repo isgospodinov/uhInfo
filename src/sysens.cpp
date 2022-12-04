@@ -255,9 +255,11 @@ CDrawArea::DRAWVECTORPLUS CSysens::SensorStatisticToggle(bool status,Glib::ustri
        for(std::list<Chip_node>::iterator n = monitoring.begin(); n != monitoring.end(); n++)  {
             if(Glib::ustring(n->chip_name.cnip_prefix) == node && (Glib::ustring(n->chip_id) == nodeid)) {
                 for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {
-                    if(Glib::ustring(sn->label) == sensor && sn->feature_number == sensorid) { 
-                        sn->SetStatisticFeatures(status,color);
-                        if(max) *max = &sn->max;
+                    if(Glib::ustring(sn->label) == sensor && sn->feature_number == sensorid) {
+                    	if(max) {
+                            sn->SetStatisticFeatures(status,color);
+                            *max = &sn->max;
+                    	}
                         return {&sn->t_statistic,&sn->statistic_color};
                     }
                 }

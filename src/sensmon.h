@@ -25,7 +25,7 @@ using Sensor_statistic = struct _Sensor_statistic {
 class CSensMon
 {
 public:
-   virtual CDrawArea::DRAWVECTORPLUS SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max) = 0;
+   virtual CDrawArea::DRAWVECTORPLUS SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max = nullptr) = 0;
    unsigned int visible_tmp_sens_count = 0;
 protected:
    virtual void PopulateTemperatureSelection(CHWindow *m_wnd) = 0;

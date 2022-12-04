@@ -80,10 +80,10 @@ void ClrDialog::on_show()
 	if(citl) {
         if((*citl)[TCOLUMNS(tsensor_node)] == sensors::nud2)
         	ldv = CLRMNG(pUd2Manager)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
-    			            (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)],nullptr);
+    			            (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
         else
         	ldv = CLRMNG(pSysensors)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
-    			    (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)],nullptr);
+    			    (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
 
         cName = const_cast<std::string*>(ldv.dsn);
         (*citl)[TCOLUMNS(color)] = " -ed- ";
