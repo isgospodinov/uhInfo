@@ -99,10 +99,6 @@ double CProc::UsageCalc(std::string &Usge,LONG2INT *mem_tot,LONG2INT *mem_id)
                   sum_total += std::stoi(line);
                   conter++;
              }
-             //---------------------------------------------
-             //V1 : Fixes wrong usage calculation(in some cases) when CPU has > 8 working threads
-             if(line.rfind('\x0A') != std::string::npos) break;
-             //---------------------------------------------
       }
 
       idle_delta = idle -  ((mem_id == nullptr) ? mem_idle : *mem_id );

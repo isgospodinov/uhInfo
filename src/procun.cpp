@@ -57,12 +57,8 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
             	UIBCF((*elV).cpuid_m_pbF,(CHECKBCF ? freqdc_compare : freqdc),(CHECKBCF ? cline_compare : cline));
             	UIBCF((*elV).cpuid_m_pbCF,(CHECKBCF ? freqdc : freqdc_compare),(CHECKBCF ? cline : cline_compare));
 
-                std::string cd = "cat /proc/stat | grep cpu" + std::to_string((*cel).cpunit);
+                std::string cd = "cat /proc/stat | grep cpu" + std::to_string((*cel).cpunit) + " | head -n1";
                 std::string res  = uhiutil::execmd(cd.data());
-                //---------------------------------------------
-                //std::string::size_type p = res.find('\x0A');                   //V2 : Fixes wrong usage calculation(in some
-                //res = res.substr(0, p == std::string::npos ? res.size() : p);  //cases) when CPU has > 8 working threads
-                //---------------------------------------------
                 usgdc = UsageCalc(res,&(*cel).cpuid_mem_total,&(*cel).cpuid_mem_idle);
                 UIBCF((*elV).cpuid_m_pbU,usgdc,res);
 

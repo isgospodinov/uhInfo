@@ -86,6 +86,6 @@ void ClrDialog::on_show()
     			    (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
 
         cName = const_cast<std::string*>(ldv.dsn);
-        (*citl)[TCOLUMNS(color)] = " -ed- ";
+        (*citl)[TCOLUMNS(color)] = "( ● )";
 	}
 }

@@ -31,7 +31,10 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   Gtk::TreeViewColumn* ptColumn = m_temperatureTreeView.get_column(1);
   if(ptColumn) {
       Gtk::CellRenderer *ptRend = ptColumn->get_first_cell();
-      if(ptRend) ptColumn->add_attribute(*ptRend,"cell-background", 2);
+      if(ptRend) {
+    	    ptColumn->add_attribute(*ptRend,"cell-background", 2);
+            ptRend->property_xalign() = .5;
+      }
   }
 
   m_temperatureTreeView.set_activate_on_single_click();
