@@ -1,4 +1,4 @@
-CPP = g++
+CPP = c++
 BUILD = build
 PROGRAM = $(BUILD)/uhInfo
 CPPFILES = $(wildcard src/*.cpp)

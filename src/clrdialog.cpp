@@ -36,6 +36,9 @@ bool ClrDialog::Wnd_close_handler()
 
 	hide();
 
+	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrawArea::DAWndState::FULL)
+		CLRMNG(mDA_ToolBar).set_visible(true);
+
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;
 	citl  = Gtk::TreeModel::iterator(nullptr);

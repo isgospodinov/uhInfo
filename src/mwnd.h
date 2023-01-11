@@ -16,6 +16,7 @@
 #include "prefsdlg.h"
 #include "aboutdlg.h"
 #include "clrdialog.h"
+#include "tcpustat.h"
 
 class CHWindow : public CInitThread, public UIHWindow
 {
@@ -36,9 +37,10 @@ private:
   const std::unique_ptr<CSmDialog> smDlg;
   const std::unique_ptr<CAboutDlg> abtDlg;
   const std::unique_ptr<ClrDialog> clrDlg;
+  const std::unique_ptr<CpuStatDlg> cpuStatDlg;
 
-  friend bool ClrDialog::Wnd_close_handler();
-  friend void ClrDialog::on_show();
+  FRIEND(ClrDialog);
+  FRIEND(CpuStatDlg);
 
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
@@ -68,6 +70,7 @@ private:
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
   virtual void on_DA_button_press_event(int npress, double x, double y) override;
+  virtual void on_tbt_clicked() override {cpuStatDlg->show();}
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };

@@ -152,6 +152,8 @@ const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin
 	      ".gn_cls {background: #66CCAA; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
 	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
 	      ".ls_cls {background: #778899; color: #000000; }" \
-	      ".fu_cls {color: #000000; }" };
+	      ".fu_cls {color: #000000; }" \
+		  ".tb_cls {color: #FFFFFF;}" \
+		  ".toolbar {background: #778899; color: #FFFFFF;}" };
 
 #endif // _UTIL_H_
