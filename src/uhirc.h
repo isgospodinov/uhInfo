@@ -91,14 +91,18 @@
 		  m_StatusBar_Grid_condit.set_visible(wndstat); \
 	      m_VBoxVLeft.set_visible(wndstat);  \
 	      m_Box_TmpControls.set_visible(wndstat); \
-	      set_show_menubar(wndstat)
+	      set_show_menubar(wndstat); \
+		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible(!wndstat)
+
+#define FRIEND(Class) friend bool Class::Wnd_close_handler(); \
+                      friend void Class::on_show()
 
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()
 
 #define CONNECTIONSET *(new sigc::connection)
 
-#define SETIMER(id,interval) std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,&CHWindow::uhI_Timer), id), interval)))
+#define SETIMER(id,interval,func) std::unique_ptr<sigc::connection>(&(CONNECTIONSET = Glib::signal_timeout().connect(sigc::bind(sigc::mem_fun(*this,func), id), interval)))
 
 #define DADRAWTEXT(crt, ly, dw, dh) crt->move_to(dw,dh); \
                                      ly->show_in_cairo_context(crt)

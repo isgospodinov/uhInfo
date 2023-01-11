@@ -9,7 +9,7 @@ using uhiutil::cpu::UhiDownCast;
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smDlgResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
-					   clrDlg(new ClrDialog(this,&css_prov))
+					   clrDlg(new ClrDialog(this,&css_prov)),cpuStatDlg(new CpuStatDlg(this,&css_prov))
 {
   set_child(m_VBoxAll);
 
@@ -68,6 +68,11 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 		state = CDrawArea::DAWndState::FULL;
 		visiblity = false;
 	}
+	else
+		if(cpuStatDlg->is_visible()) {
+			cpuStatDlg->stop_timer();
+			cpuStatDlg->hide();
+		}
 
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
@@ -240,12 +245,13 @@ void CHWindow::Posthreadnotify()
 
     if(smDlg)  smDlg->SetDefSize();
     if(clrDlg) clrDlg->SetDefSize();
+    if(cpuStatDlg) cpuStatDlg->SetDefSize();
 
     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
     ShowHide_compare_elements();
 
      if(!c_Timer)
-             c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval);
+             c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval,&CHWindow::uhI_Timer);
 
      FinishThreadAndClear();
 }

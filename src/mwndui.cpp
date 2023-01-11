@@ -23,7 +23,10 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_Box_TmpControls.append(m_ScrolledWindowTemperatures);
 
   m_VPanedTrmpetature.set_start_child(m_Box_TmpControls);
-  m_VPanedTrmpetature.set_end_child(m_DAFrame_Temperature);
+
+  mT_All.append(m_TbFrame);
+  mT_All.append(m_DAFrame_Temperature);
+  m_VPanedTrmpetature.set_end_child(mT_All);
 
   m_temperatureTreeView.append_column_editable("+/-", tColumns->col_tcheck);
   m_temperatureTreeView.append_column("Color", tColumns->color);
@@ -65,6 +68,7 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_Frame_CPUActivityAll.set_child(m_Fbox_CPUActivityAll);
 
   m_DAFrame_Temperature.set_child(m_DAtemperature);
+  m_TbFrame.set_child(mDA_ToolBar);
 
   m_VBoxCPU.append(m_Label_CPU);
   m_VBoxCPU.append(m_Frame_CPUFrecq);
@@ -189,7 +193,7 @@ void UIHWindow::InitUI()
   m_Frame_CPUFrecq.set_margin_end(14);
   m_Frame_CPUFrecq.set_margin_bottom(2);
   m_ScrolledWindow.set_margin_top(4);
-  m_DAFrame_Temperature.set_margin(2);
+  mT_All.set_margin(2);
 
   m_VBoxCPUActivityAll.set_margin(4);
   m_CPUModeGrid.set_margin(4);
@@ -217,6 +221,7 @@ void UIHWindow::InitUI()
   m_sb_cpu_status.set_text("N/A     ");
   m_sb_status.set_text("OFF     ");
 
+  mT_All.set_orientation(Gtk::Orientation::VERTICAL);
   m_HPaned.set_orientation(Gtk::Orientation::HORIZONTAL);
   m_VBoxVRight.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBoxVLeft.set_orientation(Gtk::Orientation::VERTICAL);
@@ -255,6 +260,10 @@ void UIHWindow::InitUI()
 
   m_TextView.set_editable(false);
 
+  mDA_ToolBar.set_halign(Gtk::Align::END);
+  mDA_ToolBar.set_valign(Gtk::Align::START);
+  mDA_ToolBar.set_visible(false);
+
   m_status_bar.set_halign(Gtk::Align::START);
   m_sb_cpu_labeltext.set_halign(Gtk::Align::START);
   m_sb_cpu_status.set_halign(Gtk::Align::START);
@@ -284,7 +293,6 @@ void UIHWindow::InitUI()
 void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain)
 {
 	      Glib::RefPtr<Gtk::CssProvider> prv = Gtk::CssProvider::create();
-	      Glib::RefPtr<Gtk::StyleContext> sc{nullptr};
 	      prv->load_from_data(style);
 
           std::string line("");
@@ -378,6 +386,18 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_units_monit_chain.push_back(cpu_unit);
           }
 
+          Gtk::Button *btnit = Gtk::make_managed<Gtk::Button>();
+          Gtk::Label *label = Gtk::make_managed<Gtk::Label>("CPU status   ");
+          btnit->set_image_from_icon_name("go-next-symbolic", Gtk::IconSize::INHERIT, true);
+          btnit->set_tooltip_text("Show/Hide CPU status information");
+          btnit->signal_clicked().connect( sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked) );
+
+          mDA_ToolBar.append(*label);
+          mDA_ToolBar.append(*btnit);
+
+          uhiutil::set_css_style(mDA_ToolBar.get_style_context(),prv,"toolbar");
+          uhiutil::set_css_style(btnit->get_style_context(),prv,"tb_cls");
+          uhiutil::set_css_style(m_TbFrame.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_pbUse.get_style_context(),prv,"fu_cls");
           uhiutil::set_css_style(m_pbFreq.get_style_context(),prv,"fu_cls");
