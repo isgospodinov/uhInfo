@@ -6,7 +6,7 @@
 #ifndef _CPUSTAT_H_
 #define _CPUSTAT_H_
 
-class CpuStatDlg : public Gtk::Window // Gtk::Dialog has it been deprecated in gtkmm >= 4.9.1?
+class CpuStatDlg : public Gtk::Window
 {
 public:
 	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv);
@@ -21,6 +21,8 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TextView lc_TextView;
    const Gtk::Window *const plMw = nullptr;
+   const char *const tag_attention = "cpu_f_attent";
+   double cpuattent = 0.0;
 
    std::unique_ptr<sigc::connection> l_timer{nullptr};
    bool ot_timer(int tmNo);
