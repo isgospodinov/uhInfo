@@ -15,11 +15,6 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
     uhiutil::set_css_style(get_style_context(),*cProv);
     lc_TextView.get_buffer()->create_tag(tag_attention)->property_foreground() = "red";
 
-    std::string mx = uhiutil::execmd("lscpu | grep 'CPU max'");
-    uhiutil::newline(mx,":",Direction::RIGHT);
-    uhiutil::end_intervals_remove((mx = uhiutil::start_intervals_remove(mx)));
-    cpuattent = (double) std::stod(mx) * .9;
-
     InitVision();
 
     signal_close_request().connect(sigc::mem_fun(*this, &CpuStatDlg::Wnd_close_handler),false);
@@ -29,7 +24,6 @@ bool CpuStatDlg::Wnd_close_handler()
 {
 	CLRMNG(mDA_ToolBar).set_visible(true);
 	stop_timer();
-	hide();
 
 	return true;
 }
@@ -45,8 +39,6 @@ void CpuStatDlg::InitVision()
     lc_TextView.property_justification() = Gtk::Justification::CENTER;
     scrollWindow.set_margin(4);
     scrollWindow.set_expand();
-
-    (lc_TextView.get_buffer())->set_text("Initialization...");
 }
 
 void CpuStatDlg::on_show()
@@ -64,7 +56,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 
 	int cn = 0;
 	double sv = 0.0,cv = 0.0;
-	std::string ts_line(""),tc_line("");
+	std::string fq_line("");
     Glib::RefPtr<Gtk::TextBuffer> lc_buff = lc_TextView.get_buffer();
     lc_buff->erase(lc_buff->begin(),lc_buff->end());
     Gtk::TextBuffer::iterator bfit = lc_buff->get_iter_at_line(lc_buff->get_line_count());
@@ -73,32 +65,31 @@ bool CpuStatDlg::ot_timer(int tmNo)
 
 	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(bf ? "scaling frequency  /  " : "") + "cpuinfo\n\n");
 
-	while(std::getline(fcinstrm, tc_line)) {
-		  std::getline(fsinstrm, ts_line);
+	while(std::getline(fcinstrm, fq_line)) {
+			  if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
+			  uhiutil::newline(fq_line,":",Direction::RIGHT);
+			  cv = std::stod(fq_line.c_str());
 
-		  if(tc_line.rfind('\x0A') != std::string::npos) tc_line.pop_back();
-		  uhiutil::newline(tc_line,":",Direction::RIGHT);
+			  if(bf && std::getline(fsinstrm, fq_line))
+			       sv = std::stod(fq_line) / (double) 1000;
 
-		  sv = (bf ?(std::stod(ts_line) / (double) 1000) : 0.0);
-		  cv = std::stod(tc_line.c_str());
+	          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
 
-          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
+	          if(sv) {
+	              if(cpfquattent < sv) bfit = lc_buff->insert_with_tag(bfit,std::to_string((int)sv),tag_attention);
+	              else bfit = lc_buff->insert(bfit,std::to_string((int)sv));
 
-          if(bf && (sv > 0.0)) {
-              if(cpuattent < sv) bfit = lc_buff->insert_with_tag(bfit,std::to_string((int)sv),tag_attention);
-              else bfit = lc_buff->insert(bfit,std::to_string((int)sv));
-          }
+	              bfit = lc_buff->insert(bfit," MHz  /  ");
+	          }
 
-          if(bf) bfit = lc_buff->insert(bfit," MHz  /  ");
+	          if(cpfquattent < cv) bfit = lc_buff->insert_with_tag(bfit,std::to_string((int)cv),tag_attention);
+	          else bfit = lc_buff->insert(bfit,std::to_string((int)cv));
 
-          if(cpuattent < cv) bfit = lc_buff->insert_with_tag(bfit,std::to_string((int)cv),tag_attention);
-          else bfit = lc_buff->insert(bfit,std::to_string((int)cv));
+	          bfit = lc_buff->insert(bfit," MHz\n");
 
-          bfit = lc_buff->insert(bfit," MHz\n");
-
-		  cn++;
-		  sv = cv = 0.0;
-	}
+			  cn++;
+			  sv = cv = 0.0;
+		}
 
 	return true;
 }

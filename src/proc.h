@@ -21,6 +21,7 @@ public :
     virtual std::string ProcInfoInit();
     virtual void CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch = nullptr,bool bCpuAltCalc = false);
     unsigned int Get_cpu_units() const {return cpu_units;}
+    const double Get_cpu_fqmax() const {return cpu_max_mhz;}
 
     static bool m_CpuAltCalc;
     bool m_ClearCalcData = false;

@@ -71,7 +71,6 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	else
 		if(cpuStatDlg->is_visible()) {
 			cpuStatDlg->stop_timer();
-			cpuStatDlg->hide();
 		}
 
 	TEMPERATUREWNDVIEW(visiblity);
@@ -245,7 +244,7 @@ void CHWindow::Posthreadnotify()
 
     if(smDlg)  smDlg->SetDefSize();
     if(clrDlg) clrDlg->SetDefSize();
-    if(cpuStatDlg) cpuStatDlg->SetDefSize();
+    if(cpuStatDlg) cpuStatDlg->SetParam(pntProcessor ? pntProcessor->Get_cpu_fqmax() : .0);
 
     m_CPUNativeFqSwitch.set_active(uhiutil::cpu::native_fq_state);
     ShowHide_compare_elements();
