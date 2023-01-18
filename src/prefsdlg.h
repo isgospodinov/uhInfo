@@ -17,6 +17,7 @@ public:
    const bool GetInTmpMonStat() const {return ch_InTmpMon.get_active();}
    const bool GetAllInputStat() const {return ch_AllInput.get_active();}
    const bool GetSaveImpStat() const {return ch_SaveImp.get_active();}
+   const bool GetShowCPUfq() const {return ch_ShowCPUfq.get_active();}
    const int GetMaxTmpStat() const {return cb_MaxTmp.get_active_row_number();}
    
    void SetFqState(bool nfs) {uhiutil::cpu::native_fq_state = nfs; ch_NativeFq.set_active(nfs);}
@@ -24,9 +25,9 @@ private:
    Gtk::Window *const pmWnd = nullptr;
    
    Gtk::ComboBoxText cb_MaxTmp;
-   Gtk::CheckButton ch_InTmpMon,ch_AllInput,ch_SaveImp,ch_NativeFq;
+   Gtk::CheckButton ch_InTmpMon,ch_AllInput,ch_SaveImp,ch_NativeFq,ch_ShowCPUfq;
    Gtk::Label l_MaxTemp;
-   Gtk::Box box_all,box_MaxTmp,box_InTmpMon,box_AllInput,box_SaveImp,box_NativeFq;
+   Gtk::Box box_all,box_MaxTmp,box_InTmpMon,box_AllInput,box_SaveImp,box_NativeFq,box_ShowCPUfq;
    Gtk::Frame fr_All;
 
    void on_MaxTmp_changed();
