@@ -37,7 +37,7 @@ bool ClrDialog::Wnd_close_handler()
 	hide();
 
 	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrawArea::DAWndState::FULL)
-		CLRMNG(mDA_ToolBar).set_visible(true);
+		CLRMNG(mDA_ToolBar).set_visible((CLRMNG(pfDlg) ? CLRMNG(pfDlg)->GetShowCPUfq() : false) && true);
 
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;

@@ -7,7 +7,8 @@
 
 CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : Gtk::Dialog("Preferences",*mWnd,true),pmWnd(mWnd),
                      ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
-                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),l_MaxTemp("Set max. t°    ")
+                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),
+					 l_MaxTemp("Set max. t°    ")
 {
    for(int i = 90 ; i < 140; cb_MaxTmp.append(std::to_string(i+=10)));
 
@@ -31,11 +32,13 @@ void CPrefsDlg::InitVision()
    box_AllInput.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_SaveImp.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_NativeFq.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_ShowCPUfq.set_orientation(Gtk::Orientation::HORIZONTAL);
 
    box_InTmpMon.append(ch_InTmpMon);
    box_AllInput.append(ch_AllInput);
    box_SaveImp.append(ch_SaveImp);
    box_NativeFq.append(ch_NativeFq);
+   box_ShowCPUfq.append(ch_ShowCPUfq);
    box_MaxTmp.append(l_MaxTemp);
    box_MaxTmp.append(cb_MaxTmp);
 
@@ -43,6 +46,7 @@ void CPrefsDlg::InitVision()
    box_all.append(box_AllInput);
    box_all.append(box_SaveImp);
    box_all.append(box_NativeFq);
+   box_all.append(box_ShowCPUfq);
    box_all.append(box_MaxTmp);
 
    box_MaxTmp.set_halign(Gtk::Align::CENTER);
@@ -87,6 +91,12 @@ void CPrefsDlg::InitData()
                uhiutil::newline(cmd,"uhiSaveImp=",Direction::RIGHTSKIP);
            ch_SaveImp.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
 
+           cmd = "cat " + config + " | grep uhiShowCpuFqWrn=";
+           cmd = uhiutil::execmd(cmd.c_str());
+           if(cmd != "")
+               uhiutil::newline(cmd,"uhiShowCpuFqWrn=",Direction::RIGHTSKIP);
+           ch_ShowCPUfq.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
+
            cmd = "cat " + config + " | grep uhiNativeFqState=";
            cmd = uhiutil::execmd(cmd.c_str());
            if(cmd != "")
@@ -98,6 +108,7 @@ void CPrefsDlg::InitData()
           ch_InTmpMon.set_active(false);
           ch_AllInput.set_active(false);
           ch_SaveImp.set_active(false);
+          ch_ShowCPUfq.set_active(false);
           SetFqState(false);
           cb_MaxTmp.set_active(2); //init default 120°
     }

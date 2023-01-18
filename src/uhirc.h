@@ -92,7 +92,7 @@
 	      m_VBoxVLeft.set_visible(wndstat);  \
 	      m_Box_TmpControls.set_visible(wndstat); \
 	      set_show_menubar(wndstat); \
-		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible(!wndstat)
+		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? pfDlg->GetShowCPUfq() : false) && !wndstat)
 
 #define FRIEND(Class) friend bool Class::Wnd_close_handler(); \
                       friend void Class::on_show()

@@ -70,7 +70,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	}
 	else
 		if(cpuStatDlg->is_visible()) {
-			cpuStatDlg->stop_timer();
+			cpuStatDlg->stop_cpustat_timer();
 		}
 
 	TEMPERATUREWNDVIEW(visiblity);
@@ -176,9 +176,11 @@ void CHWindow::QuitTasks() const
           wbuffer.append("uhiInTmpMon=" + (pfDlg ? std::to_string(pfDlg->GetInTmpMonStat()) : "0") + "\n");
           wbuffer.append("uhiAllInput=" + (pfDlg ? std::to_string(pfDlg->GetAllInputStat()) : "0") + "\n");
           wbuffer.append("uhiSaveImp=" + (pfDlg ? std::to_string(pfDlg->GetSaveImpStat()) : "0") + "\n");
+          wbuffer.append("uhiShowCpuFqWrn=" + (pfDlg ? std::to_string(pfDlg->GetShowCPUfq()) : "0") + "\n");
           wbuffer.append("uhiCpuAltCalc="  + (std::to_string(m_CPUModeSwitch.get_active()) + "\n"));
           wbuffer.append("uhiNativeFqState="  + (std::to_string(uhiutil::cpu::native_fq_state) + "\n"));             
           wbuffer.append("uhiBlink=" + (std::to_string(m_BlinkSwitch.get_active()) + "\n"));           
+          wbuffer.append("uhiCpuFqWrn=" + (cpuStatDlg ? std::to_string(cpuStatDlg->get_CpuFqWrnLevel()) : "0") + "\n");
           wbuffer.append("uhiMaxTmp=" + (pfDlg ? std::to_string(pfDlg->GetMaxTmpStat()) : "2") + "\n");//default 120°
           if(width > 0 && height > 0) {
                 wbuffer.append("uhiwidth=" + std::to_string(width) + "\n");
