@@ -386,17 +386,22 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_units_monit_chain.push_back(cpu_unit);
           }
 
-          Gtk::Button *btnit = Gtk::make_managed<Gtk::Button>();
+          Gtk::Button *btnit = Gtk::make_managed<Gtk::Button>(),*btnh = Gtk::make_managed<Gtk::Button>();
           Gtk::Label *label = Gtk::make_managed<Gtk::Label>("CPU status   ");
           btnit->set_image_from_icon_name("go-next-symbolic", Gtk::IconSize::INHERIT, true);
-          btnit->set_tooltip_text("Show/Hide CPU status information");
-          btnit->signal_clicked().connect( sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked) );
+          btnh->set_image_from_icon_name("view-restore-symbolic", Gtk::IconSize::INHERIT, true);
+          btnit->set_tooltip_text("CPU load info");
+          btnh->set_tooltip_text("Temporarily hide");
+          btnit->signal_clicked().connect(sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),true));
+          btnh->signal_clicked().connect(sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),false));
 
           mDA_ToolBar.append(*label);
+          mDA_ToolBar.append(*btnh);
           mDA_ToolBar.append(*btnit);
 
           uhiutil::set_css_style(mDA_ToolBar.get_style_context(),prv,"toolbar");
           uhiutil::set_css_style(btnit->get_style_context(),prv,"tb_cls");
+          uhiutil::set_css_style(btnh->get_style_context(),prv,"tb_cls");
           uhiutil::set_css_style(m_TbFrame.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_pbUse.get_style_context(),prv,"fu_cls");

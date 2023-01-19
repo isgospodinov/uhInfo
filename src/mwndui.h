@@ -85,7 +85,7 @@ protected:
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
-  virtual void on_tbt_clicked() = 0;
+  virtual void on_tbt_clicked(bool param) = 0;
 
   virtual ~UIHWindow() = default;
 };
