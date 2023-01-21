@@ -36,7 +36,7 @@ protected:
   Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar;
   Gtk::Button m_ButtonQuit;
   Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
-  Gtk::Label m_Label_Sensors,m_LabelToolbarChoice{"  >  "};
+  Gtk::Label m_Label_Sensors,m_ToolbarChoice{"  >  "};
   Gtk::Box hbox_operation_status_cpu,hbox_operation_status_pcie,hbox_operation_status_sensors;
   Gtk::Image operation_status_image_cpu,operation_status_image_pcie,operation_status_image_sensors;
 
@@ -66,6 +66,13 @@ protected:
 
   CDrawArea m_DAtemperature;
 
+  // ------------------ ToolBar functionality ------------------
+  Gtk::PopoverMenu m_ToolBarMenuPopup;
+  Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
+  virtual void on_tbt_clicked(bool param) = 0;
+  virtual void InitToolBar();
+  // ------------------ ToolBar functionality ------------------
+
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain);
   void StatusbarCpuText(){m_sb_cpu_status.set_text(m_CPUModeSwitch.get_active() ? "scaling_cur_freq      " : "cpuinfo      " );}
@@ -86,7 +93,7 @@ protected:
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
 
-  virtual ~UIHWindow() = default;
+  virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}
 };
 
 #endif // _MWNDUI_H_

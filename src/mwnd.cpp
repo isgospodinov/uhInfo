@@ -37,23 +37,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
       }
   }
 
-  // ------------------ ToolBar functionality ------------------
-  m_refToolBarChoice->set_button(GDK_BUTTON_PRIMARY);
-  m_refToolBarChoice->signal_pressed().connect(sigc::mem_fun(*this, &CHWindow::on_ToolBarShowPopup));
-  m_LabelToolbarChoice.add_controller(m_refToolBarChoice);
-
-  Glib::RefPtr<Gio::SimpleActionGroup> refTBAcGr = Gio::SimpleActionGroup::create();
-  refTBAcGr->add_action("show",sigc::bind(sigc::mem_fun(*this,&CHWindow::on_tbt_clicked),true));
-  refTBAcGr->add_action("hide",sigc::bind(sigc::mem_fun(*this,&CHWindow::on_tbt_clicked),false));
-  insert_action_group("tbchoice",refTBAcGr);
-
-  Glib::RefPtr<Gio::Menu> tbmenu = Gio::Menu::create();
-  tbmenu->append_item(Gio::MenuItem::create("Show CPU load","tbchoice.show"));
-  tbmenu->append_item(Gio::MenuItem::create("Hide toolbar","tbchoice.hide"));
-
-  m_ToolBarMenuPopup.set_parent(m_LabelToolbarChoice);
-  m_ToolBarMenuPopup.set_menu_model(tbmenu);
-  // ------------------ ToolBar functionality ------------------
+  InitToolBar(); // ToolBar functionality
 
   m_temperatureTreeView.set_activate_on_single_click();
   m_temperatureTreeView.signal_row_activated().connect(sigc::mem_fun(*this, &CHWindow::On_Temperature_Row_Activated));
@@ -94,12 +78,6 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
 	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Selected temperatures"));
-}
-
-void CHWindow::on_ToolBarShowPopup(int npress, double x, double y)
-{
-	m_ToolBarMenuPopup.set_pointing_to(Gdk::Rectangle(x,y,1,1));
-	m_ToolBarMenuPopup.popup();
 }
 
 void CHWindow::InitVision()
@@ -189,7 +167,7 @@ void CHWindow::init_units_activity_vision() // init all cpu units activity visio
    }
 }
 
-void CHWindow::QuitTasks() //const
+void CHWindow::QuitTasks() const
 {       
       VeryFastQuitGuard(); // Async init task/thread very fast quit guard
 
@@ -218,8 +196,6 @@ void CHWindow::QuitTasks() //const
                 }
           }
       }
-
-      m_ToolBarMenuPopup.unparent();
 }
 
 void CHWindow::Posthreadnotify()
