@@ -25,7 +25,7 @@ public:
   CHWindow();
 
   void smDlgResponse(int id) {smDlg_shown = false;SMDLGMISTAT(true);}
-  void QuitTasks() const;
+  void QuitTasks() /*const*/;
 
   const std::shared_ptr<CSysens> pSysensors;
   const std::shared_ptr<Ud2mon> pUd2Manager;
@@ -41,6 +41,13 @@ private:
 
   FRIEND(ClrDialog);
   FRIEND(CpuStatDlg);
+
+  // ------------------ ToolBar functionality ------------------
+  Gtk::PopoverMenu m_ToolBarMenuPopup;
+  Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
+  void on_tbt_clicked(bool param) {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);}
+  void on_ToolBarShowPopup(int n_press, double x, double y);
+  // ------------------ ToolBar functionality ------------------
 
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
@@ -70,7 +77,6 @@ private:
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
   virtual void on_DA_button_press_event(int npress, double x, double y) override;
-  virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);}
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };

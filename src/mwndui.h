@@ -36,7 +36,7 @@ protected:
   Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar;
   Gtk::Button m_ButtonQuit;
   Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
-  Gtk::Label m_Label_Sensors;
+  Gtk::Label m_Label_Sensors,m_LabelToolbarChoice{"  >  "};
   Gtk::Box hbox_operation_status_cpu,hbox_operation_status_pcie,hbox_operation_status_sensors;
   Gtk::Image operation_status_image_cpu,operation_status_image_pcie,operation_status_image_sensors;
 
@@ -85,7 +85,6 @@ protected:
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
-  virtual void on_tbt_clicked(bool param) = 0;
 
   virtual ~UIHWindow() = default;
 };
