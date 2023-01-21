@@ -42,6 +42,8 @@ private:
   FRIEND(ClrDialog);
   FRIEND(CpuStatDlg);
 
+  virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
+
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
   void sensors_print(bool Ud2print,bool extension);
@@ -70,7 +72,6 @@ private:
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
   virtual void on_DA_button_press_event(int npress, double x, double y) override;
-  virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);}
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };

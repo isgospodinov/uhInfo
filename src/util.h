@@ -156,6 +156,7 @@ const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin
 	      ".ls_cls {background: #778899; color: #000000; }" \
 	      ".fu_cls {color: #000000; }" \
 		  ".tb_cls {color: #FFFFFF;}" \
+		  ".tbext_cls {color: #FFFFFF; border-style: solid; border-color: white; border-width: 1px;}" \
 		  ".toolbar {background: #778899; color: #FFFFFF;}" };
 
 #endif // _UTIL_H_

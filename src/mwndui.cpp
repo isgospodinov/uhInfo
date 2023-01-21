@@ -386,22 +386,15 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_units_monit_chain.push_back(cpu_unit);
           }
 
-          Gtk::Button *btnit = Gtk::make_managed<Gtk::Button>(),*btnh = Gtk::make_managed<Gtk::Button>();
-          Gtk::Label *label = Gtk::make_managed<Gtk::Label>("CPU status   ");
-          btnit->set_image_from_icon_name("go-next-symbolic", Gtk::IconSize::INHERIT, true);
-          btnh->set_image_from_icon_name("view-restore-symbolic", Gtk::IconSize::INHERIT, true);
-          btnit->set_tooltip_text("CPU load info");
-          btnh->set_tooltip_text("Temporarily hide");
-          btnit->signal_clicked().connect(sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),true));
-          btnh->signal_clicked().connect(sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),false));
-
-          mDA_ToolBar.append(*label);
-          mDA_ToolBar.append(*btnh);
-          mDA_ToolBar.append(*btnit);
+          Gtk::Frame *ptFrame = Gtk::make_managed<Gtk::Frame>();
+          ptFrame->set_child(m_ToolbarChoice);
+          mDA_ToolBar.append(*Gtk::make_managed<Gtk::Label>("Utility :"));
+          mDA_ToolBar.append(*ptFrame);
+          ptFrame->set_margin_start(12);
+          ptFrame->set_margin_end(4);
 
           uhiutil::set_css_style(mDA_ToolBar.get_style_context(),prv,"toolbar");
-          uhiutil::set_css_style(btnit->get_style_context(),prv,"tb_cls");
-          uhiutil::set_css_style(btnh->get_style_context(),prv,"tb_cls");
+          uhiutil::set_css_style(ptFrame->get_style_context(),prv,"tbext_cls");
           uhiutil::set_css_style(m_TbFrame.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),prv,"ls_cls");
           uhiutil::set_css_style(m_pbUse.get_style_context(),prv,"fu_cls");
@@ -409,4 +402,23 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 
           CDrawArea::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrawArea::l_CPUCompareSwitch = &m_CPUCompareSwitch;
+}
+
+void UIHWindow::InitToolBar()
+{
+	  m_refToolBarChoice->set_button(GDK_BUTTON_PRIMARY);
+	  m_refToolBarChoice->signal_pressed().connect([&](int , double x, double y){m_ToolBarMenuPopup.set_pointing_to(Gdk::Rectangle(x,y,1,1));m_ToolBarMenuPopup.popup();});
+	  m_ToolbarChoice.add_controller(m_refToolBarChoice);
+
+	  Glib::RefPtr<Gio::SimpleActionGroup> refTBAcGr = Gio::SimpleActionGroup::create();
+	  refTBAcGr->add_action("show",sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),true));
+	  refTBAcGr->add_action("hide",sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),false));
+	  insert_action_group("tbchoice",refTBAcGr);
+
+	  Glib::RefPtr<Gio::Menu> tbmenu = Gio::Menu::create();
+	  tbmenu->append_item(Gio::MenuItem::create("Show CPU load","tbchoice.show"));
+	  tbmenu->append_item(Gio::MenuItem::create("Hide toolbar","tbchoice.hide"));
+
+	  m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
+	  m_ToolBarMenuPopup.set_menu_model(tbmenu);
 }
