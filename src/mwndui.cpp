@@ -160,6 +160,8 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
+
+   InitToolBar(); // ToolBar functionality
 }
  
 void UIHWindow::InitUI()

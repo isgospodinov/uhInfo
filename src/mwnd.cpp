@@ -37,8 +37,6 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
       }
   }
 
-  InitToolBar(); // ToolBar functionality
-
   m_temperatureTreeView.set_activate_on_single_click();
   m_temperatureTreeView.signal_row_activated().connect(sigc::mem_fun(*this, &CHWindow::On_Temperature_Row_Activated));
 

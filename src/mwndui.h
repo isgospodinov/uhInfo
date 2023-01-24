@@ -69,8 +69,8 @@ protected:
   // ------------------ ToolBar functionality ------------------
   Gtk::PopoverMenu m_ToolBarMenuPopup;
   Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
+  void InitToolBar();
   virtual void on_tbt_clicked(bool param) = 0;
-  virtual void InitToolBar();
   // ------------------ ToolBar functionality ------------------
 
   void InitUI();
