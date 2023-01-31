@@ -15,6 +15,7 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    scrollWindow.set_expand();
 
    treeView.append_column(" Color ", cvColumns->color);
+   treeView.set_headers_visible(false);
 
    InitVision();
 
@@ -37,7 +38,7 @@ bool ClrDialog::Wnd_close_handler()
 	hide();
 
 	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrawArea::DAWndState::FULL)
-		CLRMNG(mDA_ToolBar).set_visible((CLRMNG(pfDlg) ? CLRMNG(pfDlg)->GetShowCPUfq() : false) && true);
+		CLRMNG(mDA_ToolBar).set_visible((CLRMNG(pfDlg) ? (CLRMNG(pfDlg)->GetShowCPUfq() && CLRMNG(m_DAtemperature).HasActivities()): false) && true);
 
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;

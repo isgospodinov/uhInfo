@@ -41,11 +41,10 @@ void CpuStatDlg::InitVision()
 {
 	for(int i = 0; i < (int) SIZEOF(wrn_level); cb_WrnLevel.append(wrn_level[i]),i++);
 
-	Glib::RefPtr<Gtk::CssProvider> prv = Gtk::CssProvider::create();
-	prv->load_from_data(style);
-	uhiutil::set_css_style(lc_TextView.get_style_context(),prv,"toolbar");
-	uhiutil::set_css_style(lfr_Tb.get_style_context(),prv,"toolbar");
-	uhiutil::set_css_style(cb_WrnLevel.get_child()->get_style_context(),prv,"tb_cls");
+	LOCALCSSPROVWITHSTYLE;
+	uhiutil::set_css_style(lc_TextView.get_style_context(),lprv,"toolbar");
+	uhiutil::set_css_style(lfr_Tb.get_style_context(),lprv,"toolbar");
+	uhiutil::set_css_style(cb_WrnLevel.get_child()->get_style_context(),lprv,"tb_cls");
 
 	box_allWnd.set_orientation(Gtk::Orientation::VERTICAL);
 	fr_AllWnd.set_expand();
