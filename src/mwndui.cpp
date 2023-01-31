@@ -294,8 +294,7 @@ void UIHWindow::InitUI()
 
 void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain)
 {
-	      Glib::RefPtr<Gtk::CssProvider> prv = Gtk::CssProvider::create();
-	      prv->load_from_data(style);
+	      LOCALCSSPROVWITHSTYLE;
 
           std::string line("");
           std::istringstream instrproc(uhiutil::execmd("cat /proc/cpuinfo | egrep 'processor|physical id|core id'"));
@@ -358,13 +357,13 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                pDArFrame->set_margin(2);
                pBox->set_margin(4);
 
-               uhiutil::set_css_style(pUnitFrame->get_style_context(),prv,"ls_cls");
-               uhiutil::set_css_style(cpu_unit.cpuid_m_pbF->get_style_context(),prv,"ls_cls");
-               uhiutil::set_css_style(cpu_unit.cpuid_m_pbCF->get_style_context(),prv,"ls_cls");
-               uhiutil::set_css_style(cpu_unit.cpuid_m_pbU->get_style_context(),prv,"ls_cls");
-               uhiutil::set_css_style(lCcpuColor->get_style_context(),prv,"bl_cls");
-               uhiutil::set_css_style(lUsageColor->get_style_context(),prv,"gn_cls");
-               uhiutil::set_css_style(cpu_unit.lCompareColor->get_style_context(),prv,"yw_cls");
+               uhiutil::set_css_style(pUnitFrame->get_style_context(),lprv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbF->get_style_context(),lprv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbCF->get_style_context(),lprv,"ls_cls");
+               uhiutil::set_css_style(cpu_unit.cpuid_m_pbU->get_style_context(),lprv,"ls_cls");
+               uhiutil::set_css_style(lCcpuColor->get_style_context(),lprv,"bl_cls");
+               uhiutil::set_css_style(lUsageColor->get_style_context(),lprv,"gn_cls");
+               uhiutil::set_css_style(cpu_unit.lCompareColor->get_style_context(),lprv,"yw_cls");
 
                pLabelBoxCU->set_halign(Gtk::Align::CENTER);
                pLabelBoxCU->set_valign(Gtk::Align::CENTER);
@@ -395,12 +394,12 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
           ptFrame->set_margin_start(12);
           ptFrame->set_margin_end(4);
 
-          uhiutil::set_css_style(mDA_ToolBar.get_style_context(),prv,"toolbar");
-          uhiutil::set_css_style(ptFrame->get_style_context(),prv,"tbext_cls");
-          uhiutil::set_css_style(m_TbFrame.get_style_context(),prv,"ls_cls");
-          uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),prv,"ls_cls");
-          uhiutil::set_css_style(m_pbUse.get_style_context(),prv,"fu_cls");
-          uhiutil::set_css_style(m_pbFreq.get_style_context(),prv,"fu_cls");
+          uhiutil::set_css_style(mDA_ToolBar.get_style_context(),lprv,"toolbar");
+          uhiutil::set_css_style(ptFrame->get_style_context(),lprv,"tbext_cls");
+          uhiutil::set_css_style(m_TbFrame.get_style_context(),lprv,"ls_cls");
+          uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),lprv,"ls_cls");
+          uhiutil::set_css_style(m_pbUse.get_style_context(),lprv,"fu_cls");
+          uhiutil::set_css_style(m_pbFreq.get_style_context(),lprv,"fu_cls");
 
           CDrawArea::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrawArea::l_CPUCompareSwitch = &m_CPUCompareSwitch;

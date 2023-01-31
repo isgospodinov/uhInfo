@@ -34,6 +34,7 @@ public:
   void Redraw() {queue_draw();}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
+  const bool HasActivities() const {return !draw_temperatures.empty();}
   double**const GetDAVcoreAccess() {return &DA_VcoreVal;}
 
   static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;

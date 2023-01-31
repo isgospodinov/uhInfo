@@ -30,7 +30,7 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TreeView treeView;
    
-   Gtk::Window *const pmWnd = nullptr;
+   const Gtk::Window *const pmWnd = nullptr;
    CSysens *const pSensors = nullptr;
    Ud2mon *const pUd2mon = nullptr;
 

@@ -92,7 +92,7 @@
 	      m_VBoxVLeft.set_visible(wndstat);  \
 	      m_Box_TmpControls.set_visible(wndstat); \
 	      set_show_menubar(wndstat); \
-		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? pfDlg->GetShowCPUfq() : false) && !wndstat)
+		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? (pfDlg->GetShowCPUfq() && m_DAtemperature.HasActivities()): false) && !wndstat)
 
 #define FRIEND(Class) friend bool Class::Wnd_close_handler(); \
                       friend void Class::on_show()
@@ -122,12 +122,14 @@
 #define CLRMNG(v) ((CHWindow*)plMw)->v
 #define TCOLUMNS(v) CLRMNG(tColumns)->v
 
-/*#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
+#define LOCALCSSPROVWITHSTYLE Glib::RefPtr<Gtk::CssProvider> lprv = Gtk::CssProvider::create();lprv->load_from_data(style)
+
+#define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))
 
 // true if Gtkmm is new enough
-#define GTKMM_CHECK_VERSION(major,minor,micro)                             \
+/*#define GTKMM_CHECK_VERSION(major,minor,micro)                             \
      (GTKMM_MAJOR_VERSION > (major)  ||                                    \
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION > (minor)) ||  \
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION == (minor) && GTKMM_MICRO_VERSION >= (micro)))*/                                

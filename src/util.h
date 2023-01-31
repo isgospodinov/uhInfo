@@ -155,8 +155,10 @@ const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin
 	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
 	      ".ls_cls {background: #778899; color: #000000; }" \
 	      ".fu_cls {color: #000000; }" \
+		  ".afu_cls {color: #000000; font-style: italic;}" \
 		  ".tb_cls {color: #FFFFFF;}" \
 		  ".tbext_cls {color: #FFFFFF; border-style: solid; border-color: white; border-width: 1px;}" \
+		  ".als_cls {color: #000000; font-weight: bold; font-size: 16px;}" \
 		  ".toolbar {background: #778899; color: #FFFFFF;}" };
 
 #endif // _UTIL_H_
