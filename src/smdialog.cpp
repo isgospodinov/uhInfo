@@ -9,9 +9,12 @@
 #include "mwnd.h"
 using uhiutil::cpu::UhiDownCast;
 
-CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : Gtk::Dialog("Settings",*p_wnd),
-                     pmWnd(p_wnd),pSensors(&pS),pUd2mon(&pUd2)
+CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : pmWnd(p_wnd),
+                     pSensors(&pS),pUd2mon(&pUd2)
 {
+	set_transient_for(*p_wnd);
+	set_title("Settings");
+
     uhiutil::GetDesktopSize((unsigned int*) &dh,(unsigned int*) &dw);
 
     if(!dh || !dw) {
@@ -20,7 +23,7 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    }
 
    scrollWindow.set_child(treeView);
-   get_content_area()->append(scrollWindow);
+   set_child(scrollWindow);
    treeView.set_model(pRefTreeModel);
 
    scrollWindow.set_margin(7);
@@ -41,17 +44,10 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    if(pColumn && pRenderer)
        pRenderer->signal_toggled().connect(sigc::mem_fun(*this,&CSmDialog::OnToggled));
 
-   signal_response().connect(sigc::mem_fun((CHWindow&)*p_wnd, fp));
-   signal_close_request().connect(sigc::mem_fun(*this, &CSmDialog::Wnd_close_handler),false);
+   signal_hide().connect(sigc::bind(sigc::mem_fun((CHWindow&)*p_wnd, fp),false));
+   signal_close_request().connect([&]()->bool{hide();return true;},false);
 
    uhiutil::set_css_style(get_style_context(),*cp);
-}
-
-bool CSmDialog::Wnd_close_handler()
-{
-	hide();
-	((CHWindow*)pmWnd)->smDlgResponse(1);
-	return true;
 }
 
 void CSmDialog::InitVision()
@@ -177,18 +173,4 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	           }
 	       }
 	   }
-}
-
-void CSmDialog::on_show()
-{
-    //int x = 0, y = 0;
-    //pmWnd->get_position(x,y);
-
-    // !! move(... , ...) works effectively only after Gtk::Dialog::on_show() execution
-    //MVWND(x,y,pmWnd->get_width(),get_width());
-
-    // pRefTreeModel->clear();
-    InitVision();
-    Gtk::Dialog::on_show();
-    //MVWND(x,y,pmWnd->get_width(),get_width());
 }

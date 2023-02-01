@@ -12,9 +12,9 @@ class CSysens;
 class Ud2mon;
 class CHWindow;
 
-class CSmDialog : public Gtk::Dialog
+class CSmDialog : public Gtk::Window
 {
-   using fp_DlgResp = void (CHWindow::*)(int);
+   using fp_DlgResp = void (CHWindow::*)(bool);
 public:
    CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp);
    virtual ~CSmDialog() = default;
@@ -34,11 +34,9 @@ private:
    CSysens *const pSensors = nullptr;
    Ud2mon *const pUd2mon = nullptr;
 
-   virtual void on_show() override;
+   virtual void on_show() override {InitVision();Gtk::Window::on_show();}
    void InitVision();
    void OnToggled(const Glib::ustring &path_string);
-
-   bool Wnd_close_handler();
 };
 
 #endif // _SMDIALOG_H_
