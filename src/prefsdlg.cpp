@@ -5,11 +5,16 @@
 
 #include "prefsdlg.h"
 
-CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : Gtk::Dialog("Preferences",*mWnd,true),pmWnd(mWnd),
+CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : pmWnd(mWnd),
                      ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
                      ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),
 					 l_MaxTemp("Set max. t°    ")
 {
+	set_transient_for(*mWnd);
+	set_title("Preferences");
+	set_resizable(false);
+	set_modal(true);
+
    for(int i = 90 ; i < 140; cb_MaxTmp.append(std::to_string(i+=10)));
 
    InitVision();
@@ -22,7 +27,7 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
 
 void CPrefsDlg::InitVision()
 {
-   get_content_area()->append(fr_All);
+   set_child(fr_All);
    fr_All.set_child(box_all);
    fr_All.set_margin(8);
    box_MaxTmp.set_margin(4);

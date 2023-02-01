@@ -5,10 +5,14 @@
 
 #include "mwnd.h"
 
-ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : Gtk::Dialog("Color choice",*pMWnd),plMw(pMWnd)
+ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : plMw(pMWnd)
 {
+	set_transient_for(*pMWnd);
+	set_title("Color choice");
+
+	set_child(scrollWindow);
+
    scrollWindow.set_child(treeView);
-   get_content_area()->append(scrollWindow);
    treeView.set_model(pRefTreeModel);
 
    scrollWindow.set_margin(7);
@@ -74,7 +78,7 @@ void ClrDialog::InitVision()
 
 void ClrDialog::on_show()
 {
-	Gtk::Dialog::on_show();
+	Gtk::Window::on_show();
 	CLRMNG(item_temperature)->set_enabled(false);
 	treeView.get_selection()->unselect_all();
 

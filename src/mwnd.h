@@ -24,7 +24,7 @@ class CHWindow : public CInitThread, public UIHWindow
 public:
   CHWindow();
 
-  void smDlgResponse(int id) {smDlg_shown = false;SMDLGMISTAT(true);}
+  void smWndResponse(bool fl) {smDlg_shown = fl;SMDLGMISTAT(!fl);}
   void QuitTasks() const;
 
   const std::shared_ptr<CSysens> pSysensors;
@@ -60,7 +60,7 @@ private:
        }
   virtual void enhanced_system_info() override;
   virtual void show_cpu_activity_all() override;
-  virtual void manage_sensors() override {if(smDlg){SMDLGMISTAT(false);smDlg_shown = true;smDlg->present();}}
+  virtual void manage_sensors() override {smWndResponse(true);smDlg->show();}
   virtual void monitor_temperature() override;
   virtual void get_preferences() const override {if(pfDlg){pfDlg->present();}}
   virtual void Wnd_show_handler() override {m_VPanedTrmpetature.set_position((get_height() - 110) / 2);}

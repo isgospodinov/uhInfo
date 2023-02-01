@@ -8,7 +8,7 @@
 
 #include "uhirc.h"
 
-class CPrefsDlg : public Gtk::Dialog
+class CPrefsDlg : public Gtk::Window
 {
 public:
    CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp);
@@ -34,8 +34,8 @@ private:
    void on_NativeFq_changed() {uhiutil::cpu::native_fq_state = ch_NativeFq.get_active();}
    void InitVision();
    void InitData();
-   virtual void on_show() override {Gtk::Dialog::on_show();}
-   bool Wnd_close_handler() {Gtk::Dialog::hide();return true;}
+   virtual void on_show() override {Gtk::Window::on_show();}
+   bool Wnd_close_handler() {Gtk::Window::hide();return true;}
 
 };
 

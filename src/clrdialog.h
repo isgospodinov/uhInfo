@@ -8,7 +8,7 @@
 
 #include "uhirc.h"
 
-class ClrDialog : public Gtk::Dialog
+class ClrDialog : public Gtk::Window
 {
 public:
 	ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv);

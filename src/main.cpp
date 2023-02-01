@@ -8,6 +8,16 @@
 
 int main (int argc, char* argv[])
 {
+	   std::locale lc;
+	   try{
+		     lc = std::locale("en_US");
+	     }
+	     catch(std::runtime_error const&){
+	         lc = std::locale(lc,"",std::locale::all);
+	     }
+
+	   std::locale::global(lc);
+
        std::string command = "ps -p " + std::to_string(getpid()) + " -o comm=";
        int res{std::string{"uhInfo\n"}.compare(uhiutil::execmd(command.data()))};
        if(res) return 0;
