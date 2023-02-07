@@ -45,7 +45,7 @@ std::string CProc::ProcInfoInit()
    threads = uhiutil::execmd("lscpu | grep 'Thread(s) per core:'");
    uhiutil::newline(threads,"Thread(s) per core:",Direction::RIGHT);
    uhiutil::end_intervals_remove((threads = uhiutil::start_intervals_remove(threads)));
-   cpu_units = std::stoi(cores) * std::stoi(threads);
+   cpu_units = sysconf(_SC_NPROCESSORS_ONLN);
    threads = std::to_string(cpu_units);
 
    min = uhiutil::execmd("lscpu | grep 'CPU min'");
@@ -64,18 +64,21 @@ std::string CProc::ProcInfoInit()
                                                std::to_string(std::atoi(min.data())) + "MHz" + " / " + std::to_string(std::atoi(max.data())) + "MHz");
 }
 
-double CProc::FreqCalc(std::string &Fq, bool bc)
+double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
 {
       if(Fq.rfind('\x0A') != std::string::npos) Fq.pop_back();
 
-      uhiutil::newline(Fq,":",Direction::RIGHT);
+      bool v = uhiutil::newline(Fq,":",Direction::RIGHT);
+
       double dres = std::stod(Fq);
-      
-      Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
+
+      if(fast) return (v ? dres : (dres / (double) 1000));
 
       if(dres > cpu_max_mhz) dres = cpu_max_mhz;
       else
          if(dres < cpu_min_mhz) dres = cpu_min_mhz;
+
+      Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
          
       double val_max = (cpu_max_mhz / (double) 1000) - ((uhiutil::cpu::native_fq_state ?  0.0 : cpu_min_mhz) / (double) 1000);
       double val_min = (((uhiutil::cpu::native_fq_state ?  0.0 : cpu_min_mhz) / (double) 1000));

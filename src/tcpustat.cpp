@@ -5,7 +5,8 @@
 
 #include "mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : lc_TextView(),cb_WrnLevel(),plMw(pMWnd)
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,class CProc *const pCpu) : lc_TextView(),
+                                                                                cb_WrnLevel(),plMw(pMWnd),lpCPU(pCpu)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
@@ -90,26 +91,22 @@ void CpuStatDlg::on_show()
 
 bool CpuStatDlg::ot_timer(int tmNo)
 {
-	//bf = false;
-
 	int cn = 0;
 	double sv = .0,cv = .0;
 	std::string fq_line("");
     Glib::RefPtr<Gtk::TextBuffer> lc_buff = lc_TextView.get_buffer();
     lc_buff->erase(lc_buff->begin(),lc_buff->end());
     Gtk::TextBuffer::iterator bfit = lc_buff->get_iter_at_line(lc_buff->get_line_count());
-    std::istringstream fsinstrm{(bf ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")},
+    std::istringstream fsinstrm{(CProc::m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")},
                                                 fcinstrm{uhiutil::execmd("cat /proc/cpuinfo  | grep 'cpu MHz'")};
 
-	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(bf ? "scaling frequency  /  " : "") + "cpuinfo\n\n");
+	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(CProc::m_CpuAltCalc ? "scaling frequency  /  " : "") + "cpuinfo\n\n");
 
 	while(std::getline(fcinstrm, fq_line)) {
-			  if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
-			  uhiutil::newline(fq_line,":",Direction::RIGHT);
-			  cv = std::stod(fq_line.c_str());
+			  cv = lpCPU->FreqCalc(fq_line,false,true);
 
-			  if(bf && std::getline(fsinstrm, fq_line))
-			       sv = std::stod(fq_line) / (double) 1000;
+			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line))
+			       sv = lpCPU->FreqCalc(fq_line,false,true);
 
 	          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
 

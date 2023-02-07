@@ -9,10 +9,11 @@
 class CpuStatDlg : public Gtk::Window
 {
 public:
-	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv);
+	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,class CProc *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
-	void SetParam(const double mx) {if(plMw)set_default_size((2 * plMw->get_width() / 3), (plMw->get_height() - (2 * plMw->get_height() / 3)));fqmax = mx;cpufquattent = fqmax * .9;}
+	void SetParam(const double mx) {if(plMw)set_default_size((2 * plMw->get_width() / 3),
+			        (plMw->get_height() - (2 * plMw->get_height() / 3)));fqmax = mx;cpufquattent = fqmax * .9;}
 	bool Wnd_close_handler();
 	virtual void on_show() override;
 	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}}
@@ -29,12 +30,12 @@ private:
    const char *const tag_attention = "cpu_f_attent";
    double fqmax = .0,cpufquattent = .0;
 
+   class CProc *const lpCPU = nullptr;
+
    std::unique_ptr<sigc::connection> l_timer{nullptr};
    bool ot_timer(int tmNo);
 
-   bool bf{uhiutil::ExistenceVerification("/sys/devices/system/cpu/cpu1/cpufreq/scaling_cur_freq")};
    void InitVision();
-
    void on_WrnLewel_changed();
    void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
 };

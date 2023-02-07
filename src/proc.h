@@ -22,6 +22,7 @@ public :
     virtual void CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch = nullptr,bool bCpuAltCalc = false);
     unsigned int Get_cpu_units() const {return cpu_units;}
     const double Get_cpu_fqmax() const {return cpu_max_mhz;}
+    double FreqCalc(std::string &Fq, bool bc = false, bool fast = false);
 
     static bool m_CpuAltCalc;
     bool m_ClearCalcData = false;
@@ -34,7 +35,6 @@ protected :
     LONG2INT mem_total = 0,mem_idle = 0;
 
     std::string Cpu_microcodes();
-    double FreqCalc(std::string &Fq, bool bc = false);
     double UsageCalc(std::string &Usge,LONG2INT *mem_tot = nullptr,LONG2INT *mem_id = nullptr);
 };
 
