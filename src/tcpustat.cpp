@@ -98,15 +98,17 @@ bool CpuStatDlg::ot_timer(int tmNo)
     lc_buff->erase(lc_buff->begin(),lc_buff->end());
     Gtk::TextBuffer::iterator bfit = lc_buff->get_iter_at_line(lc_buff->get_line_count());
     std::istringstream fsinstrm{(CProc::m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")},
-                                                fcinstrm{uhiutil::execmd("cat /proc/cpuinfo  | grep 'cpu MHz'")};
+                                                fcinstrm{uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'")};
 
 	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(CProc::m_CpuAltCalc ? "scaling frequency  /  " : "") + "cpuinfo\n\n");
 
 	while(std::getline(fcinstrm, fq_line)) {
 			  cv = lpCPU->FreqCalc(fq_line,false,true);
 
-			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line))
+			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line)) {
+				   fq_line = std::to_string((std::stod(fq_line) / (double) 1000));
 			       sv = lpCPU->FreqCalc(fq_line,false,true);
+			  }
 
 	          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
 

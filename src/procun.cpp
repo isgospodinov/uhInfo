@@ -35,22 +35,21 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
              CProc::CalcFrecqUsage(pbF,pbU);
     }
     else {
-             std::istringstream input;
              std::string cline(""),cline_compare("");
              double usgdc = 0.0,freqdc = 0.0,freqdc_compare = 0.0;
-             
-	         input = std::istringstream(uhiutil::execmd("cat /proc/cpuinfo  | grep \"cpu MHz\""));
+             std::istringstream input_ci{std::istringstream(uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))},
+            		 input_sf{(m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")};
+
              std::list<cpu_chain_el>::iterator elV = units_ch->begin();
              for(std::list<unit_calc_el>::iterator cel = units_calc_cahin.begin(); cel != units_calc_cahin.end(); cel++,elV++) {   
              
                 if(local_cd) cel->init_calc_el();
 
-            	 std::getline(input,cline);
+            	 std::getline(input_ci,cline);
             	 freqdc = FreqCalc(cline,CHECKBCF);
 
-            	 if(m_CpuAltCalc) {
-                    cline_compare = "cat /sys/devices/system/cpu/cpu" + std::to_string((*cel).cpunit) + "/cpufreq/scaling_cur_freq";
-                    cline_compare = "cpu MHz\t: " + std::to_string((std::stod(uhiutil::execmd(cline_compare.data())) / (double) 1000));
+            	 if(m_CpuAltCalc && std::getline(input_sf,cline_compare)) {
+            		cline_compare = std::to_string((std::stod(cline_compare) / (double) 1000));
                     freqdc_compare = FreqCalc(cline_compare,!CHECKBCF);
                 }
 

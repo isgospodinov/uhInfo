@@ -68,11 +68,9 @@ double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
 {
       if(Fq.rfind('\x0A') != std::string::npos) Fq.pop_back();
 
-      bool v = uhiutil::newline(Fq,":",Direction::RIGHT);
-
       double dres = std::stod(Fq);
 
-      if(fast) return (v ? dres : (dres / (double) 1000));
+      if(fast) return dres;
 
       if(dres > cpu_max_mhz) dres = cpu_max_mhz;
       else
@@ -128,9 +126,8 @@ void CProc::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list
       std::string res("");
       double cpucfq = 0.0;
 
-      std::istringstream instrm{uhiutil::execmd("cat /proc/cpuinfo  | grep 'cpu MHz'")};
+      std::istringstream instrm{std::istringstream(uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))};
       while(std::getline(instrm, res)) {
-    	  uhiutil::newline(res,":",Direction::RIGHT);
     	  cpucfq += std::stod(res);
       }
       res = std::to_string(cpucfq / cpu_units);
