@@ -226,7 +226,7 @@ void Ud2mon::PopulateTemperatureSelection(CHWindow *m_wnd)
    }
 }
 
-CDrawArea::DRAWVECTORPLUS Ud2mon::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
+CDrArTempr::DRAWVECTORPLUS Ud2mon::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
 {
    for(std::list<Ud2_sens_node>::iterator sn =  monitoring.begin(); sn != monitoring.end(); sn++) {
           if(Glib::ustring(sn->ud2_model_name) == sensor && Glib::ustring(sn->ud2_drv_id) == nodeid) {

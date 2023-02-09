@@ -11,7 +11,6 @@
 class CProcUnits;
 
 using DeviceType = enum class DVTP {AUDIO,NETWORKRESOURSE};
-using Dm = enum class DrawMode {CPUDRAW,TEMPERATUREDRAW};
 using Direction = enum class GetDirection {LEFT,RIGHT,LEFTSKIP,RIGHTSKIP};
 
 namespace uhiutil {

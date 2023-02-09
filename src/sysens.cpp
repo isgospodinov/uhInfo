@@ -249,7 +249,7 @@ void CSysens::PopulateTemperatureSelection(CHWindow *m_wnd)
    }
 }
 
-CDrawArea::DRAWVECTORPLUS CSysens::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
+CDrArTempr::DRAWVECTORPLUS CSysens::SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max)
 {
    if(libsensh) {
        for(std::list<Chip_node>::iterator n = monitoring.begin(); n != monitoring.end(); n++)  {

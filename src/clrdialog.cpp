@@ -41,7 +41,7 @@ bool ClrDialog::Wnd_close_handler()
 
 	hide();
 
-	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrawArea::DAWndState::FULL)
+	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::FULL)
 		CLRMNG(mDA_ToolBar).set_visible((CLRMNG(pfDlg) ? (CLRMNG(pfDlg)->GetShowCPUfq() && CLRMNG(m_DAtemperature).HasActivities()): false) && true);
 
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
@@ -82,7 +82,7 @@ void ClrDialog::on_show()
 	CLRMNG(item_temperature)->set_enabled(false);
 	treeView.get_selection()->unselect_all();
 
-	CDrawArea::DRAWVECTORPLUS ldv{nullptr,nullptr};
+	CDrArTempr::DRAWVECTORPLUS ldv{nullptr,nullptr};
 	citl = CLRMNG(m_temperatureTreeView).get_selection()->get_selected();
 
 	if(citl) {

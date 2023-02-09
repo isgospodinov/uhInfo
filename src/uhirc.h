@@ -6,7 +6,8 @@
 #ifndef _UHICR_H_
 #define _UHICR_H_
 
-#include "hdwera.h"
+#include "hdwarec.h"
+#include "hdwaret.h"
 
 #define KB1 1024
 #define MB1 1048576
@@ -138,7 +139,7 @@ using cpu_chain_el = struct _cpu_chain {
 	  std::string cpuid = "";
       int processor = -1,physid = -1,coreid = -1,cpuidn = -1;
 	  Gtk::ProgressBar *cpuid_m_pbF = nullptr, *cpuid_m_pbCF = nullptr, *cpuid_m_pbU = nullptr;
-      CDrawArea *pDArea = nullptr;
+	  CDrArCpu *pDArea = nullptr;
       Gtk::Label *lCompareColor = nullptr;
 };
 

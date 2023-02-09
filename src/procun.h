@@ -20,7 +20,7 @@ using unit_calc_el = struct _unit_calc_el {
      LONG2INT cpuid_mem_idle{0}; 
                      
      _unit_calc_el() {init_calc_el();}
-     void init_calc_el(){std::for_each(UnitData.begin(), UnitData.end(), [](CDrawArea::TUDRAWVECTOR &el){el.fill(0.0);});}          
+     void init_calc_el(){std::for_each(UnitData.begin(), UnitData.end(), [](CDrArCpu::TUDRAWVECTOR &el){el.fill(0.0);});}
      void set_data(double df,double du,double dfc) {
               for(int dc = (uhiutil::calc::draw_cpu_statistic - 1); dc > 0 ;  dc--) {
             	  UnitData[uhiutil::calc::bfr][dc] = UnitData[uhiutil::calc::bfr][dc - 1]; // frequency
@@ -32,10 +32,10 @@ using unit_calc_el = struct _unit_calc_el {
               UnitData[uhiutil::calc::usg][0] = du; // usage
               UnitData[uhiutil::calc::cfr][0] = dfc; // comparative frequency
      }
-     const CDrawArea::TUDRAWVECTOR *const GetStor(const int sn) const {return &UnitData[sn];}
+     const CDrArCpu::TUDRAWVECTOR *const GetStor(const int sn) const {return &UnitData[sn];}
 private:
      // UnitData[0] - base /*cpuinfo*/ freq,UnitData[1] - comparative /*scaling_cur_freq*/ freq,UnitData[2] - cpu usage
-     std::array<CDrawArea::TUDRAWVECTOR, uhiutil::calc::dimension> UnitData;    
+     std::array<CDrArCpu::TUDRAWVECTOR, uhiutil::calc::dimension> UnitData;
 };
 
 class CProcUnits : public CProc

@@ -61,11 +61,11 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	   if(!((et != Gdk::Event::Type::BUTTON_PRESS) && (et != Gdk::Event::Type::PAD_BUTTON_PRESS)) && npress != 2) return;
 	}
 
-	CDrawArea::TmpWndState state = CDrawArea::DAWndState::NORMAL;
+	CDrArTempr::TmpWndState state = CDrArTempr::DAWndState::NORMAL;
 	bool visiblity = true;
 
 	if(m_DAtemperature.m_TmpWndCurrState == state) {
-		state = CDrawArea::DAWndState::FULL;
+		state = CDrArTempr::DAWndState::FULL;
 		visiblity = false;
 	}
 	else
@@ -449,7 +449,7 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
 {
 	Gtk::TreePath path(path_string);
     Gtk::TreeModel::iterator iter = ptRefTreeModel->get_iter(path);
-    CDrawArea::DRAWVECTORPLUS dv{nullptr,nullptr};
+    CDrArTempr::DRAWVECTORPLUS dv{nullptr,nullptr};
     double *ps_max = nullptr;
 
     if(pSysensors && (*iter)[tColumns->tsensor_id] != -1)

@@ -328,7 +328,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 			   Gtk::Label *lCcpuColor = Gtk::make_managed<Gtk::Label>();
 			   Gtk::Label *lUsageColor = Gtk::make_managed<Gtk::Label>();
 
-               cpu_unit.pDArea = Gtk::make_managed<CDrawArea>(nullptr,nullptr,Dm::CPUDRAW, ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg));
+               cpu_unit.pDArea = Gtk::make_managed<CDrArCpu>(ucEl->GetStor(uhiutil::calc::bfr), ucEl->GetStor(uhiutil::calc::cfr), ucEl->GetStor(uhiutil::calc::usg));
 
                cpu_unit.cpuid_m_pbF = Gtk::make_managed<Gtk::ProgressBar>();
                cpu_unit.cpuid_m_pbCF = Gtk::make_managed<Gtk::ProgressBar>();
@@ -401,8 +401,8 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
           uhiutil::set_css_style(m_pbUse.get_style_context(),lprv,"fu_cls");
           uhiutil::set_css_style(m_pbFreq.get_style_context(),lprv,"fu_cls");
 
-          CDrawArea::l_CPUModeSwitch = &m_CPUModeSwitch;
-          CDrawArea::l_CPUCompareSwitch = &m_CPUCompareSwitch;
+          CDrArCpu::l_CPUModeSwitch = &m_CPUModeSwitch;
+          CDrArCpu::l_CPUCompareSwitch = &m_CPUCompareSwitch;
 }
 
 void UIHWindow::InitToolBar()

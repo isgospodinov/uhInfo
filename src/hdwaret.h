@@ -1,44 +1,37 @@
 /*
  *    uhInfo
- *    Copyright (C) 2018
+ *    Copyright (C) 2023
  */
 
-#ifndef _DWERA_H_
-#define _DWERA_H_
+#ifndef _DWERAT_H_
+#define _DWERAT_H_
 
-#include "util.h"
 #include <iomanip>
 #include <chrono>
+#include "hdwareuhi.h"
 
 class UIHWindow;
 namespace draw = uhiutil::draw;
 
-class CDrawArea : public Gtk::DrawingArea
+class CDrArTempr : public CDrArUhi
 {
 public:
-  using StatPaint = enum class PaintMode {FREQP,COMPAREFREQP,USAGE,TEMPERATUREP};
-  using TmpWndState = enum class DAWndState {NORMAL,FULL};
   using fp_lDASR = void (UIHWindow::*)(int, double, double);
   using DRAWVECTOR = const std::vector<double>*;
   using DRAWVECTORPLUS = struct {
 	         DRAWVECTOR dvc;
 	         const std::string* dsn;
   };
-  using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
 
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
 
-  CDrawArea(UIHWindow* uhiwnd,fp_lDASR ldafp,Dm dwm = Dm::TEMPERATUREDRAW,const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
-  virtual ~CDrawArea() = default;
+  CDrArTempr(UIHWindow* uhiwnd,fp_lDASR ldafp);
+  virtual ~CDrArTempr() = default;
 
-  void Redraw() {queue_draw();}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
   double**const GetDAVcoreAccess() {return &DA_VcoreVal;}
-
-  static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;
-  TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
 private:
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
@@ -48,16 +41,13 @@ private:
   };
 
   DRAWVECTOR tmpmon = nullptr;
-  const TUDRAWVECTOR *valfreq = nullptr, *valfreqcmpr = nullptr, *valusg = nullptr;
-  DrawMode DMode;
   double *DA_VcoreVal = nullptr;
 
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
 
-  void on_draw(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height);
-  void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const;
-  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0,StatPaint pm = StatPaint::TEMPERATUREP) const;
+  virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
+  void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0) const;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
   std::string DurationTimeString(std::chrono::seconds sec) const;
   std::string GetDurationString();
@@ -72,4 +62,4 @@ private:
   std::list<Draw_Item> draw_temperatures;
 };
 
-#endif // _DWERA_H_
+#endif // _DWERAT_H_

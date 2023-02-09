@@ -64,7 +64,7 @@ protected:
   std::mutex mutex_print;
   std::unique_ptr<sigc::connection> c_Timer{nullptr};
 
-  CDrawArea m_DAtemperature;
+  CDrArTempr m_DAtemperature;
 
   // ------------------ ToolBar functionality ------------------
   Gtk::PopoverMenu m_ToolBarMenuPopup;
