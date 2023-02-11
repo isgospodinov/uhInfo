@@ -9,7 +9,7 @@
 class CpuStatDlg : public Gtk::Window
 {
 public:
-	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,class CProc *const pCpu);
+	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
 	void SetParam(const double mx) {if(plMw)set_default_size((2 * plMw->get_width() / 3),

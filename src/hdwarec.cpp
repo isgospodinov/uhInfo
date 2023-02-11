@@ -27,6 +27,18 @@ void CDrArCpu::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atv
   crtx->stroke();
 }
 
+void CDrArCpu::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
+{
+   int cnt = (!X ? (double) dwidth / (double) draw::uhi_draw_xscale : (double) dheight / (double) draw::uhi_draw_yscale),up = cnt;
+   while(cnt <= (X ? dheight : dwidth)) {
+       crtx->move_to((X ? 0 : cnt),(X ? cnt : 0));
+       crtx->line_to((X ? dwidth : cnt),(X ? cnt : dheight));
+       cnt += up;
+   }
+
+   crtx->stroke();
+}
+
 void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
   cr->save();
@@ -40,8 +52,8 @@ void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, 
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
 
-  DrawAxis_XY(cr,width,height,DMode::CPUDRAW);                     // X axis
-  DrawAxis_XY(cr,width,height,DMode::CPUDRAW,true); // Y axis
+  DrawAxis_XY(cr,width,height);      // X axis
+  DrawAxis_XY(cr,width,height,true); // Y axis
 
   cr->unset_dash();
 

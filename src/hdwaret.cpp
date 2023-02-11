@@ -30,6 +30,36 @@ void CDrArTempr::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double a
   crtx->stroke();
 }
 
+void CDrArTempr::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
+{
+	if(!X) {
+	   double cw = (dwidth - (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0)) / 2;
+
+       for(int b = 1; b < (int) draw::uhi_draw_xscale ; b *= 2) {
+           double cl =  cw; // centering
+           int c = 0;
+
+           cl -= ((cw / (double)b) * (b - 1)); // offset
+
+		   while(c++ < b) {
+		       crtx->move_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),0);
+			   crtx->line_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),dheight);
+			   cl += ((cw / ((double)b / 2)));
+		   }
+       }
+	}
+	else {
+       int cnt = (double) dheight / (double) draw::uhi_draw_yscale,up = cnt;
+       while(cnt <= (X ? dheight : dwidth)) {
+           crtx->move_to((X ? (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset - draw::dofset :  0) : cnt),(X ? cnt : 0));
+           crtx->line_to((X ? dwidth : cnt),(X ? cnt : dheight));
+           cnt += up;
+       }
+	}
+
+    crtx->stroke();
+}
+
 void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
   cr->save();
@@ -45,8 +75,8 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
   cr->set_line_width(1.0);
   cr->set_dash(std::vector<double>{1.0}, 1);
 
-  DrawAxis_XY(cr,width,height,DMode::TEMPERATUREDRAW);      // X axis
-  DrawAxis_XY(cr,width,height,DMode::TEMPERATUREDRAW,true); // Y axis
+  DrawAxis_XY(cr,width,height);      // X axis
+  DrawAxis_XY(cr,width,height,true); // Y axis
 
   cr->unset_dash();
   cr->set_line_width(1.7);

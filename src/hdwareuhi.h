@@ -15,14 +15,9 @@ public:
 	CDrArUhi();
 	virtual ~CDrArUhi() = default;
 
-	using TmpWndState = enum class DAWndState {NORMAL,FULL};
-	using DMode = enum class DrawMode {CPUDRAW,TEMPERATUREDRAW};
-
-	TmpWndState m_TmpWndCurrState;
-
 	void Redraw() {queue_draw();}
 protected:
-	void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,DMode dm,bool X = false) const;
+	virtual void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const = 0;
 	virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width,int height) = 0;
 };
 

@@ -5,7 +5,7 @@
 
 #include "mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,class CProc *const pCpu) : lc_TextView(),
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : lc_TextView(),
                                                                                 cb_WrnLevel(),plMw(pMWnd),lpCPU(pCpu)
 {
 	set_transient_for(*pMWnd);
