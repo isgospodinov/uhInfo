@@ -40,8 +40,19 @@ private:
 
 class CProcUnits : public CProc
 {
-    std::list<unit_calc_el> units_calc_cahin; //unit`s chain
+     std::list<unit_calc_el> units_calc_cahin; //unit`s chain
 public:
+     struct {
+     	     CDrArCpu::TUDRAWVECTOR FqAvg;
+     	     void clear_cpufq_average_data(){FqAvg.fill(.0);}
+     	     void set_cpufq_average_data(double data) {
+     	          for(int dc = (uhiutil::calc::draw_cpu_statistic - 1); dc > 0 ;  dc--) {
+     	        	    FqAvg[dc] = FqAvg[dc - 1];
+     	          }
+     	          FqAvg[0] = data;
+     	     }
+     }cpuFqAvg;
+
      virtual std::string ProcInfoInit() override;
      virtual void CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch = nullptr,bool bCpuAltCalc = false) override;
      void ClearCPUnitStatistic() {std::for_each(units_calc_cahin.begin(), units_calc_cahin.end(), [](unit_calc_el &cpunel){cpunel.init_calc_el();});}

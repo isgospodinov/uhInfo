@@ -6,16 +6,20 @@
 #include "mwnd.h"
 
 CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : lc_TextView(),
-                                                                                cb_WrnLevel(),plMw(pMWnd),lpCPU(pCpu)
+                                                    cb_WrnLevel(),plMw(pMWnd),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
 
 	set_child(fr_AllWnd);
 	fr_AllWnd.set_child(box_allWnd);
+	lcpuDrAr.set_child(l_CPULoad);
+	l_CPULoad.append(l_InfoCpu);
+	l_CPULoad.append(local_CpuInTempr);
     scrollWindow.set_child(lc_TextView);
     lfr_Tb.set_child(mCPU_Stat_ToolBar);
     box_allWnd.append(lfr_Tb);
+    box_allWnd.append(lcpuDrAr);
     box_allWnd.append(scrollWindow);
     uhiutil::set_css_style(get_style_context(),*cProv);
     lc_TextView.get_buffer()->create_tag(tag_attention)->property_foreground() = "red";
@@ -46,8 +50,10 @@ void CpuStatDlg::InitVision()
 	uhiutil::set_css_style(lc_TextView.get_style_context(),lprv,"toolbar");
 	uhiutil::set_css_style(lfr_Tb.get_style_context(),lprv,"toolbar");
 	uhiutil::set_css_style(cb_WrnLevel.get_child()->get_style_context(),lprv,"tb_cls");
+	uhiutil::set_css_style(lcpuDrAr.get_style_context(),lprv,"toolbar");
 
 	box_allWnd.set_orientation(Gtk::Orientation::VERTICAL);
+	l_CPULoad.set_orientation(Gtk::Orientation::VERTICAL);
 	fr_AllWnd.set_expand();
 	box_allWnd.set_expand();
 	fr_AllWnd.set_margin(4);
@@ -55,6 +61,10 @@ void CpuStatDlg::InitVision()
 	l_InfoLabel.set_margin(4);
 	lfr_Tb.set_margin_end(4);
 	lfr_Tb.set_margin_start(4);
+	l_InfoCpu.set_margin_top(2);
+	l_InfoCpu.set_margin_bottom(2);
+	lcpuDrAr.set_margin_start(4);
+	lcpuDrAr.set_margin_end(4);
 
     lc_TextView.property_justification() = Gtk::Justification::CENTER;
     scrollWindow.set_margin(4);
@@ -92,7 +102,7 @@ void CpuStatDlg::on_show()
 bool CpuStatDlg::ot_timer(int tmNo)
 {
 	int cn = 0;
-	double sv = .0,cv = .0;
+	double sv = .0,cv = .0,sum = .0;
 	std::string fq_line("");
     Glib::RefPtr<Gtk::TextBuffer> lc_buff = lc_TextView.get_buffer();
     lc_buff->erase(lc_buff->begin(),lc_buff->end());
@@ -103,11 +113,17 @@ bool CpuStatDlg::ot_timer(int tmNo)
 	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(CProc::m_CpuAltCalc ? "scaling frequency  /  " : "") + "cpuinfo\n\n");
 
 	while(std::getline(fcinstrm, fq_line)) {
-			  cv = lpCPU->FreqCalc(fq_line,false,true);
+		      if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
+		      cv = std::stod(fq_line);
+			  if(!CProc::m_CpuAltCalc) {
+			       sum += lpCPU->FreqCalc(fq_line,false,true);
+			  }
 
 			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line)) {
+				   if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
 				   fq_line = std::to_string((std::stod(fq_line) / (double) 1000));
-			       sv = lpCPU->FreqCalc(fq_line,false,true);
+				   sv = std::stod(fq_line);
+			       sum += lpCPU->FreqCalc(fq_line,false,true);
 			  }
 
 	          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
@@ -127,6 +143,9 @@ bool CpuStatDlg::ot_timer(int tmNo)
 			  cn++;
 			  sv = cv = .0;
 		}
+
+	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units());
+	local_CpuInTempr.Redraw();
 
 	return true;
 }

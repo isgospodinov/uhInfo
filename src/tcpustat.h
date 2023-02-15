@@ -16,21 +16,22 @@ public:
 			        (plMw->get_height() - (2 * plMw->get_height() / 3)));fqmax = mx;cpufquattent = fqmax * .9;}
 	bool Wnd_close_handler();
 	virtual void on_show() override;
-	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}}
+	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}lpCPU->cpuFqAvg.clear_cpufq_average_data();}
 	const int get_CpuFqWrnLevel() const {return cb_WrnLevel.get_active_row_number();}
 
 private:
-   Gtk::Frame fr_AllWnd,lfr_Tb;
-   Gtk::Box box_allWnd,mCPU_Stat_ToolBar;
+   Gtk::Frame fr_AllWnd,lfr_Tb,lcpuDrAr;
+   Gtk::Box box_allWnd,mCPU_Stat_ToolBar,l_CPULoad;
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TextView lc_TextView;
    Gtk::ComboBoxText cb_WrnLevel;
-   Gtk::Label l_InfoLabel;
+   Gtk::Label l_InfoLabel,l_InfoCpu{"CPU Fq. average"};
    const Gtk::Window *const plMw = nullptr;
    const char *const tag_attention = "cpu_f_attent";
    double fqmax = .0,cpufquattent = .0;
 
-   class CProc *const lpCPU = nullptr;
+   CProcUnits *const lpCPU = nullptr;
+   CDrArCpuInTempr local_CpuInTempr;
 
    std::unique_ptr<sigc::connection> l_timer{nullptr};
    bool ot_timer(int tmNo);

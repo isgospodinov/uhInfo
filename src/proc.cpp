@@ -70,16 +70,14 @@ double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
 
       double dres = std::stod(Fq);
 
-      if(fast) return dres;
-
       if(dres > cpu_max_mhz) dres = cpu_max_mhz;
       else
          if(dres < cpu_min_mhz) dres = cpu_min_mhz;
 
-      Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
+      if(!fast) Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
          
-      double val_max = (cpu_max_mhz / (double) 1000) - ((uhiutil::cpu::native_fq_state ?  0.0 : cpu_min_mhz) / (double) 1000);
-      double val_min = (((uhiutil::cpu::native_fq_state ?  0.0 : cpu_min_mhz) / (double) 1000));
+      double val_max = (cpu_max_mhz / (double) 1000) - (((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000);
+      double val_min = ((((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000));
 
       return (((dres / (double) 1000) - (double)val_min) / (double)val_max);
 }
