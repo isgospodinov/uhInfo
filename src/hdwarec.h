@@ -37,12 +37,6 @@ public:
 
 	void SetCpuMahFq(const double mx) {cpum = mx;}
 private:
-	const Pango::FontDescription DrawFont()  const { Pango::FontDescription font; font.set_family(uhiutil::draw::text_font_family);
-			font.set_weight(Pango::Weight::THIN);
-			font.set_style(Pango::Style::NORMAL);
-			font.set_size(uhiutil::draw::dtxthin * PANGO_SCALE);
-			return font;
-	  }
 	virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
 	double cpum = 0;
 };

@@ -57,12 +57,6 @@ private:
   std::string DurationTimeString(std::chrono::seconds sec) const;
   std::string GetDurationString();
   void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) const {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
-  const Pango::FontDescription DA_DrawFont(bool fd = true)  const { Pango::FontDescription font; font.set_family(draw::text_font_family);
-		font.set_weight(fd ? Pango::Weight::BOLD : Pango::Weight::THIN);
-		font.set_style(fd ? Pango::Style::ITALIC : Pango::Style::NORMAL);
-		font.set_size((fd ? draw::dtxtmax : draw::dtxthin) * PANGO_SCALE);
-		return font;
-  }
 
   std::list<Draw_Item> draw_temperatures;
 };

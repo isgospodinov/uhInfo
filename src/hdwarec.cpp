@@ -102,7 +102,7 @@ void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int 
   cr->save();
   cr->set_source_rgb(1.0, 1.0, 1.0);
   Glib::RefPtr<Pango::Layout> layout = create_pango_layout("");
-  layout->set_font_description(DrawFont());
+  layout->set_font_description(DA_DrawFont(false));
 
   layout->set_text(std::to_string(scale * (draw::uhi_draw_yscale - br)) + " Mhz");
   layout->get_pixel_size(dw,dh);
