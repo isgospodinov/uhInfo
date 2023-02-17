@@ -43,13 +43,15 @@ class CProcUnits : public CProc
      std::list<unit_calc_el> units_calc_cahin; //unit`s chain
 public:
      struct {
-     	     CDrArCpu::TUDRAWVECTOR FqAvg;
-     	     void clear_cpufq_average_data(){FqAvg.fill(.0);}
-     	     void set_cpufq_average_data(double data) {
+     	     CDrArCpu::TUDRAWVECTOR FqAvg,UsgAvg;
+     	     void clear_cpufq_average_data(){FqAvg.fill(.0);UsgAvg.fill(.0);}
+     	     void set_cpufq_average_data(double data,double udata) {
      	          for(int dc = (uhiutil::calc::draw_cpu_statistic - 1); dc > 0 ;  dc--) {
      	        	    FqAvg[dc] = FqAvg[dc - 1];
+     	        	    UsgAvg[dc] = UsgAvg[dc - 1];
      	          }
      	          FqAvg[0] = data;
+     	          UsgAvg[0] = udata;
      	     }
      }cpuFqAvg;
 

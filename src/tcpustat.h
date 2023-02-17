@@ -12,8 +12,7 @@ public:
 	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
-	void SetParam(const double mx) {if(plMw)set_default_size((2 * plMw->get_width() / 3),
-			        (plMw->get_height() - (2 * plMw->get_height() / 3)));fqmax = mx;cpufquattent = fqmax * .9;}
+	void SetParam(const double mx) {if(plMw)set_default_size((plMw->get_width() / 3), (plMw->get_height() - (plMw->get_height() / 4)));fqmax = mx;cpufquattent = fqmax * .9;}
 	bool Wnd_close_handler();
 	virtual void on_show() override;
 	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}lpCPU->cpuFqAvg.clear_cpufq_average_data();}
@@ -25,7 +24,7 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TextView lc_TextView;
    Gtk::ComboBoxText cb_WrnLevel;
-   Gtk::Label l_InfoLabel,l_InfoCpu{"CPU Fq. average"};
+   Gtk::Label l_InfoLabel,l_InfoCpu{"Overall : CPU Fq. / CPU usage"};
    const Gtk::Window *const plMw = nullptr;
    const char *const tag_attention = "cpu_f_attent";
    double fqmax = .0,cpufquattent = .0;

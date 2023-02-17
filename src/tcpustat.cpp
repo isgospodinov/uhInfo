@@ -6,7 +6,7 @@
 #include "mwnd.h"
 
 CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : lc_TextView(),
-                                                    cb_WrnLevel(),plMw(pMWnd),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg)
+                                                    cb_WrnLevel(),plMw(pMWnd),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
@@ -91,6 +91,7 @@ void CpuStatDlg::InitVision()
 void CpuStatDlg::on_show()
 {
 	Gtk::Window::on_show();
+	local_CpuInTempr.SetCpuMahFq(fqmax);
 	CLRMNG(mDA_ToolBar).set_visible(false);
 	(lc_TextView.get_buffer())->set_text("Initialization...");
 
@@ -144,7 +145,8 @@ bool CpuStatDlg::ot_timer(int tmNo)
 			  sv = cv = .0;
 		}
 
-	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units());
+	std::string res = uhiutil::execmd("head -n1 /proc/stat");
+	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
 	local_CpuInTempr.Redraw();
 
 	return true;

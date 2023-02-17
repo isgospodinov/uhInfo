@@ -35,6 +35,7 @@ protected :
     LONG2INT mem_total = 0,mem_idle = 0;
 
     std::string Cpu_microcodes();
+public :
     double UsageCalc(std::string &Usge,LONG2INT *mem_tot = nullptr,LONG2INT *mem_id = nullptr);
 };
 

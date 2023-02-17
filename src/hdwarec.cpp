@@ -19,10 +19,11 @@ CDrArCpu::CDrArCpu(const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,co
 
 void CDrArCpu::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth,StatPaint pm) const
 {
-  crtx->move_to(0, (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[0] : (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0]))) * dheight);
-  crtx->arc(0, (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[0] : (pm == StatPaint::USAGE ? (*valusg)[0] : (pm == StatPaint::FREQP ? (*valfreq)[0] : (*valfreqcmpr)[0]))) * dheight, 1.1, 0, 2 * M_PI);
+  crtx->move_to(0, (pm == StatPaint::TEMPRCPUSGSTAT ? (*cpuUsgSum)[0] : (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[0] : (pm == StatPaint::USAGE ? (*valusg)[0] :  ( pm == StatPaint::FREQP ?  (*valfreq)[0] : (*valfreqcmpr)[0])))) * dheight);
+  if(pm != StatPaint::TEMPRCPUSGSTAT)
+	  crtx->arc(0, (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[0] : (pm == StatPaint::USAGE ? (*valusg)[0] : (pm == StatPaint::FREQP ? (*valfreq)[0] : (*valfreqcmpr)[0]))) * dheight, 1.1, 0, 2 * M_PI);
   for(long unsigned int br = 1; br < uhiutil::calc::draw_cpu_statistic ;br++) {
-       crtx->arc(atvy * br, (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[br] : (pm == StatPaint::USAGE ? (*valusg)[br] : (pm == StatPaint::FREQP ? (*valfreq)[br] : (*valfreqcmpr)[br]))) * dheight, 1.1, 0, 2 * M_PI);
+       crtx->arc(atvy * br,(pm == StatPaint::TEMPRCPUSGSTAT ? (*cpuUsgSum)[br] : (pm == StatPaint::TEMPRCPUSTAT ? (*cpuFqSum)[br] : (pm == StatPaint::USAGE ? (*valusg)[br] : (pm == StatPaint::FREQP ? (*valfreq)[br] : (*valfreqcmpr)[br])))) * dheight, 1.1, 0, 2 * M_PI);
   }
   crtx->stroke();
 }
@@ -41,7 +42,6 @@ void CDrArCpu::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,
 
 double CDrArCpu::on_draw_prep(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
-	   cr->save();
 	   cr->set_source_rgb(1.0, 1.0, 1.0);
 
 	   Cairo::Matrix matrix(-1.0 , 0.0, 0.0, -1.0, width, height); // axes flipping
@@ -62,7 +62,8 @@ double CDrArCpu::on_draw_prep(const Cairo::RefPtr<Cairo::Context>& cr, int width
 
 void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
-  double xc = on_draw_prep(cr,width,height);
+   cr->save();
+   double xc = on_draw_prep(cr,width,height);
 
    bool l_cmsactive = l_CPUModeSwitch->get_active(),l_csactive = l_CPUCompareSwitch->get_active();
    cr->set_source_rgb(0.0, 0.75, 1.0);
@@ -86,11 +87,34 @@ void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, 
 
 void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
+  cr->save();
   double xc = on_draw_prep(cr,width,height);
+  const int scale = cpum / draw::uhi_draw_yscale;
+  int dw = 0,dh = 0,br = 0;
 
-  cr->set_source_rgb(1.0, 0.15, 0.25);
-  cr->set_line_width(1.7);
-  DrawActivity(cr,xc,height,0,StatPaint::TEMPRCPUSTAT);
+  for(int pm = (int)StatPaint::TEMPRCPUSTAT;pm < (int)StatPaint::FREQP ; pm++) {
+	  cr->set_source_rgb(pm == (int)StatPaint::TEMPRCPUSTAT ? 1.0 : 0.40,pm == (int)StatPaint::TEMPRCPUSTAT ? 0.15 : 0.80,pm == (int)StatPaint::TEMPRCPUSTAT ? 0.25 : 0.67);
+	  cr->set_line_width(pm == (int)StatPaint::TEMPRCPUSTAT ? 1.7 : 1.4);
+	  DrawActivity(cr,xc,height,0,(StatPaint) pm);
+  }
+  cr->restore();
 
+  cr->save();
+  cr->set_source_rgb(1.0, 1.0, 1.0);
+  Glib::RefPtr<Pango::Layout> layout = create_pango_layout("");
+  layout->set_font_description(DrawFont());
+
+  layout->set_text(std::to_string(scale * (draw::uhi_draw_yscale - br)) + " Mhz");
+  layout->get_pixel_size(dw,dh);
+  DADRAWTEXT(cr,layout,draw::dofset / 2,height - (height - (draw::dofset / 2)));
+  br++;
+
+  int cnt = (double) height / (double) draw::uhi_draw_yscale,up = cnt;
+  while(cnt <= height) {
+      layout->set_text(std::to_string(scale * (draw::uhi_draw_yscale - br)) + ((draw::uhi_draw_yscale - br) ? " Mhz" : ""));;
+      DADRAWTEXT(cr,layout,draw::dofset / 2,cnt - dh);
+      cnt += up;
+      br++;
+  }
   cr->restore();
 }
