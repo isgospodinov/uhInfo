@@ -89,7 +89,7 @@ void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int 
 {
   cr->save();
   double xc = on_draw_prep(cr,width,height);
-  const int scale = cpum / draw::uhi_draw_yscale;
+  const int scale = *cpuFqMax / draw::uhi_draw_yscale;
   int dw = 0,dh = 0,br = 0;
 
   for(int pm = (int)StatPaint::TEMPRCPUSTAT;pm < (int)StatPaint::FREQP ; pm++) {
