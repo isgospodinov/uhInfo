@@ -35,14 +35,14 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
 
 bool ClrDialog::Wnd_close_handler()
 {
-	CLRMNG(m_temperatureTreeView).get_selection()->unselect_all();
-	CLRMNG(m_Box_TmpControls).set_sensitive(true);
-	CLRMNG(item_temperature)->set_enabled(true);
+	PTSMNG(m_temperatureTreeView).get_selection()->unselect_all();
+	PTSMNG(m_Box_TmpControls).set_sensitive(true);
+	PTSMNG(item_temperature)->set_enabled(true);
 
 	hide();
 
-	if(CLRMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::FULL)
-		CLRMNG(mDA_ToolBar).set_visible((CLRMNG(pfDlg) ? (CLRMNG(pfDlg)->GetShowCPUfq() && CLRMNG(m_DAtemperature).HasActivities()): false) && true);
+	if(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::FULL)
+		PTSMNG(mDA_ToolBar).set_visible((PTSMNG(pfDlg) ? (PTSMNG(pfDlg)->GetShowCPUfq() && PTSMNG(m_DAtemperature).HasActivities()): false) && true);
 
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;
@@ -79,18 +79,18 @@ void ClrDialog::InitVision()
 void ClrDialog::on_show()
 {
 	Gtk::Window::on_show();
-	CLRMNG(item_temperature)->set_enabled(false);
+	PTSMNG(item_temperature)->set_enabled(false);
 	treeView.get_selection()->unselect_all();
 
 	CDrArTempr::DRAWVECTORPLUS ldv{nullptr,nullptr};
-	citl = CLRMNG(m_temperatureTreeView).get_selection()->get_selected();
+	citl = PTSMNG(m_temperatureTreeView).get_selection()->get_selected();
 
 	if(citl) {
         if((*citl)[TCOLUMNS(tsensor_node)] == sensors::nud2)
-        	ldv = CLRMNG(pUd2Manager)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
+        	ldv = PTSMNG(pUd2Manager)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
     			            (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
         else
-        	ldv = CLRMNG(pSysensors)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
+        	ldv = PTSMNG(pSysensors)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
     			    (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
 
         cName = const_cast<std::string*>(ldv.dsn);

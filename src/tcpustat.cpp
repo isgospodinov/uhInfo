@@ -36,7 +36,7 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
 
 bool CpuStatDlg::Wnd_close_handler()
 {
-	CLRMNG(mDA_ToolBar).set_visible(true);
+	PTSMNG(mDA_ToolBar).set_visible(true);
 	stop_cpustat_timer();
 
 	return true;
@@ -91,7 +91,7 @@ void CpuStatDlg::InitVision()
 void CpuStatDlg::on_show()
 {
 	Gtk::Window::on_show();
-	CLRMNG(mDA_ToolBar).set_visible(false);
+	PTSMNG(mDA_ToolBar).set_visible(false);
 	(lc_TextView.get_buffer())->set_text("Initialization...");
 
 	on_WrnLewel_changed();

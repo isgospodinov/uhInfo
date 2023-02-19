@@ -22,7 +22,10 @@ public:
   bool temperature_monitoring_enabled = false;
   Gtk::Label m_Label_MOBO,m_Label_Memory,m_Label_CPU,m_Label_Monitors,m_Label_Audio,m_Label_Network,m_Label_OS;
 protected:
- const Glib::RefPtr<Gio::SimpleAction> item_infomode{add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info))},
+  post_init_sig sig_postinit_param;
+  post_init_sig signal_set_param() {return sig_postinit_param;}
+
+  const Glib::RefPtr<Gio::SimpleAction> item_infomode{add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info))},
                                        item_cpu{add_action_bool("cpuactivity",sigc::mem_fun(*this,&UIHWindow::show_cpu_activity_all))},
                                        item_temperature{add_action_bool("tmpmonit",sigc::mem_fun(*this,&UIHWindow::monitor_temperature), false)},
                                        item_manage{add_action("sensorset",sigc::mem_fun(*this,&UIHWindow::manage_sensors))},

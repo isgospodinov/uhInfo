@@ -12,11 +12,11 @@ public:
 	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
-	void SetParam(const double mx) {if(plMw)set_default_size((plMw->get_width() / 3), (plMw->get_height() - (plMw->get_height() / 4)));fqmax = mx;cpufquattent = fqmax * .9;}
 	bool Wnd_close_handler();
 	virtual void on_show() override;
 	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}lpCPU->cpuFqAvg.clear_cpufq_average_data();}
 	const int get_CpuFqWrnLevel() const {return cb_WrnLevel.get_active_row_number();}
+	void on_set_after_init_param(const int w,const int h,const double p) {set_default_size(w / 3, (h - (h / 4)));fqmax = p;cpufquattent = fqmax * .9;}
 
 private:
    Gtk::Frame fr_AllWnd,lfr_Tb,lcpuDrAr;

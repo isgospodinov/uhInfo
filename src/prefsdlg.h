@@ -22,8 +22,6 @@ public:
    
    void SetFqState(bool nfs) {uhiutil::cpu::native_fq_state = nfs; ch_NativeFq.set_active(nfs);}
 private:
-   const Gtk::Window *const pmWnd = nullptr;
-   
    Gtk::ComboBoxText cb_MaxTmp;
    Gtk::CheckButton ch_InTmpMon,ch_AllInput,ch_SaveImp,ch_NativeFq,ch_ShowCPUfq;
    Gtk::Label l_MaxTemp;

@@ -9,7 +9,7 @@
 #include "mwnd.h"
 using uhiutil::cpu::UhiDownCast;
 
-CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : pmWnd(p_wnd),
+CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : plMw(p_wnd),
                      pSensors(&pS),pUd2mon(&pUd2)
 {
 	set_transient_for(*p_wnd);
@@ -54,7 +54,7 @@ void CSmDialog::InitVision()
 {
 	pRefTreeModel->clear();
    if(pSensors) {
-       bool stat = ((CHWindow*)pmWnd)->pfDlg->GetAllInputStat();
+       bool stat = PTSMNG(pfDlg)->GetAllInputStat();
        for(Chip_node n : pSensors->monitoring)  {
            for(Sensor_node sn : n.sensors) {
                 if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
@@ -139,7 +139,7 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 
 	   if((*iter)[vColumns->tsensor_node] == sensors::nud2) {
 	       if(pUd2mon) {
-	    	   bool l_stat = ((CHWindow*)pmWnd)->pfDlg->GetInTmpMonStat();
+	    	   bool l_stat = PTSMNG(pfDlg)->GetInTmpMonStat();
 	           for(std::list<Ud2_sens_node>::iterator it = pUd2mon->monitoring.begin(); it != pUd2mon->monitoring.end(); it++)  {
 	                if(((Glib::ustring((*iter)[vColumns->tsensor_name])) == it->ud2_model_name) && ((Glib::ustring((*iter)[vColumns->tnode_id])) == it->ud2_drv_id)) {
 	                    it->visible = (*iter)[vColumns->col_tcheck];

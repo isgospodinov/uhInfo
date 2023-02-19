@@ -120,8 +120,8 @@
 
 #define SNTP(type) (sn->sntype == type)
 
-#define CLRMNG(v) ((CHWindow*)plMw)->v
-#define TCOLUMNS(v) CLRMNG(tColumns)->v
+#define PTSMNG(v) ((CHWindow*)plMw)->v
+#define TCOLUMNS(v) PTSMNG(tColumns)->v
 
 #define LOCALCSSPROVWITHSTYLE Glib::RefPtr<Gtk::CssProvider> lprv = Gtk::CssProvider::create();lprv->load_from_data(style)
 
@@ -134,6 +134,8 @@
      (GTKMM_MAJOR_VERSION > (major)  ||                                    \
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION > (minor)) ||  \
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION == (minor) && GTKMM_MICRO_VERSION >= (micro)))*/                                
+
+using  post_init_sig = sigc::signal<void(const int,const int,const double)>;
 
 using cpu_chain_el = struct _cpu_chain {
 	  std::string cpuid = "";

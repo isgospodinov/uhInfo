@@ -42,6 +42,8 @@ private:
   FRIEND(ClrDialog);
   FRIEND(CpuStatDlg);
 
+  void Post_Init_Param() {sig_postinit_param.emit(get_width(),get_height(),pntProcessor->Get_cpu_fqmax());}
+
   virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
 
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);

@@ -5,10 +5,8 @@
 
 #include "prefsdlg.h"
 
-CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : pmWnd(mWnd),
-                     ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
-                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),
-					 l_MaxTemp("Set max. t°    ")
+CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
+                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),l_MaxTemp("Set max. t°    ")
 {
 	set_transient_for(*mWnd);
 	set_title("Preferences");
