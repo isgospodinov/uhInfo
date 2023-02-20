@@ -5,7 +5,7 @@
 
 #include "mwnd.h"
 
-ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : plMw(pMWnd)
+ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : UhiDlgWnd(pMWnd)
 {
 	set_transient_for(*pMWnd);
 	set_title("Color choice");
@@ -78,7 +78,7 @@ void ClrDialog::InitVision()
 
 void ClrDialog::on_show()
 {
-	Gtk::Window::on_show();
+	UhiDlgWnd::on_show();
 	PTSMNG(item_temperature)->set_enabled(false);
 	treeView.get_selection()->unselect_all();
 

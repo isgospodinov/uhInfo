@@ -8,7 +8,7 @@
 
 #include "uhirc.h"
 
-class ClrDialog : public Gtk::Window
+class ClrDialog : public UhiDlgWnd
 {
 public:
 	ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv);
@@ -17,7 +17,7 @@ public:
 	void OnColorChoiceToggled(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 	bool Wnd_close_handler();
 	virtual void on_show() override;
-	void on_set_after_init_param(const int w,const int h,const double p) {set_default_size(w / 3, (h - (h / 4)));}
+	virtual void on_set_after_init_param(const int w,const int h,const double p) override {set_default_size(w / 3, (h - (h / 4)));}
 
 private:
    const uhimc_unique_ptr cvColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::COLOR));
@@ -25,11 +25,10 @@ private:
 
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TreeView treeView;
-   const Gtk::Window *const plMw = nullptr;
    std::string* cName = nullptr;
    Gtk::TreeModel::iterator citl{nullptr};
 
-   void InitVision();
+   virtual void InitVision() override;
 };
 
 #endif // _CLRDIALOG_H_

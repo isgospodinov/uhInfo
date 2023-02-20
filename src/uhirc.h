@@ -8,6 +8,7 @@
 
 #include "hdwarec.h"
 #include "hdwaret.h"
+#include "uhiDlg.h"
 
 #define KB1 1024
 #define MB1 1048576

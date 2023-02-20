@@ -6,6 +6,8 @@
 #include "mwndui.h"
 #include "procun.h"
 
+post_init_sig UIHWindow::sig_postinit_param;
+
 UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
                          m_status_bar("  Everything at a glance..."), m_TextView(), m_TreeView(m_refTreeModel),
 						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)

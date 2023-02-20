@@ -48,10 +48,6 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 
   set_show_menubar(true);
 
-  signal_set_param().connect(sigc::mem_fun(*smDlg.get(),&CSmDialog::on_set_after_init_param));
-  signal_set_param().connect(sigc::mem_fun(*clrDlg.get(),&ClrDialog::on_set_after_init_param));
-  signal_set_param().connect(sigc::mem_fun(*cpuStatDlg.get(),&CpuStatDlg::on_set_after_init_param));
-
   PrepAndMakeThread(this,&CHWindow::Posthreadnotify);
 }
 

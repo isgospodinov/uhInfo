@@ -5,8 +5,8 @@
 
 #include "mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : lc_TextView(),
-                                                    cb_WrnLevel(),plMw(pMWnd),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax)
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
+                                                    cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
@@ -90,7 +90,7 @@ void CpuStatDlg::InitVision()
 
 void CpuStatDlg::on_show()
 {
-	Gtk::Window::on_show();
+	UhiDlgWnd::on_show();
 	PTSMNG(mDA_ToolBar).set_visible(false);
 	(lc_TextView.get_buffer())->set_text("Initialization...");
 

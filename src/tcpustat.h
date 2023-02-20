@@ -6,7 +6,7 @@
 #ifndef _CPUSTAT_H_
 #define _CPUSTAT_H_
 
-class CpuStatDlg : public Gtk::Window
+class CpuStatDlg : public UhiDlgWnd
 {
 public:
 	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu);
@@ -16,7 +16,7 @@ public:
 	virtual void on_show() override;
 	void stop_cpustat_timer() {if(l_timer) {l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);hide();}lpCPU->cpuFqAvg.clear_cpufq_average_data();}
 	const int get_CpuFqWrnLevel() const {return cb_WrnLevel.get_active_row_number();}
-	void on_set_after_init_param(const int w,const int h,const double p) {set_default_size(w / 3, (h - (h / 4)));fqmax = p;cpufquattent = fqmax * .9;}
+	virtual void on_set_after_init_param(const int w,const int h,const double p) override {set_default_size(w / 3, (h - (h / 4)));fqmax = p;cpufquattent = fqmax * .9;}
 
 private:
    Gtk::Frame fr_AllWnd,lfr_Tb,lcpuDrAr;
@@ -25,7 +25,6 @@ private:
    Gtk::TextView lc_TextView;
    Gtk::ComboBoxText cb_WrnLevel;
    Gtk::Label l_InfoLabel,l_InfoCpu{"Overall : CPU Fq. / CPU usage"};
-   const Gtk::Window *const plMw = nullptr;
    const char *const tag_attention = "cpu_f_attent";
    double fqmax = .0,cpufquattent = .0;
 
@@ -35,7 +34,7 @@ private:
    std::unique_ptr<sigc::connection> l_timer{nullptr};
    bool ot_timer(int tmNo);
 
-   void InitVision();
+   virtual void InitVision() override;
    void on_WrnLewel_changed();
    void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
 };
