@@ -82,39 +82,3 @@ void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, 
 
    cr->restore();
 }
-
-// --------------------------------- class CDrArCpuInTempr ---------------------------------
-
-void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
-{
-  cr->save();
-  double xc = on_draw_prep(cr,width,height);
-  const int scale = *cpuFqMax / draw::uhi_draw_yscale;
-  int dw = 0,dh = 0,br = 0;
-
-  for(int pm = (int)StatPaint::TEMPRCPUSTAT;pm < (int)StatPaint::FREQP ; pm++) {
-	  cr->set_source_rgb(pm == (int)StatPaint::TEMPRCPUSTAT ? 1.0 : 0.40,pm == (int)StatPaint::TEMPRCPUSTAT ? 0.15 : 0.80,pm == (int)StatPaint::TEMPRCPUSTAT ? 0.25 : 0.67);
-	  cr->set_line_width(pm == (int)StatPaint::TEMPRCPUSTAT ? 1.7 : 1.4);
-	  DrawActivity(cr,xc,height,0,(StatPaint) pm);
-  }
-  cr->restore();
-
-  cr->save();
-  cr->set_source_rgb(1.0, 1.0, 1.0);
-  Glib::RefPtr<Pango::Layout> layout = create_pango_layout("");
-  layout->set_font_description(DA_DrawFont(false));
-
-  layout->set_text(std::to_string(scale * (draw::uhi_draw_yscale - br)) + " Mhz");
-  layout->get_pixel_size(dw,dh);
-  DADRAWTEXT(cr,layout,draw::dofset / 2,height - (height - (draw::dofset / 2)));
-  br++;
-
-  int cnt = (double) height / (double) draw::uhi_draw_yscale,up = cnt;
-  while(cnt <= height) {
-      layout->set_text(std::to_string(scale * (draw::uhi_draw_yscale - br)) + ((draw::uhi_draw_yscale - br) ? " Mhz" : ""));;
-      DADRAWTEXT(cr,layout,draw::dofset / 2,cnt - dh);
-      cnt += up;
-      br++;
-  }
-  cr->restore();
-}
