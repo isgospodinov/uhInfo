@@ -186,6 +186,11 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 		  cr->restore();
 	  }
 
+	  if(m_TmpWndCurrState != DAWndState::FULL && !HasActivities() && show_msg_attention) {
+	       DA_Text(layout, width, height, "Epty selection");
+	       DADRAWTEXT(cr,layout,(w / 2) - width / 2, h - (h / 2));
+	  }
+
 	  layout->unset_font_description();
 	  font = DA_DrawFont(false);
 	  layout->set_font_description(font);
@@ -229,6 +234,5 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	 	   	   std::to_string((int)std::ceil((((double)uhiutil::calc::t_statistic_len - 1) / (double)2) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
-
 	  }
 }

@@ -56,10 +56,12 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	Glib::RefPtr<Gdk::Event> evbntpress = m_DAtemperature.msbntpress->get_last_event(m_DAtemperature.msbntpress->get_current_sequence());
 
 	if(!evbntpress) return;
-	else {
-	   Gdk::Event::Type et = evbntpress->get_event_type();
-	   if(!((et != Gdk::Event::Type::BUTTON_PRESS) && (et != Gdk::Event::Type::PAD_BUTTON_PRESS)) && npress != 2) return;
-	}
+		else {
+		   Gdk::Event::Type et = evbntpress->get_event_type();
+		   if(!((et != Gdk::Event::Type::BUTTON_PRESS) && (et != Gdk::Event::Type::PAD_BUTTON_PRESS)) && npress != 2) return;
+		   else
+			   if(!m_DAtemperature.HasActivities()) {m_DAtemperature.SetAttentState(true); return;}
+		}
 
 	CDrArTempr::TmpWndState state = CDrArTempr::DAWndState::NORMAL;
 	bool visiblity = true;
@@ -292,6 +294,8 @@ bool CHWindow::uhI_Timer(int TmNo)
              m_Label_VGA_cond_status.set_text(pGpus->CurrentPcieLinkStatus(m_Gpus.get_active_row_number()));
 
       ((condition == 5) ? condition = 0 : condition++);
+
+      if(m_DAtemperature.GetAttentState() && (!condition || condition == 3)){ m_DAtemperature.SetAttentState(false);}
 
       return true;
 }

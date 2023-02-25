@@ -32,6 +32,8 @@ public:
 
   TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
 
+  void SetAttentState(bool show) {show_msg_attention = show;}
+  bool GetAttentState() const {return  show_msg_attention;}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
@@ -46,6 +48,8 @@ private:
 
   DRAWVECTOR tmpmon = nullptr;
   double *DA_VcoreVal = nullptr;
+
+  bool show_msg_attention = false;
 
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);

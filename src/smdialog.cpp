@@ -57,7 +57,7 @@ void CSmDialog::InitVision()
        bool stat = PTSMNG(pfDlg)->GetAllInputStat();
        for(Chip_node n : pSensors->monitoring)  {
            for(Sensor_node sn : n.sensors) {
-                if(!stat && sn.sntype == SENSORS_FEATURE_IN && ((int)sn.label.find("Vcore") == -1)) continue;
+                if(!stat && sn.sntype == SENSORS_FEATURE_IN && !sn.is_Vcore) continue;
                 Gtk::TreeModel::Row row = *(pRefTreeModel->append());
                 row[vColumns->col_tcheck] = sn.visible;
                 row[vColumns->tsensor_node] = n.chip_name.cnip_prefix;
@@ -159,7 +159,7 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	                        if((Glib::ustring((*iter)[vColumns->tsensor_name])) == Glib::ustring(sn->label) && ((*iter)[vColumns->tsensor_id] == sn->feature_number)) {
 	                            sn->visible = (*iter)[vColumns->col_tcheck];
 
-	                            if(!VCORECHECK && !sn->visible && *pSensors->sVcore_val) {
+	                            if(sn->is_Vcore && !sn->visible && *pSensors->sVcore_val) {
 	                            	**pSensors->sVcore_val = 0.0;
 	                            }
 
