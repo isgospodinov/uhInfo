@@ -44,7 +44,7 @@ using Chip_node = struct _Chip_node {
 class CSysens : public CSensMon
 {
 public :
-    CSysens(double **const DAVcoreVal);
+    CSysens(CDrArTempr::VCORESBUNCH*const dvc);
     virtual ~CSysens() override;
 
     friend class CSmDialog;
@@ -66,7 +66,7 @@ private:
     sensors::fp_sValue     sysens_get_value;
     // ------------- Skipping libsensors runtime dependency -------------
 
-    double **const sVcore_val = nullptr;
+    CDrArTempr::VCORESBUNCH*const ldvc = nullptr;
     void *libsensh = nullptr;
     std::list<Chip_node> monitoring;
     bool LibSensorsOpen(const char * filename);

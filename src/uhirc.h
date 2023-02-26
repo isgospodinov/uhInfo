@@ -117,7 +117,7 @@
 #define UIBCF(uiel,fraction,text) uiel->set_fraction(fraction); \
 	                              uiel->set_text(text)
 
-#define VCORECHECK ((int)lbl.find("Vcore") != -1)
+#define VCORECHECK (((int)lbl.find("Vcore") != -1) || ((int)lbl.find("SVI2_Core") != -1))
 
 #define SNTP(type) (sn->sntype == type)
 

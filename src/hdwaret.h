@@ -12,15 +12,24 @@
 
 class UIHWindow;
 namespace draw = uhiutil::draw;
+using Sensor_node = struct _Sensor_node;
 
 class CDrArTempr : public CDrArUhi
 {
 public:
   using fp_lDASR = void (UIHWindow::*)(int, double, double);
   using DRAWVECTOR = const std::vector<double>*;
+  using VCORESBUNCH = std::list<Sensor_node*>;
   using DRAWVECTORPLUS = struct {
 	         DRAWVECTOR dvc;
 	         const std::string* dsn;
+  };
+
+  using Draw_Item = struct {
+      DRAWVECTOR DItem = nullptr;
+      const std::string* DItName = nullptr;
+      std::string DItSensor = "";
+      double *sensormax = nullptr;
   };
 
   using TmpWndState = enum class DAWndState{NORMAL,FULL};
@@ -37,17 +46,12 @@ public:
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
-  double**const GetDAVcoreAccess() {return &DA_VcoreVal;}
+  VCORESBUNCH*const GetDAVcoreAccess() {return &draw_Vcores;}
+  const bool HasVCores() const {return !draw_Vcores.empty();}
 private:
-  using Draw_Item = struct {
-      DRAWVECTOR DItem = nullptr;
-      const std::string* DItName = nullptr;
-      std::string DItSensor = "";
-      double *sensormax = nullptr;
-  };
 
   DRAWVECTOR tmpmon = nullptr;
-  double *DA_VcoreVal = nullptr;
+  VCORESBUNCH draw_Vcores;
 
   bool show_msg_attention = false;
 

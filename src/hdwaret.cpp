@@ -178,11 +178,17 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  cr->move_to(draw::dofset,draw::dofset);
 	  layout->show_in_cairo_context(cr); // duration
 
-	  if(FULLAPPWNDMODE(w,h) && DA_VcoreVal && *DA_VcoreVal && !(duration == "0:00:00")) {
+	  if(FULLAPPWNDMODE(w,h) && HasVCores() && !(duration == "0:00:00")) {
 		  cr->save();
 		  cr->set_source_rgb(0.8, 0.2, 0.4);
-		  DA_Text(layout, width , height,"\nVcore : " + (std::to_string(*DA_VcoreVal)).substr(0,5) + "V");
-		  DADRAWTEXT(cr, layout, draw::dofset,0); // Vcore
+		  int mv = 0;
+		  for(Sensor_node *di : draw_Vcores)  {
+			   if(di->visible) {
+			        DA_Text(layout, width , height,di->label + " : " + (std::to_string(di->max)).substr(0,5) + "V");
+			        mv += height;
+			        DADRAWTEXT(cr, layout, draw::dofset,mv); // Vcore
+			   }
+		  }
 		  cr->restore();
 	  }
 
