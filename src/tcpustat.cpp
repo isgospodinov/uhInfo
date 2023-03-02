@@ -5,8 +5,8 @@
 
 #include "mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
-                                                    cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax)
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV) : UhiDlgWnd(pMWnd),lc_TextView(),
+                                                    cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax),local_SensVcore(pV)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
@@ -16,6 +16,10 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
 	lcpuDrAr.set_child(l_CPULoad);
 	l_CPULoad.append(l_InfoCpu);
 	l_CPULoad.append(local_CpuInTempr);
+	lfr_VCativ.set_child(lb_VCstat);
+	lb_VCstat.append(l_VCstat);
+	lb_VCstat.append(local_SensVcore);
+	l_CPULoad.append(lfr_VCativ);
     scrollWindow.set_child(lc_TextView);
     lfr_Tb.set_child(mCPU_Stat_ToolBar);
     box_allWnd.append(lfr_Tb);
@@ -54,6 +58,7 @@ void CpuStatDlg::InitVision()
 
 	box_allWnd.set_orientation(Gtk::Orientation::VERTICAL);
 	l_CPULoad.set_orientation(Gtk::Orientation::VERTICAL);
+	lb_VCstat.set_orientation(Gtk::Orientation::VERTICAL);
 	fr_AllWnd.set_expand();
 	box_allWnd.set_expand();
 	fr_AllWnd.set_margin(4);
@@ -65,6 +70,7 @@ void CpuStatDlg::InitVision()
 	l_InfoCpu.set_margin_bottom(2);
 	lcpuDrAr.set_margin_start(4);
 	lcpuDrAr.set_margin_end(4);
+	lfr_VCativ.set_margin_top(4);
 
     lc_TextView.property_justification() = Gtk::Justification::CENTER;
     scrollWindow.set_margin(4);
@@ -97,6 +103,14 @@ void CpuStatDlg::on_show()
 	on_WrnLewel_changed();
 
 	if(!l_timer) l_timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval,&CpuStatDlg::ot_timer);
+
+	if(local_SensVcore.VCoresActivities()){
+		lfr_VCativ.set_visible(true);
+		local_SensVcore.ClearOrActivateVCStatistic(true);
+	}
+	else
+		lfr_VCativ.set_visible(false);
+
 }
 
 bool CpuStatDlg::ot_timer(int tmNo)
@@ -147,6 +161,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 	std::string res = uhiutil::execmd("head -n1 /proc/stat");
 	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
 	local_CpuInTempr.Redraw();
+	if(local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();
 
 	return true;
 }
@@ -161,4 +176,16 @@ void CpuStatDlg::on_WrnLewel_changed()
 	  }
 	  cpufquattent = fqmax * cwf;
       set_InfoLabel(std::to_string((int) cpufquattent));
+}
+
+void CpuStatDlg::stop_cpustat_timer()
+{
+	if(l_timer) {
+		l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);
+		hide();
+	}
+
+	lpCPU->cpuFqAvg.clear_cpufq_average_data();
+
+	if(local_SensVcore.VCoresActivities())local_SensVcore.ClearOrActivateVCStatistic();
 }

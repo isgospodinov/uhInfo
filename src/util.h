@@ -44,6 +44,7 @@ namespace uhiutil {
    namespace calc {
        enum {bfr = 0,cfr,usg,dimension};
        const unsigned int draw_cpu_statistic = 10;
+       const double draw_Vcore_scaler = 1.5;
        const unsigned int t_statistic_len = 421;
        const int resetime = 4271;      
    }   

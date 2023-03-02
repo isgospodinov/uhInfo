@@ -12,7 +12,7 @@
 #include "sensmon.h"
 
 using Ud2_sens_node = struct _Ud2_sens_node : public Sensor_statistic{
-      _Ud2_sens_node(UDisksDriveAta *const atadrv,const char *mn,const char *dnm,bool vz) : Sensor_statistic(vz), ud2_model_name(mn), ud2_drv_id(dnm),
+      _Ud2_sens_node(UDisksDriveAta *const atadrv,const char *mn,const char *dnm,bool vz) : Sensor_statistic(vz,false), ud2_model_name(mn), ud2_drv_id(dnm),
                 ata_drive(new (UDisksDriveAta *const){atadrv},[](UDisksDriveAta *const *drv){if(drv){g_clear_object(const_cast<UDisksDriveAta **>(drv));delete drv;}}){}
       int index = -1;
       const char *ud2_model_name,*ud2_drv_id;

@@ -24,11 +24,10 @@ using sensors_chip_name_mod = struct _sensors_chip_name_mod {
 };
 
 using Sensor_node = struct _Sensor_node : public Sensor_statistic{
-      _Sensor_node(int fn,std::string l,sensors_feature_type sft,bool sv,bool vc) : Sensor_statistic(sv),feature_number(fn),label(l),sntype(sft),is_Vcore(vc) {}
+      _Sensor_node(int fn,std::string l,sensors_feature_type sft,bool sv,bool vc) : Sensor_statistic(sv,vc),feature_number(fn),label(l),sntype(sft)/*,is_Vcore(vc)*/ {}
       int feature_number;
       std::string label;
 	  sensors_feature_type sntype;
-	  bool is_Vcore;
 };
 
 using Chip_node = struct _Chip_node {

@@ -191,7 +191,10 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                 	 if(sn->t_statistic_active || (printmode && sn->is_Vcore)){
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,((std::to_string(value)).substr(0,5) + "V\n"),uhiutil::ui::active_tag);
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "        - - - - - - - - - - -\n") , uhiutil::ui::active_tag);
-                                		 if(sn->visible && !sn->t_statistic_active) sn->max = value;
+                                		 if(sn->visible && sn->is_Vcore) {
+                                			 sn->max = value;
+                                			 if(sn->t_statistic_active) sn->SetTemperature(value/ uhiutil::calc::draw_Vcore_scaler);
+                                		 }
                                 		 else sn->max = .0;
                                 	 }
                                 	 else itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));

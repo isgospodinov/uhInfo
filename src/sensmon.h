@@ -11,13 +11,14 @@
 class CHWindow;
 
 using Sensor_statistic = struct _Sensor_statistic {
-      _Sensor_statistic(bool sv) : visible(sv){}
+      _Sensor_statistic(bool sv,bool vc) : visible(sv),is_Vcore(vc){}
       std::vector<double> t_statistic;
       std::string statistic_color = "";
       bool t_statistic_active = false;
       double max = 0.0;
       bool visible;
-      void SetTemperature(double temperature){t_statistic.insert(t_statistic.begin(),temperature);if(t_statistic.size() > uhiutil::calc::t_statistic_len) t_statistic.erase((t_statistic.end() - 1));}
+      bool is_Vcore;
+      void SetTemperature(double temperature){t_statistic.insert(t_statistic.begin(),temperature);if(t_statistic.size() >  (is_Vcore ? uhiutil::calc::draw_cpu_statistic : uhiutil::calc::t_statistic_len) ) t_statistic.erase((t_statistic.end() - 1));}
       void SetStatisticFeatures(bool StatStatus,std::string color){t_statistic_active = StatStatus;statistic_color = (StatStatus ? color : "");if(!t_statistic_active) t_statistic.clear();}
       void EraseStatistic(){SetStatisticFeatures(false,"");}
 };
