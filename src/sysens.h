@@ -7,7 +7,7 @@
 #define _SYSENS_H_
 
 #include "sensmon.h"
-#include "smdialog.h"
+#include "dlg/smdialog.h"
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -24,7 +24,7 @@ using sensors_chip_name_mod = struct _sensors_chip_name_mod {
 };
 
 using Sensor_node = struct _Sensor_node : public Sensor_statistic{
-      _Sensor_node(int fn,std::string l,sensors_feature_type sft,bool sv,bool vc) : Sensor_statistic(sv,vc),feature_number(fn),label(l),sntype(sft)/*,is_Vcore(vc)*/ {}
+      _Sensor_node(int fn,std::string l,sensors_feature_type sft,bool sv,bool vc) : Sensor_statistic(sv,vc),feature_number(fn),label(l),sntype(sft){}
       int feature_number;
       std::string label;
 	  sensors_feature_type sntype;

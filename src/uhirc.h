@@ -6,9 +6,9 @@
 #ifndef _UHICR_H_
 #define _UHICR_H_
 
-#include "hdwarec.h"
-#include "hdwaret.h"
-#include "uhiDlg.h"
+#include "dar/hdwarec.h"
+#include "dar/hdwaret.h"
+#include "dlg/uhiDlg.h"
 
 #define KB1 1024
 #define MB1 1048576

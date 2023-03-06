@@ -3,7 +3,7 @@
  *    Copyright (C) 2022
  */
 
-#include "mwnd.h"
+#include "../mwnd.h"
 
 ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : UhiDlgWnd(pMWnd)
 {

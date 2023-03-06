@@ -13,10 +13,10 @@
 #include "ud2mon.h"
 #include "hgpu.h"
 #include "hmonit.h"
-#include "prefsdlg.h"
-#include "aboutdlg.h"
-#include "clrdialog.h"
-#include "tcpustat.h"
+#include "dlg/prefsdlg.h"
+#include "dlg/aboutdlg.h"
+#include "dlg/clrdialog.h"
+#include "dlg/tcpustat.h"
 
 class CHWindow : public CInitThread, public UIHWindow
 {

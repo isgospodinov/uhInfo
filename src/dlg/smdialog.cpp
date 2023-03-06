@@ -4,9 +4,9 @@
  */
 
 #include "smdialog.h"
-#include "sysens.h"
-#include "ud2mon.h"
-#include "mwnd.h"
+#include "../sysens.h"
+#include "../ud2mon.h"
+#include "../mwnd.h"
 using uhiutil::cpu::UhiDownCast;
 
 CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : UhiDlgWnd(p_wnd),

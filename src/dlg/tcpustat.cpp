@@ -3,7 +3,7 @@
  *    Copyright (C) 2023
  */
 
-#include "mwnd.h"
+#include "../mwnd.h"
 
 CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV) : UhiDlgWnd(pMWnd),lc_TextView(),
                                                     cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax),local_SensVcore(pV)
@@ -181,7 +181,8 @@ void CpuStatDlg::on_WrnLewel_changed()
 void CpuStatDlg::stop_cpustat_timer()
 {
 	if(l_timer) {
-		l_timer.get()->disconnect();l_timer = std::unique_ptr<sigc::connection>(nullptr);
+		l_timer.get()->disconnect();
+		l_timer = std::unique_ptr<sigc::connection>(nullptr);
 		hide();
 	}
 

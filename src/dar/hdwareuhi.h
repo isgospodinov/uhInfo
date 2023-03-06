@@ -6,7 +6,7 @@
 #ifndef _DWERAUHI_H_
 #define _DWERAUHI_H_
 
-#include "util.h"
+#include "../util.h"
 #include <cairomm/context.h>
 
 class CDrArUhi : public Gtk::DrawingArea

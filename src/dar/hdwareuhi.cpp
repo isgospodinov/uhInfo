@@ -4,7 +4,7 @@
  */
 
 #include "hdwareuhi.h"
-#include "uhirc.h"
+#include "../uhirc.h"
 
 CDrArUhi::CDrArUhi()
 {

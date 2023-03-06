@@ -1,20 +1,21 @@
 CPP = c++
 BUILD = build
 PROGRAM = $(BUILD)/uhInfo
-CPPFILES = $(wildcard src/*.cpp)
-OBJS = $(CPPFILES:src/%.cpp=$(BUILD)/%.o)
-GTKMMFLAGS = `pkg-config --cflags gtkmm-4.0`
+OBJS = $(patsubst src/%.cpp,$(BUILD)/%.o,$(wildcard */*.cpp)) \
+               $(patsubst src/dar/%.cpp,$(BUILD)/%.o,$(wildcard */dar/*.cpp)) \
+                            $(patsubst src/dlg/%.cpp,$(BUILD)/%.o,$(wildcard */dlg/*.cpp))
+CMPGO = $(CPP) -c -o $@ $(BFLAGS) $< 
+BFLAGS = `pkg-config --cflags gtkmm-4.0` -std=c++17 -Os -Wall# -g
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
-UHIBFLAGS = -std=c++17 -Os -Wall# -g
 ELIBS = -lpthread -ludisks2 -ldl
 DT := $(shell date +%s)
 
+$(BUILD)/%.o:*/%.cpp ; $(CMPGO)
+$(BUILD)/%.o:*/*/%.cpp ; $(CMPGO)
+
 .PHONY: all
 
-all: bldaf
-
-$(BUILD)/%.o:src/%.cpp
-	$(CPP) -c -o $@ $(GTKMMFLAGS) $(UHIBFLAGS) $<
+all: bldaf	
 
 cmsg:
 	@echo '$(shell printf "** Build time : %ds **" $(shell expr $(shell date +%s) - $(DT)))'

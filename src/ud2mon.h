@@ -6,7 +6,7 @@
 #ifndef _UD2MON_H_
 #define _UD2MON_H_
 
-#include "smdialog.h"
+#include "dlg/smdialog.h"
 #include <udisks2/udisks/udisks.h>
 #include <list>
 #include "sensmon.h"

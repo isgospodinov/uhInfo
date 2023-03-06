@@ -6,8 +6,8 @@
 #ifndef _CPUSTAT_H_
 #define _CPUSTAT_H_
 
-#include "hdwaretc.h"
-#include "hdwarev.h"
+#include "../dar/hdwaretc.h"
+#include "../dar/hdwarev.h"
 
 class CpuStatDlg : public UhiDlgWnd
 {

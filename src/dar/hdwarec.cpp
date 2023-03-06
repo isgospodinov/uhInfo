@@ -3,8 +3,8 @@
  *    Copyright (C) 2023
  */
 
-#include "mwnd.h"
-#include "proc.h"
+#include "../mwnd.h"
+#include "../proc.h"
 #include <cairomm/context.h>
 #include "hdwarec.h"
 

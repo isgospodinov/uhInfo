@@ -3,7 +3,7 @@
  *    Copyright (C) 2023
  */
 
-#include "mwndui.h"
+#include "../mwndui.h"
 
 UhiDlgWnd::UhiDlgWnd(const Gtk::Window *const pW) : plMw(pW)
 {

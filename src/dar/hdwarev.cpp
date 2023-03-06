@@ -4,7 +4,7 @@
  */
 
 #include "hdwarev.h"
-#include "sysens.h"
+#include "../sysens.h"
 
 void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {

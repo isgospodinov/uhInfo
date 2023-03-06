@@ -6,7 +6,7 @@
 #ifndef _PREFSDLG_H_
 #define _PREFSDLG_H_
 
-#include "uhirc.h"
+#include "../uhirc.h"
 
 class CPrefsDlg : public Gtk::Window
 {

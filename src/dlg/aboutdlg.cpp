@@ -4,7 +4,7 @@
  */
 
 #include "aboutdlg.h"
-#include "uhirc2.h"
+#include "../uhirc2.h"
 
 CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB("Close"),lB("http://www.uhinfo.free.bg/","Go to uhInfo website"),
                                    lbGH("https://github.com/isgospodinov/uhInfo","uhInfo on GitHub"),m_copyright("Copyright© Ivailo Gospodinov"),

@@ -6,7 +6,7 @@
 #ifndef HDWARETC_
 #define HDWARETC_
 
-#include "uhirc.h"
+#include "../uhirc.h"
 
 class CDrArCpuInTempr : public CDrArCpu
 {
