@@ -19,6 +19,7 @@ public:
 	const bool VCoresActivities() const;
 private:
 	const VCORESBUNCH *const pVcores;
+	bool draw_sensor_name = false;
 };
 
 

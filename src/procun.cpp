@@ -21,6 +21,7 @@ std::string CProcUnits::ProcInfoInit()
        }
    }
 
+   //TestPoint
    // m_CpuAltCalc = false;
 
    return init;

@@ -121,7 +121,8 @@ void CSysens::SensorsDetect(bool *flag)
                             if(!visnode) ++chnd.inactive_sensors_number;
 
                             if(chnd.sensors.back().is_Vcore) {
-                            	           ldvc->push_back(&chnd.sensors.back());
+                            	   //TestPoint
+                            	   ldvc->push_back(&chnd.sensors.back());
                             }
 
 
