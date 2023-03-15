@@ -96,6 +96,15 @@
 	      set_show_menubar(wndstat); \
 		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? (pfDlg->GetShowCPUfq() && m_DAtemperature.HasActivities()): false) && !wndstat)
 
+#define CONDITCPUSUMMARY(stat) \
+		m_Fbox_CPUActivityAll.set_visible(stat); \
+		m_CPUModeLabel.set_visible(stat); \
+		m_CPUNativeFqLabel.set_visible(stat); \
+		m_CPUCompareLabel.set_visible(stat); \
+        m_CPUModeSwitch.set_visible(stat); \
+        m_CPUNativeFqSwitch.set_visible(stat); \
+	    m_CPUCompareSwitch.set_visible(stat)
+
 #define FRIEND(Class) friend bool Class::Wnd_close_handler(); \
                       friend void Class::on_show()
 
@@ -137,7 +146,7 @@
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION > (minor)) ||  \
      (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION == (minor) && GTKMM_MICRO_VERSION >= (micro)))*/                                
 
-using  post_init_sig = sigc::signal<void(const int,const int,const double)>;
+using  post_init_sig = sigc::signal<void(const int,const int)>;
 
 using cpu_chain_el = struct _cpu_chain {
 	  std::string cpuid = "";

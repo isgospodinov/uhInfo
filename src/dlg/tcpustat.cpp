@@ -6,7 +6,8 @@
 #include "../mwnd.h"
 
 CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV) : UhiDlgWnd(pMWnd),lc_TextView(),
-                                                    cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),local_CpuInTempr(&lpCPU->cpuFqAvg.FqAvg,&lpCPU->cpuFqAvg.UsgAvg,&fqmax),local_SensVcore(pV)
+                        cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),fqmax(lpCPU->Get_PtrCpu_fqmax()),
+						local_CpuInTempr(lpCPU->GetCpuFqAvg(),fqmax),local_SensVcore(pV)
 {
 	set_transient_for(*pMWnd);
 	set_title("CPU status");
@@ -160,8 +161,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 
 	std::string res = uhiutil::execmd("head -n1 /proc/stat");
 	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
-	local_CpuInTempr.Redraw();
-	if(local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();
+	Redraw();
 
 	return true;
 }
@@ -174,7 +174,7 @@ void CpuStatDlg::on_WrnLewel_changed()
 		   case 2: cwf = .94;break;
 		   case 3: cwf = .96;break;
 	  }
-	  cpufquattent = fqmax * cwf;
+	  cpufquattent = *fqmax * cwf;
       set_InfoLabel(std::to_string((int) cpufquattent));
 }
 

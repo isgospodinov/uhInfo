@@ -36,7 +36,7 @@ protected:
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
   Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
   Gtk::Grid m_gridVGA_cond,m_StatusBar_Grid_condit;
-  Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar;
+  Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar,m_Box_CPUActivityAll;
   Gtk::Button m_ButtonQuit;
   Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
   Gtk::Label m_Label_Sensors,m_ToolbarChoice{"  >  "};
@@ -45,8 +45,8 @@ protected:
 
   //CPU activity all
   Gtk::Grid m_BlinkGrid,m_CPUModeGrid;
-  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUNativeFqLabel;
-  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch;
+  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUOverallLabel, m_CPUNativeFqLabel;
+  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_CPUOverallSwitch, m_BlinkSwitch;
 
   Gtk::FlowBox m_Fbox_CPUActivityAll;
   Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature,m_TbFrame;
@@ -94,6 +94,7 @@ protected:
   virtual void On_CPUActivityAll_switch_changed() = 0;
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
+  virtual void On_CPUOverall_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
 
   virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}

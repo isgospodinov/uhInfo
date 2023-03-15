@@ -14,10 +14,12 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
 {
    m_CPUModeGrid.attach(m_CPUModeLabel, 0, 1, 1, 1);
    m_CPUModeGrid.attach(m_CPUModeSwitch, 1, 1, 1, 1);
-   m_CPUModeGrid.attach(m_CPUNativeFqLabel, 2, 1, 1, 1);
-   m_CPUModeGrid.attach(m_CPUNativeFqSwitch, 3, 1, 1, 1);
-   m_CPUModeGrid.attach(m_CPUCompareLabel, 1, 2, 1, 1);
-   m_CPUModeGrid.attach(m_CPUCompareSwitch, 2, 2, 1, 1);
+   m_CPUModeGrid.attach(m_CPUNativeFqLabel, 4, 1, 1, 1);
+   m_CPUModeGrid.attach(m_CPUNativeFqSwitch, 5, 1, 1, 1);
+   m_CPUModeGrid.attach(m_CPUCompareLabel, 2, 1, 1, 1);
+   m_CPUModeGrid.attach(m_CPUCompareSwitch, 3, 1, 1, 1);
+   m_CPUModeGrid.attach(m_CPUOverallLabel, 2, 2, 1, 1);
+   m_CPUModeGrid.attach(m_CPUOverallSwitch, 3, 2, 1, 1);
 
   m_BlinkGrid.attach(m_BlinkLabel, 0, 1, 1, 1);
   m_BlinkGrid.attach(m_BlinkSwitch, 1, 1, 1, 1);
@@ -67,7 +69,8 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
 
   m_Frame_Sensors.set_child(m_ScrolledWindow);
 
-  m_Frame_CPUActivityAll.set_child(m_Fbox_CPUActivityAll);
+  m_Box_CPUActivityAll.append(m_Fbox_CPUActivityAll);
+  m_Frame_CPUActivityAll.set_child(m_Box_CPUActivityAll);
 
   m_DAFrame_Temperature.set_child(m_DAtemperature);
   m_TbFrame.set_child(mDA_ToolBar);
@@ -160,6 +163,7 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_CPUModeSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_CPUActivityAll_switch_changed));
   m_CPUCompareSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_Compare_mode_switch_changed));
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
+  m_CPUOverallSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_CPUOverall_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
 
@@ -216,6 +220,7 @@ void UIHWindow::InitUI()
   m_CPUCompareLabel.set_text("Compare ");
   m_CPUNativeFqLabel.set_text("Relative/Native ");
   m_CPUModeLabel.set_text("Fq. source ");
+  m_CPUOverallLabel.set_text("Units/Sum ");
   m_BlinkLabel.set_text("Indicators blinking    ");
   m_Label_Sensors.set_text(" Sensors :");
   m_VBoxCPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
@@ -233,6 +238,7 @@ void UIHWindow::InitUI()
   m_VBoxCPU.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBoxCPU_Freq_Use.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBoxVGA.set_orientation(Gtk::Orientation::VERTICAL);
+  m_Box_CPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
   m_separator.set_orientation(Gtk::Orientation::HORIZONTAL);
   hbox_operation_status_cpu.set_orientation(Gtk::Orientation::HORIZONTAL);
   hbox_operation_status_pcie.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -283,10 +289,12 @@ void UIHWindow::InitUI()
   m_CPUCompareLabel.set_halign(Gtk::Align::END);
   m_CPUNativeFqLabel.set_halign(Gtk::Align::END);
   m_CPUModeLabel.set_halign(Gtk::Align::END);
+  m_CPUOverallLabel.set_halign(Gtk::Align::END);
 
   m_CPUModeSwitch.set_halign(Gtk::Align::START);
   m_CPUCompareSwitch.set_halign(Gtk::Align::START);
   m_CPUNativeFqSwitch.set_halign(Gtk::Align::START);
+  m_CPUOverallSwitch.set_halign(Gtk::Align::START);
   m_BlinkLabel.set_halign(Gtk::Align::START);
   m_BlinkSwitch.set_halign(Gtk::Align::END);
   
@@ -402,6 +410,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
           uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),lprv,"ls_cls");
           uhiutil::set_css_style(m_pbUse.get_style_context(),lprv,"fu_cls");
           uhiutil::set_css_style(m_pbFreq.get_style_context(),lprv,"fu_cls");
+          uhiutil::set_css_style(m_Box_CPUActivityAll.get_style_context(),lprv,"toolbar");
 
           CDrArCpu::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrArCpu::l_CPUCompareSwitch = &m_CPUCompareSwitch;

@@ -14,8 +14,8 @@ public:
 	using StatPaint = enum class PaintMode {TEMPRCPUSTAT,TEMPRCPUSGSTAT,FREQP,COMPAREFREQP,USAGE};
 	using TUDRAWVECTOR = std::array<double, uhiutil::calc::draw_cpu_statistic>;
 
-	CDrArCpu(const TUDRAWVECTOR *dw_frec = nullptr,const TUDRAWVECTOR *dw_frec_cp = nullptr,const TUDRAWVECTOR *dw_usg = nullptr);
-	CDrArCpu(const TUDRAWVECTOR *const*const cpuFq,const TUDRAWVECTOR *const cpuUsg) : cpuFqSum(*cpuFq),cpuUsgSum(cpuUsg) {}
+	CDrArCpu(const TUDRAWVECTOR *dw_frec, const TUDRAWVECTOR *dw_frec_cp, const TUDRAWVECTOR *dw_usg);
+	CDrArCpu(const TUDRAWVECTOR *cpuFq,const TUDRAWVECTOR *cpuUsg) : cpuFqSum(cpuFq),cpuUsgSum(cpuUsg) {}
 	virtual ~CDrArCpu() = default;
 
 	static const Gtk::Switch *l_CPUModeSwitch,*l_CPUCompareSwitch;

@@ -7,15 +7,22 @@
 #define HDWARETC_
 
 #include "../uhirc.h"
+#include "../procun.h"
 
 class CDrArCpuInTempr : public CDrArCpu
 {
 public:
-	CDrArCpuInTempr(const CDrArCpu::TUDRAWVECTOR *const cpu_fda,const CDrArCpu::TUDRAWVECTOR *const cpu_usg,const double *const mx) : CDrArCpu(&cpu_fda,cpu_usg),cpuFqMax(mx){}
+	using CpuDaMode = enum class DaCpuInfoMode {NORMAL,EXTENDED};
+
+	CDrArCpuInTempr(CProcUnits::PFQAVG pFA, const double *const mx,CpuDaMode cdm = CpuDaMode::NORMAL) : CDrArCpu(&pFA->FqAvg,&pFA->UsgAvg),cpuFqMax(mx),pFqAv(pFA),lcdm(cdm){}
 	virtual ~CDrArCpuInTempr() = default;
 private:
 	virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
-	const double *const cpuFqMax = 0;
+	const double *const cpuFqMax = nullptr;
+
+	CProcUnits::PFQAVG pFqAv = nullptr;
+	CpuDaMode lcdm;
+
 };
 
 #endif // HDWARETC_

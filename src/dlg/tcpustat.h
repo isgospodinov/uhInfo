@@ -19,7 +19,7 @@ public:
 	virtual void on_show() override;
 	void stop_cpustat_timer();
 	const int get_CpuFqWrnLevel() const {return cb_WrnLevel.get_active_row_number();}
-	virtual void on_set_after_init_param(const int w,const int h,const double p) override {set_default_size(w / 3, (h - (h / 4)));fqmax = p;cpufquattent = fqmax * .9;}
+	virtual void on_set_after_init_param(const int w,const int h) override {set_default_size(w / 3, (h - (h / 4)));cpufquattent = *fqmax * .9;}
 
 private:
    Gtk::Frame fr_AllWnd,lfr_Tb,lcpuDrAr,lfr_VCativ;
@@ -29,9 +29,10 @@ private:
    Gtk::ComboBoxText cb_WrnLevel;
    Gtk::Label l_InfoLabel,l_InfoCpu{"Overall : CPU Fq. / CPU usage"},l_VCstat{"Vcore`s statistic"};
    const char *const tag_attention = "cpu_f_attent";
-   double fqmax = .0,cpufquattent = .0;
+   double cpufquattent = .0;
 
    CProcUnits *const lpCPU = nullptr;
+   double *const fqmax = nullptr;
    CDrArCpuInTempr local_CpuInTempr;
    CDrArVcore local_SensVcore;
 
@@ -40,7 +41,8 @@ private:
 
    virtual void InitVision() override;
    void on_WrnLewel_changed();
-   void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
+   void Redraw(){local_CpuInTempr.Redraw();if(local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();}
+   void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) *fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
 };
 
 #endif // _CPUSTAT_H_

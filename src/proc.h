@@ -21,11 +21,12 @@ public :
     virtual std::string ProcInfoInit();
     virtual void CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch = nullptr,bool bCpuAltCalc = false);
     unsigned int Get_cpu_units() const {return cpu_units;}
-    const double Get_cpu_fqmax() const {return cpu_max_mhz;}
+    double *const Get_PtrCpu_fqmax() {return &cpu_max_mhz;}
     double FreqCalc(std::string &Fq, bool bc = false, bool fast = false);
 
     static bool m_CpuAltCalc;
     bool m_ClearCalcData = false;
+    std::string cpuname = "";
 
     virtual ~CProc() = default;
 protected :

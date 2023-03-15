@@ -32,7 +32,7 @@ std::string CProc::ProcInfoInit()
    std::string workbuffer = uhiutil::execmd("lscpu"); 
    if(workbuffer == "") return "";
 
-   std::string cpuname(""),cores(""),threads(""),min(""),max("");
+   std::string cores(""),threads(""),min(""),max("");
 
    cpuname = uhiutil::execmd("lscpu | grep 'Model name:'");
    uhiutil::newline(cpuname,"Model name:",Direction::RIGHT);

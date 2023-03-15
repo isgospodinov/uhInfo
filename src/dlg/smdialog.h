@@ -22,7 +22,7 @@ public:
    int dh = 0, dw = 0;
    const std::string GetInused(bool all = false) const;
    const std::string GetAllInused() const;
-   virtual void on_set_after_init_param(const int w,const int h,const double p) override {set_default_size(w / 3, (h - (h / 4)));}
+   virtual void on_set_after_init_param(const int w,const int h) override {set_default_size(w / 3, (h - (h / 4)));}
 private:
    const uhimc_unique_ptr vColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::SENSORS));
    const Glib::RefPtr<Gtk::ListStore> pRefTreeModel = Gtk::ListStore::create(*vColumns);

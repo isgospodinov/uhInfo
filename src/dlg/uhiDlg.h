@@ -12,7 +12,7 @@ public:
 	UhiDlgWnd(const Gtk::Window *const pW);
 	virtual ~UhiDlgWnd()  = default;
 protected:
-	virtual void on_set_after_init_param(const int ,const int ,const double ) = 0;
+	virtual void on_set_after_init_param(const int ,const int) = 0;
 	virtual void InitVision() = 0;
 	virtual void on_show() override = 0;
 

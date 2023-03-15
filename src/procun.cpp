@@ -30,6 +30,7 @@ std::string CProcUnits::ProcInfoInit()
 void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch,bool bCpuAltCalc)
 {
     bool local_cd(m_ClearCalcData);
+    double sum = .0;
 
     if(((pbF != nullptr) && (pbU != nullptr))) {
              if(local_cd) ClearCPUnitStatistic();
@@ -63,7 +64,11 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
                 UIBCF((*elV).cpuid_m_pbU,usgdc,res);
 
                 (*cel).set_data(freqdc,usgdc,freqdc_compare);
+                sum += freqdc;
              }
+
+             std::string res = uhiutil::execmd("head -n1 /proc/stat");
+             cpuFqAvg.set_cpufq_average_data(sum / (double) cpu_units,CProc::UsageCalc(res));
     }
     
     if(local_cd) m_ClearCalcData = false;

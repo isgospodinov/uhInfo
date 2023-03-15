@@ -39,10 +39,12 @@ private:
   const std::unique_ptr<ClrDialog> clrDlg;
   const std::unique_ptr<CpuStatDlg> cpuStatDlg;
 
+  CDrArCpuInTempr da_CpuOverall;
+
   FRIEND(ClrDialog);
   FRIEND(CpuStatDlg);
 
-  void Post_Init_Param() {sig_postinit_param.emit(get_width(),get_height(),pntProcessor->Get_cpu_fqmax());}
+  void Post_Init_Param() {sig_postinit_param.emit(get_width(),get_height());}
 
   virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
 
@@ -53,7 +55,7 @@ private:
   void init_units_activity_vision();
   void InitVision();
   bool uhI_Timer(int TmNo);
-  void RedrawActivity(){for(std::list<cpu_chain_el>::iterator chnel = cpu_units_monit_chain.begin(); chnel != cpu_units_monit_chain.end(); chnel++) (*chnel).pDArea->Redraw();}
+  void RedrawActivity(){da_CpuOverall.Redraw();for(std::list<cpu_chain_el>::iterator chnel = cpu_units_monit_chain.begin(); chnel != cpu_units_monit_chain.end(); chnel++) (*chnel).pDArea->Redraw();}
   void OnTempToggled(const Glib::ustring &path_string);
   void ShowHide_compare_elements(bool sv = false) const {
          std::for_each(cpu_units_monit_chain.begin(), cpu_units_monit_chain.end(), [sv](const cpu_chain_el &ce){ 
@@ -70,6 +72,7 @@ private:
   virtual void On_CPUActivityAll_switch_changed() override;
   virtual void On_Compare_mode_switch_changed() override;
   virtual void On_NativeFq_changed() override {pfDlg->SetFqState(m_CPUNativeFqSwitch.get_active());}
+  virtual void On_CPUOverall_changed() override;
   virtual void on_gpus_selection_changed() override {if(pGpus)m_Label_VGA.set_text(pGpus->GpuStatus(m_Gpus.get_active_row_number()));}
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}

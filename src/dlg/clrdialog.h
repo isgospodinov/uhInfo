@@ -17,7 +17,7 @@ public:
 	void OnColorChoiceToggled(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 	bool Wnd_close_handler();
 	virtual void on_show() override;
-	virtual void on_set_after_init_param(const int w,const int h,const double p) override {set_default_size(w / 3, (h - (h / 4)));}
+	virtual void on_set_after_init_param(const int w,const int h) override {set_default_size(w / 3, (h - (h / 4)));}
 
 private:
    const uhimc_unique_ptr cvColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::COLOR));
