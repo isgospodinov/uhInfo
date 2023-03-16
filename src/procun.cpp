@@ -37,7 +37,7 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
              CProc::CalcFrecqUsage(pbF,pbU);
     }
     else {
-             std::string cline(""),cline_compare("");
+             std::string cline(""),cline_compare(""),fq_double("");
              double usgdc = 0.0,freqdc = 0.0,freqdc_compare = 0.0;
              std::istringstream input_ci{std::istringstream(uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))},
             		 input_sf{(m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")};
@@ -48,11 +48,16 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
                 if(local_cd) cel->init_calc_el();
 
             	 std::getline(input_ci,cline);
+            	 fq_double = cline;
             	 freqdc = FreqCalc(cline,CHECKBCF);
+            	 if(!m_CpuAltCalc)
+            		       sum += (uhiutil::cpu::native_fq_state ? freqdc : FreqCalc(fq_double,false,true));
 
             	 if(m_CpuAltCalc && std::getline(input_sf,cline_compare)) {
             		cline_compare = std::to_string((std::stod(cline_compare) / (double) 1000));
+            		fq_double = cline_compare;
                     freqdc_compare = FreqCalc(cline_compare,!CHECKBCF);
+                    sum += (uhiutil::cpu::native_fq_state ? freqdc_compare : FreqCalc(fq_double,false,true));
                 }
 
             	UIBCF((*elV).cpuid_m_pbF,(CHECKBCF ? freqdc_compare : freqdc),(CHECKBCF ? cline_compare : cline));
@@ -64,7 +69,6 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
                 UIBCF((*elV).cpuid_m_pbU,usgdc,res);
 
                 (*cel).set_data(freqdc,usgdc,freqdc_compare);
-                sum += freqdc;
              }
 
              std::string res = uhiutil::execmd("head -n1 /proc/stat");
