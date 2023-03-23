@@ -41,12 +41,13 @@ private:
 
   CDrArCpuInTempr da_CpuOverall;
 
-  FRIEND(ClrDialog);
-  FRIEND(CpuStatDlg);
+  friend bool ClrDialog::Wnd_close_handler();
+  friend void ClrDialog::on_show();
+  friend void CpuStatDlg::CtrlStatMng(const bool) const;
 
   void Post_Init_Param() {sig_postinit_param.emit(get_width(),get_height());}
 
-  virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->show(); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
+  virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
 
   void On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
 
@@ -69,6 +70,7 @@ private:
   virtual void get_preferences() const override {if(pfDlg){pfDlg->present();}}
   virtual void Wnd_show_handler() override {m_VPanedTrmpetature.set_position((get_height() - 110) / 2);}
   virtual void on_quit_button_clicked() override {QuitTasks();hide();}
+  virtual void on_overall_button_clicked() override {cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::CPUOVLDLG);}
   virtual void On_CPUActivityAll_switch_changed() override;
   virtual void On_Compare_mode_switch_changed() override;
   virtual void On_NativeFq_changed() override {pfDlg->SetFqState(m_CPUNativeFqSwitch.get_active());}

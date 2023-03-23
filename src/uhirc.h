@@ -98,15 +98,13 @@
 
 #define CONDITCPUSUMMARY(stat) \
 		m_Fbox_CPUActivityAll.set_visible(stat); \
+		m_ButtCPUOverall.set_visible(stat); \
 		m_CPUModeLabel.set_visible(stat); \
 		m_CPUNativeFqLabel.set_visible(stat); \
 		m_CPUCompareLabel.set_visible(stat); \
         m_CPUModeSwitch.set_visible(stat); \
         m_CPUNativeFqSwitch.set_visible(stat); \
 	    m_CPUCompareSwitch.set_visible(stat)
-
-#define FRIEND(Class) friend bool Class::Wnd_close_handler(); \
-                      friend void Class::on_show()
 
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()

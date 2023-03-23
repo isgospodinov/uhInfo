@@ -8,7 +8,7 @@
 
 post_init_sig UIHWindow::sig_postinit_param;
 
-UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
+UIHWindow::UIHWindow() : m_ButtCPUOverall("Sum\nDlg"), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
                          m_status_bar("  Everything at a glance..."), m_TextView(), m_TreeView(m_refTreeModel),
 						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
 {
@@ -147,7 +147,11 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   m_VBoxAll.append(m_separator);
   m_VBoxAll.append(m_StatusBar_Grid_condit);
 
-  m_VBoxCPUActivityAll.append(m_CPUModeGrid);
+  mFr_GRrid.set_child(m_CPUModeGrid);
+  m_Box_GRridAndButt.append(mFr_GRrid);
+  m_Box_GRridAndButt.append(m_ButtCPUOverall);
+
+  m_VBoxCPUActivityAll.append(m_Box_GRridAndButt);
   m_VBoxCPUActivityAll.append(m_ScrolledWindowCPUActivityAll);
  
   hbox_operation_status_sensors.append(operation_status_image_sensors);
@@ -158,6 +162,7 @@ UIHWindow::UIHWindow() : m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_Scrol
   signal_show().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_show_handler));
   signal_close_request().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_close_handler),false);
   m_ButtonQuit.signal_clicked().connect(sigc::mem_fun(*this, &UIHWindow::on_quit_button_clicked));
+  m_ButtCPUOverall.signal_clicked().connect(sigc::mem_fun(*this, &UIHWindow::on_overall_button_clicked));
 
   m_Gpus.signal_changed().connect(sigc::mem_fun(*this,&UIHWindow::on_gpus_selection_changed));
   m_CPUModeSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_CPUActivityAll_switch_changed));
@@ -279,6 +284,10 @@ void UIHWindow::InitUI()
   m_sb_cpu_status.set_halign(Gtk::Align::START);
   m_sb_labeltext.set_halign(Gtk::Align::START);
   m_sb_status.set_halign(Gtk::Align::START);
+
+  m_Box_GRridAndButt.set_halign(Gtk::Align::CENTER);
+  m_ButtCPUOverall.set_margin(6);
+  m_ButtCPUOverall.set_margin_start(12);
 
   m_CPUModeGrid.set_halign(Gtk::Align::CENTER);
   m_CPUModeGrid.set_column_spacing(4);
@@ -411,6 +420,8 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
           uhiutil::set_css_style(m_pbUse.get_style_context(),lprv,"fu_cls");
           uhiutil::set_css_style(m_pbFreq.get_style_context(),lprv,"fu_cls");
           uhiutil::set_css_style(m_Box_CPUActivityAll.get_style_context(),lprv,"toolbar");
+          uhiutil::set_css_style(m_ButtCPUOverall.get_style_context(),lprv,"toolbar");
+          uhiutil::set_css_style(mFr_GRrid.get_style_context(),lprv,"toolbar");
 
           CDrArCpu::l_CPUModeSwitch = &m_CPUModeSwitch;
           CDrArCpu::l_CPUCompareSwitch = &m_CPUCompareSwitch;

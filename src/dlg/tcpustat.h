@@ -15,11 +15,15 @@ public:
 	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV);
 	virtual ~CpuStatDlg() = default;
 
+	using WrcMode = enum class WmDlg{CPUOVLDLG,TEMPRTDLG};
+
 	bool Wnd_close_handler();
 	virtual void on_show() override;
+	void OnShowDlg(WrcMode wm) {lcWrMode = wm;show();}
 	void stop_cpustat_timer();
 	const int get_CpuFqWrnLevel() const {return cb_WrnLevel.get_active_row_number();}
 	virtual void on_set_after_init_param(const int w,const int h) override {set_default_size(w / 3, (h - (h / 4)));cpufquattent = *fqmax * .9;}
+	void CtrlStatMng(const bool st) const;
 
 private:
    Gtk::Frame fr_AllWnd,lfr_Tb,lcpuDrAr,lfr_VCativ;
@@ -36,12 +40,14 @@ private:
    CDrArCpuInTempr local_CpuInTempr;
    CDrArVcore local_SensVcore;
 
+   WrcMode lcWrMode;
+
    std::unique_ptr<sigc::connection> l_timer{nullptr};
    bool ot_timer(int tmNo);
 
    virtual void InitVision() override;
    void on_WrnLewel_changed();
-   void Redraw(){local_CpuInTempr.Redraw();if(local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();}
+   void Redraw(){local_CpuInTempr.Redraw();if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();}
    void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) *fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
 };
 

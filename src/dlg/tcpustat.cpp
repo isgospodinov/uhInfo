@@ -41,7 +41,7 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
 
 bool CpuStatDlg::Wnd_close_handler()
 {
-	PTSMNG(mDA_ToolBar).set_visible(true);
+	CtrlStatMng(true);
 	stop_cpustat_timer();
 
 	return true;
@@ -98,19 +98,21 @@ void CpuStatDlg::InitVision()
 void CpuStatDlg::on_show()
 {
 	UhiDlgWnd::on_show();
-	PTSMNG(mDA_ToolBar).set_visible(false);
+	CtrlStatMng(false);
+
 	(lc_TextView.get_buffer())->set_text("Initialization...");
 
 	on_WrnLewel_changed();
 
 	if(!l_timer) l_timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval,&CpuStatDlg::ot_timer);
 
-	if(local_SensVcore.VCoresActivities()){
+	if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities()){
 		lfr_VCativ.set_visible(true);
 		local_SensVcore.ClearOrActivateVCStatistic(true);
 	}
-	else
+	else {
 		lfr_VCativ.set_visible(false);
+	}
 
 }
 
@@ -130,15 +132,17 @@ bool CpuStatDlg::ot_timer(int tmNo)
 	while(std::getline(fcinstrm, fq_line)) {
 		      if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
 		      cv = std::stod(fq_line);
-			  if(!CProc::m_CpuAltCalc) {
-			       sum += lpCPU->FreqCalc(fq_line,false,true);
+			  if(lcWrMode == WmDlg::TEMPRTDLG && !CProc::m_CpuAltCalc) {
+			           sum += lpCPU->FreqCalc(fq_line,false,true);
 			  }
 
 			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line)) {
 				   if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
 				   fq_line = std::to_string((std::stod(fq_line) / (double) 1000));
 				   sv = std::stod(fq_line);
-			       sum += lpCPU->FreqCalc(fq_line,false,true);
+				   if(lcWrMode == WmDlg::TEMPRTDLG) {
+			              sum += lpCPU->FreqCalc(fq_line,false,true);
+				   }
 			  }
 
 	          bfit = lc_buff->insert(bfit,"CPU " + std::to_string(cn) + ":  ");
@@ -159,8 +163,11 @@ bool CpuStatDlg::ot_timer(int tmNo)
 			  sv = cv = .0;
 		}
 
-	std::string res = uhiutil::execmd("head -n1 /proc/stat");
-	lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
+	if(lcWrMode == WmDlg::TEMPRTDLG) {
+	    std::string res = uhiutil::execmd("head -n1 /proc/stat");
+	    lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
+	}
+
 	Redraw();
 
 	return true;
@@ -186,7 +193,21 @@ void CpuStatDlg::stop_cpustat_timer()
 		hide();
 	}
 
-	lpCPU->cpuFqAvg.clear_cpufq_average_data();
+	if(lcWrMode == WmDlg::TEMPRTDLG) {
+	    lpCPU->cpuFqAvg.clear_cpufq_average_data();
 
-	if(local_SensVcore.VCoresActivities())local_SensVcore.ClearOrActivateVCStatistic();
+	    if(local_SensVcore.VCoresActivities())local_SensVcore.ClearOrActivateVCStatistic();
+	}
+}
+
+inline void CpuStatDlg::CtrlStatMng(const bool st) const
+{
+	if(lcWrMode == WmDlg::TEMPRTDLG)
+	       PTSMNG(mDA_ToolBar).set_visible(st);
+	else {
+		PTSMNG(set_show_menubar(st));
+		PTSMNG(m_ButtCPUOverall).set_visible(st);
+		PTSMNG(m_CPUOverallSwitch).set_visible(st);
+		PTSMNG(m_CPUOverallLabel).set_visible(st);
+	}
 }
