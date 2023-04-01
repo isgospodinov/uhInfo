@@ -166,9 +166,8 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
    std::string bufer("");
    Gtk::TextBuffer::iterator itxbf = txtbuff->get_iter_at_line(txtbuff->get_line_count());
    if(GetSensorNodesNumb() && !get_ud2_print_status()) {
-	   bufer.append("  " + std::string{sensors::nud2} + '\n');
         if(printmode)
-        	itxbf = txtbuff->insert(itxbf,"  " + std::string{sensors::nud2} + '\n');
+        	itxbf = txtbuff->insert_with_tag(itxbf,"  " + std::string{sensors::nud2} + '\n',uhiutil::ui::max_tag);
         for(std::list<Ud2_sens_node>::iterator it =  monitoring.begin(); it != monitoring.end(); it++) {
               if(!it->visible) continue;
               if(Ud2Cl && it->ata_drive) {

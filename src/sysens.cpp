@@ -70,7 +70,8 @@ void CSysens::SensorsDetect(bool *flag)
              bool continue_break = false;
              if(!monitoring.empty()) {
                  for(Chip_node n : monitoring) {
-                       if(n.chip_name.cnip_prefix.find(std::string(chpname->prefix)) != std::string::npos && n.chip_name.cnip_bus.type == chpname->bus.type && n.chip_name.cnip_bus.nr == chpname->bus.nr && n.chip_name.cnip_addr == chpname->addr) {
+                       if(n.chip_name.cnip_prefix.find(std::string(chpname->prefix)) != std::string::npos &&
+                    		                        n.chip_name.cnip_bus.type == chpname->bus.type && n.chip_name.cnip_bus.nr == chpname->bus.nr && n.chip_name.cnip_addr == chpname->addr) {
                             if(!continue_break) continue_break = true;
                             break;
                        }
@@ -105,6 +106,9 @@ void CSysens::SensorsDetect(bool *flag)
                                break;
                         case SENSORS_FEATURE_POWER: 
                                 subfeat_type = SENSORS_SUBFEATURE_POWER_INPUT;
+                                break;
+                        case SENSORS_FEATURE_CURR:
+                                subfeat_type = SENSORS_SUBFEATURE_CURR_INPUT;
                                 break;
                         default: continue;
                  } // switch feature type
@@ -171,7 +175,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            }
                            (sysens_get_value)(&cn, sn->feature_number, &value);
                            if(!chipisset) {
-                                    itxbf = txtbuff->insert(itxbf,"  " + n->chip_name.cnip_prefix + "\n");
+                        	        itxbf = txtbuff->insert_with_tag(itxbf,"  " + n->chip_name.cnip_prefix + "\n",uhiutil::ui::max_tag);
                                     chipisset = true;
                            }
 
@@ -179,7 +183,6 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            else itxbf = txtbuff->insert(itxbf,"        ");
                            
                            if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && sn->is_Vcore)) {
-                        	   itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "- - - - - - - - - - -\n        "),uhiutil::ui::active_tag);
                         	   itxbf = txtbuff->insert_with_tag(itxbf,sn->label,
                         		                                   sn->t_statistic_active ? uhiutil::ui::active_tag : uhiutil::ui::max_tag);
                            }
@@ -191,7 +194,6 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                  case SENSORS_FEATURE_IN:
                                 	 if(sn->t_statistic_active || (printmode && sn->is_Vcore)){
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,((std::to_string(value)).substr(0,5) + "V\n"),uhiutil::ui::active_tag);
-                                		 itxbf = txtbuff->insert_with_tag(itxbf,(sn->t_statistic_active ? "" : "        - - - - - - - - - - -\n") , uhiutil::ui::active_tag);
                                 		 if(sn->visible && sn->is_Vcore) {
                                 			 sn->max = value;
                                 			 if(sn->t_statistic_active) sn->SetTemperature(value/ uhiutil::calc::draw_Vcore_scaler);
@@ -218,6 +220,9 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                      break;
                                  case SENSORS_FEATURE_POWER:
                                      itxbf = txtbuff->insert(itxbf,(Print_Value((float)value) + "W\n"));
+                                     break;
+                                 case SENSORS_FEATURE_CURR:
+                                     itxbf = txtbuff->insert(itxbf,(Print_Value((float)value) + "A\n"));
                                      break;
                                  default: break;
                             }

@@ -10,7 +10,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smWndResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
 					   clrDlg(new ClrDialog(this,&css_prov)),cpuStatDlg(new CpuStatDlg(this,&css_prov,pntProcessor.get(),m_DAtemperature.GetDAVcoreAccess())),
-					   da_CpuOverall(((CProcUnits*)pntProcessor.get())->GetCpuFqAvg(),pntProcessor->Get_PtrCpu_fqmax(),CDrArCpuInTempr::CpuDaMode::EXTENDED)
+					   da_CpuOverall((UhiDownCast(pntProcessor.get()))->GetCpuFqAvg(),pntProcessor->Get_PtrCpu_fqmax(),CDrArCpuInTempr::CpuDaMode::EXTENDED)
 {
   set_child(m_VBoxAll);
 
@@ -285,9 +285,11 @@ bool CHWindow::uhI_Timer(int TmNo)
       }
 
       if(sensors_printing_enable) {
-                sensors_print(((condition == 5 || pUd2Manager->dataPrint_forced) ? true : false),pfDlg->GetInTmpMonStat());
-                if(pUd2Manager->dataPrint_forced)  {
-                       pUd2Manager->dataPrint_forced = false;
+    	        const bool Ud2printFrStat = pUd2Manager->GetPrintForceStatus();
+
+                sensors_print(((condition == 5 || Ud2printFrStat) ? true : false),pfDlg->GetInTmpMonStat());
+                if(Ud2printFrStat)  {
+                       pUd2Manager->PrintForceExternal(false);
                        if(condition != 5) condition = 5;
                 }
       }
@@ -324,7 +326,11 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        if((Ud2print && !temperature_mode_status) || (temperature_mode_status && extension))
                Ud2printcache = pUd2Manager->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat); 
 
-       if(!temperature_mode_status) buff->insert(buff->get_iter_at_line(buff->get_line_count()),Ud2printcache);
+       if(!temperature_mode_status && !Ud2printcache.empty()) {
+    	   Gtk::TextBuffer::iterator tbit = buff->get_iter_at_line(buff->get_line_count());
+    	   tbit = buff->insert_with_tag(tbit,"  " + std::string{sensors::nud2} + '\n',uhiutil::ui::max_tag);
+    	   buff->insert(tbit,Ud2printcache);
+       }
 
        if(buff->get_text() == "  Detected sensors :    \n") {
            if(item_temperature && !temperature_mode_status /*&& state*/)
@@ -408,7 +414,7 @@ void CHWindow::show_cpu_activity_all()
        }
 
        m_CPUOverallSwitch.set_active(false);
-       ((CProcUnits*)pntProcessor.get())->cpuFqAvg.clear_cpufq_average_data();
+       (UhiDownCast(pntProcessor.get()))->ClearAverageData();
 
        MENUITESTAUS((cpumode ? !cpumode : remeber_activity));
        if(!cpumode && item_infomode && (pSysensors->GetSensorNodesNumb() +

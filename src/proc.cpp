@@ -29,39 +29,36 @@ std::string CProc::Cpu_microcodes()
 
 std::string CProc::ProcInfoInit()
 {
-   std::string workbuffer = uhiutil::execmd("lscpu"); 
-   if(workbuffer == "") return "";
+	std::string cores("0"),threads("0"),min("0"),max("0");
+	cpuname = uhiutil::execmd("cat /proc/cpuinfo | grep 'model name' | head -n1 | awk -F ': ' '{print $2}'");
+	if(cpuname.rfind('\x0A') != std::string::npos) cpuname.pop_back();
 
-   std::string cores(""),threads(""),min(""),max("");
+	if(uhiutil::execmd("lscpu") != "") {
+         cores = uhiutil::execmd("lscpu | grep 'Core(s) per socket:'");
+         uhiutil::newline(cores,"Core(s) per socket:",Direction::RIGHT);
+         uhiutil::end_intervals_remove((cores = uhiutil::start_intervals_remove(cores)));
 
-   cpuname = uhiutil::execmd("lscpu | grep 'Model name:'");
-   uhiutil::newline(cpuname,"Model name:",Direction::RIGHT);
-   uhiutil::end_intervals_remove((cpuname = uhiutil::start_intervals_remove(cpuname)));
-   
-   cores = uhiutil::execmd("lscpu | grep 'Core(s) per socket:'");
-   uhiutil::newline(cores,"Core(s) per socket:",Direction::RIGHT);
-   uhiutil::end_intervals_remove((cores = uhiutil::start_intervals_remove(cores)));
+         threads = uhiutil::execmd("lscpu | grep 'Thread(s) per core:'");
+         uhiutil::newline(threads,"Thread(s) per core:",Direction::RIGHT);
+         uhiutil::end_intervals_remove((threads = uhiutil::start_intervals_remove(threads)));
+         cpu_units = sysconf(_SC_NPROCESSORS_ONLN);
+         threads = std::to_string(cpu_units);
 
-   threads = uhiutil::execmd("lscpu | grep 'Thread(s) per core:'");
-   uhiutil::newline(threads,"Thread(s) per core:",Direction::RIGHT);
-   uhiutil::end_intervals_remove((threads = uhiutil::start_intervals_remove(threads)));
-   cpu_units = sysconf(_SC_NPROCESSORS_ONLN);
-   threads = std::to_string(cpu_units);
+         min = uhiutil::execmd("lscpu | grep 'CPU min'");
+         uhiutil::newline(min,":",Direction::RIGHT);
+         uhiutil::end_intervals_remove((min = uhiutil::start_intervals_remove(min)));
+         cpu_min_mhz = std::stod(min);
 
-   min = uhiutil::execmd("lscpu | grep 'CPU min'");
-   uhiutil::newline(min,":",Direction::RIGHT);
-   uhiutil::end_intervals_remove((min = uhiutil::start_intervals_remove(min)));
-   cpu_min_mhz = (double) std::stod(min);
-
-   max = uhiutil::execmd("lscpu | grep 'CPU max'");
-   uhiutil::newline(max,":",Direction::RIGHT);
-   uhiutil::end_intervals_remove((max = uhiutil::start_intervals_remove(max)));
-   cpu_max_mhz = (double) std::stod(max);
+         max = uhiutil::execmd("lscpu | grep 'CPU max'");
+         uhiutil::newline(max,":",Direction::RIGHT);
+         uhiutil::end_intervals_remove((max = uhiutil::start_intervals_remove(max)));
+         cpu_max_mhz = std::stod(max);
+	}
 
    std::string cpu_mcodes = Cpu_microcodes();
 
    return  ("CPU name: " + cpuname + "\n" + "Microcode(s) : " + cpu_mcodes + "\n" + "CPU cores/threads: " + cores + " / " + threads + "\n" + "CPU min/max: " + \
-                                               std::to_string(std::atoi(min.data())) + "MHz" + " / " + std::to_string(std::atoi(max.data())) + "MHz");
+                                               std::to_string(std::atoi(min.c_str())) + "MHz" + " / " + std::to_string(std::atoi(max.c_str())) + "MHz");
 }
 
 double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
@@ -79,7 +76,7 @@ double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
       double val_max = (cpu_max_mhz / (double) 1000) - (((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000);
       double val_min = ((((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000));
 
-      return (((dres / (double) 1000) - (double)val_min) / (double)val_max);
+      return (((dres / (double) 1000) - val_min) / val_max);
 }
 
 double CProc::UsageCalc(std::string &Usge,LONG2INT *mem_tot,LONG2INT *mem_id)

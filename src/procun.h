@@ -41,10 +41,7 @@ private:
 class CProcUnits : public CProc
 {
      std::list<unit_calc_el> units_calc_cahin; //unit`s chain
-public:
-     CProcUnits() {cpuFqAvg.cpun = &cpuname;cpuFqAvg.cu = &cpu_units; cpuFqAvg.clear_cpufq_average_data();}
-
-    struct {
+     struct {
      	     CDrArCpu::TUDRAWVECTOR FqAvg,UsgAvg;
      	     void clear_cpufq_average_data(){FqAvg.fill(.0);UsgAvg.fill(.0);}
      	     void set_cpufq_average_data(double data,double udata) {
@@ -57,11 +54,15 @@ public:
      	     }
      	     std::string *cpun = nullptr;
      	     unsigned int *cu = nullptr;
-     }cpuFqAvg;
+      }cpuFqAvg;
+public:
+     CProcUnits() {cpuFqAvg.cpun = &cpuname;cpuFqAvg.cu = &cpu_units; ClearAverageData();}
 
      using PFQAVG = decltype(CProcUnits::cpuFqAvg)*;
 
      PFQAVG GetCpuFqAvg() {return &cpuFqAvg;}
+     void ClearAverageData() {cpuFqAvg.clear_cpufq_average_data();}
+     void SetAverageData(double dfq,double dus) {cpuFqAvg.set_cpufq_average_data(dfq,dus);}
      virtual std::string ProcInfoInit() override;
      virtual void CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list<cpu_chain_el> *units_ch = nullptr,bool bCpuAltCalc = false) override;
      void ClearCPUnitStatistic() {std::for_each(units_calc_cahin.begin(), units_calc_cahin.end(), [](unit_calc_el &cpunel){cpunel.init_calc_el();});}

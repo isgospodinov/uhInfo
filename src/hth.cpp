@@ -212,41 +212,34 @@ std::string CInitThread::OS_Info() const
                                                                  "Desktop environment : " + deskenv + (gccver.size() ? (std::string("\n") + std::string("Compiler: ") + gccver) : ""));
 }
 
-void CInitThread::Init(CHWindow *caller) const
+void CInitThread::Init(CHWindow *plMw) const
 {
-    if(caller->pntProcessor)
-          (caller->m_Label_CPU).set_text(caller->pntProcessor->ProcInfoInit());
+    if(PTSMNG(pntProcessor))
+    	PTSMNG(m_Label_CPU).set_text(PTSMNG(pntProcessor)->ProcInfoInit());
 
-    std::string print = caller->MOBO_Info();
-    (caller->m_Label_MOBO).set_text(print);
+    PTSMNG(m_Label_MOBO).set_text(plMw->MOBO_Info());
+    PTSMNG(m_Label_Memory).set_text(plMw->Mem_Info());
 
-    print = caller->Mem_Info();
-    (caller->m_Label_Memory).set_text(print);
-
-    if(caller->pMonitor) {
-         caller->pMonitor->Init(); //Monitor(s)
-         print = caller->pMonitor->Get_Ident();
+    if(PTSMNG(pMonitor)) {
+    	 PTSMNG(pMonitor)->Init(); //Monitor(s)
+    	 std::string print = PTSMNG(pMonitor)->Get_Ident();
          if(print != "") 
-              (caller->m_Label_Monitors).set_text(print);
+        	 PTSMNG(m_Label_Monitors).set_text(print);
     }
 
-    print = caller->GetDevices(DeviceType::NETWORKRESOURSE); //Network resourses
-    (caller->m_Label_Network).set_text(print);
+    PTSMNG(m_Label_Network).set_text(plMw->GetDevices(DeviceType::NETWORKRESOURSE));
+    PTSMNG(m_Label_Audio).set_text(plMw->GetDevices(DeviceType::AUDIO));
 
-    print = caller->GetDevices(DeviceType::AUDIO); //Audio
-    (caller->m_Label_Audio).set_text(print);
+    if(PTSMNG(pGpus))
+    	PTSMNG(pGpus)->Gpus_Info_Init();
 
-    if(caller->pGpus)
-          caller->pGpus->Gpus_Info_Init();
+    PTSMNG(m_Label_OS).set_text(plMw->OS_Info());
 
-    print = caller->OS_Info(); 
-    (caller->m_Label_OS).set_text(print);
+    if(PTSMNG(pSysensors))
+    	PTSMNG(pSysensors)->SensorsDetect(&PTSMNG(temperature_monitoring_enabled));
 
-    if(caller->pSysensors)
-          caller->pSysensors->SensorsDetect(&caller->temperature_monitoring_enabled);
-
-    if(caller->pUd2Manager)
-          caller->pUd2Manager->SensorsDetect();
+    if(PTSMNG(pUd2Manager))
+    	PTSMNG(pUd2Manager)->SensorsDetect();
 
     if(m_Dispatch && CONNECTIONSTATUS(m_Connection)) m_Dispatch->emit();
 }

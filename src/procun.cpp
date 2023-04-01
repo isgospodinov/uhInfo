@@ -72,7 +72,7 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
              }
 
              std::string res = uhiutil::execmd("head -n1 /proc/stat");
-             cpuFqAvg.set_cpufq_average_data(sum / (double) cpu_units,CProc::UsageCalc(res));
+             SetAverageData(sum / (double) cpu_units,CProc::UsageCalc(res));
     }
     
     if(local_cd) m_ClearCalcData = false;

@@ -64,7 +64,11 @@ void CSmDialog::InitVision()
                 row[vColumns->tsensor_name] = sn.label;
                 row[vColumns->tnode_id] = n.chip_id;
                 row[vColumns->tsensor_id] = sn.feature_number;
-                row[vColumns->description] = (sn.sntype == SENSORS_FEATURE_IN ? "   V" : (sn.sntype == SENSORS_FEATURE_TEMP ? "  °t" : ( sn.sntype == SENSORS_FEATURE_POWER ? "  W" : ( sn.sntype ==  SENSORS_FEATURE_FAN ? "  ☼" : "   -"))));
+                row[vColumns->description] = (sn.sntype == SENSORS_FEATURE_IN ? "   V" :
+                		                         (sn.sntype == SENSORS_FEATURE_TEMP ? "  °t" :
+                		                             (sn.sntype == SENSORS_FEATURE_POWER ? "  W" :
+                		                                 (sn.sntype ==  SENSORS_FEATURE_FAN ? "  ☼" :
+                		                    		         (sn.sntype == SENSORS_FEATURE_CURR ? "   A" : "   -")))));
            }
        }
    }
@@ -144,7 +148,7 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	                if(((Glib::ustring((*iter)[vColumns->tsensor_name])) == it->ud2_model_name) && ((Glib::ustring((*iter)[vColumns->tnode_id])) == it->ud2_drv_id)) {
 	                    it->visible = (*iter)[vColumns->col_tcheck];
 	                    ((!it->visible) ? (++pUd2mon->inactive_dev_number,(l_stat ? --pUd2mon->visible_tmp_sens_count : 0)) : (--pUd2mon->inactive_dev_number,(l_stat ? ++pUd2mon->visible_tmp_sens_count : 0)));
-	                    pUd2mon->dataPrint_forced = true;
+	                    pUd2mon->PrintForceExternal();
 	                    break;
 	                }
 	           }
@@ -163,7 +167,8 @@ void CSmDialog::OnToggled(const Glib::ustring &path_string)
 	                            	sn->max = .0;
 	                            }
 
-	                            ((!sn->visible) ? (++n->inactive_sensors_number,(SNTP(SENSORS_FEATURE_TEMP) ? --pSensors->visible_tmp_sens_count : 0)) : (--n->inactive_sensors_number,(sn->sntype == SENSORS_FEATURE_TEMP ? ++pSensors->visible_tmp_sens_count : 0)));
+	                            ((!sn->visible) ? (++n->inactive_sensors_number,(SNTP(SENSORS_FEATURE_TEMP) ? --pSensors->visible_tmp_sens_count : 0)) :
+	                            		                                       (--n->inactive_sensors_number,(sn->sntype == SENSORS_FEATURE_TEMP ? ++pSensors->visible_tmp_sens_count : 0)));
 	                            break_it = true;
 	                            break;
 	                        }

@@ -14,7 +14,7 @@ class CInitThread
 {
 	using fp_DispNtf = void (CHWindow::*)();
 protected :
-    virtual void Init(CHWindow *caller) const;
+    virtual void Init(CHWindow *plMw) const;
     virtual std::string MOBO_Info() const;
     virtual std::string OS_Info() const;
     virtual std::string Mem_Info() const;

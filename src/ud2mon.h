@@ -33,6 +33,7 @@ public :
      unsigned int GetSensorNodesNumb() const {return (Ud2Cl ? (monitoring.size() ? 1 : 0 ) : 0);}
      void SensorsDetect();
      std::string PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status);
+     const bool GetPrintForceStatus() const {return dataPrint_forced;}
      void PrintForceExternal(bool pforce = true) {dataPrint_forced = pforce;}
      virtual void PopulateTemperatureSelection(CHWindow *m_wnd) override;
      virtual CDrArTempr::DRAWVECTORPLUS SensorStatisticToggle(bool status,Glib::ustring color,Glib::ustring node,Glib::ustring sensor,Glib::ustring nodeid,int sensorid,double **max = nullptr) override;
@@ -42,13 +43,13 @@ public :
 
      Ud2mon(CHWindow *p_wnd) : m_wnd(p_wnd){}
      CHWindow *m_wnd = nullptr;
-     bool dataPrint_forced = false;
 private:
     const ud2mon_unique_ptr Ud2Cl = ud2mon_unique_ptr(UDISKS_CLIENT(g_initable_new(UDISKS_TYPE_CLIENT,nullptr,nullptr,nullptr)), [](UDisksClient *ud2c){if(ud2c) g_object_unref(ud2c);});
     std::list<Ud2_sens_node> monitoring;
     long unsigned int inactive_dev_number = 0;
     bool get_ud2_print_status() const {return (inactive_dev_number == monitoring.size());}
     void media_detect(UDisksDrive *dr,bool m2[]) const;
+    bool dataPrint_forced = false;
 };
 
 #endif // _UD2MON_H_

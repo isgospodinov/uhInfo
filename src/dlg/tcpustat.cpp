@@ -165,7 +165,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 
 	if(lcWrMode == WmDlg::TEMPRTDLG) {
 	    std::string res = uhiutil::execmd("head -n1 /proc/stat");
-	    lpCPU->cpuFqAvg.set_cpufq_average_data(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
+	    lpCPU->SetAverageData(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
 	}
 
 	Redraw();
@@ -194,7 +194,7 @@ void CpuStatDlg::stop_cpustat_timer()
 	}
 
 	if(lcWrMode == WmDlg::TEMPRTDLG) {
-	    lpCPU->cpuFqAvg.clear_cpufq_average_data();
+	    lpCPU->ClearAverageData();
 
 	    if(local_SensVcore.VCoresActivities())local_SensVcore.ClearOrActivateVCStatistic();
 	}
