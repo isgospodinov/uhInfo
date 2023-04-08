@@ -48,6 +48,8 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    signal_close_request().connect([&]()->bool{hide();return true;},false);
 
    uhiutil::set_css_style(get_style_context(),*cp);
+
+   SETLOCALDECORATION;
 }
 
 void CSmDialog::InitVision()

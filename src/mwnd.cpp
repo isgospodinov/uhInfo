@@ -116,6 +116,12 @@ void CHWindow::InitVision()
        cmd = uhiutil::execmd(cmd.c_str());
        if(cmd != "") uhiutil::newline(cmd,"uhiCpuAltCalc=",Direction::RIGHTSKIP);
        m_CPUModeSwitch.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
+
+       cmd = "cat " + path + " | grep uhiCpuBase=";
+       cmd = uhiutil::execmd(cmd.c_str());
+       if(cmd != "")
+           uhiutil::newline(cmd,"uhiCpuBase=",Direction::RIGHTSKIP);
+       uhiutil::cpu::cpu_fq_base = ((cmd != "" ? std::stoi(cmd) == 1 : false));
   }
   else {
       m_BlinkSwitch.set_active(true);
@@ -164,7 +170,7 @@ void CHWindow::init_units_activity_vision() // init all cpu units activity visio
 
           InitUI_activity_vision(UhiDownCast(pntProcessor.get())->GetCalcChain(),cpu_units_monit_chain);          
           
-          if(!pntProcessor->m_CpuAltCalc) {
+          if(!CProc::m_CpuAltCalc) {
                  m_CPUModeSwitch.set_active(false);
                  CPUMNGBTNSTATE(m_CPUModeSwitch);
                  m_CPUCompareSwitch.set_active(false);
@@ -186,6 +192,7 @@ void CHWindow::QuitTasks() const
           wbuffer.append("uhiSaveImp=" + (pfDlg ? std::to_string(pfDlg->GetSaveImpStat()) : "0") + "\n");
           wbuffer.append("uhiShowCpuFqWrn=" + (pfDlg ? std::to_string(pfDlg->GetShowCPUfq()) : "0") + "\n");
           wbuffer.append("uhiCpuAltCalc="  + (std::to_string(m_CPUModeSwitch.get_active()) + "\n"));
+          wbuffer.append("uhiCpuBase="  + (std::to_string(uhiutil::cpu::cpu_fq_base) + "\n"));
           wbuffer.append("uhiNativeFqState="  + (std::to_string(uhiutil::cpu::native_fq_state) + "\n"));             
           wbuffer.append("uhiBlink=" + (std::to_string(m_BlinkSwitch.get_active()) + "\n"));           
           wbuffer.append("uhiCpuFqWrn=" + (cpuStatDlg ? std::to_string(cpuStatDlg->get_CpuFqWrnLevel()) : "0") + "\n");

@@ -31,6 +31,8 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
 
    treeView.set_activate_on_single_click();
    treeView.property_enable_grid_lines() = true;
+
+   SETLOCALDECORATION;
 }
 
 bool ClrDialog::Wnd_close_handler()

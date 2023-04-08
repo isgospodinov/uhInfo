@@ -35,11 +35,6 @@
                                                 connection->disconnect()
 
 #define CLEAR_THREAD_CONDITIONS if(m_Connection) {CONNECTIONCLOSE(m_Connection);}
-          
-/*#define MVWND(x,y,pw,gw) if((x + 5 + pw + gw) > dw) \
-                                move(dw - gw, y); \
-                         else \
-                                move((x + 5) + pw, y)*/
 
 #define SIZEOF(obj) ((sizeof obj) / sizeof(char*))
 #define LIBCLOSE(lib) if(lib) {dlclose(lib);lib = nullptr;}
@@ -133,6 +128,14 @@
 #define TCOLUMNS(v) PTSMNG(tColumns)->v
 
 #define LOCALCSSPROVWITHSTYLE Glib::RefPtr<Gtk::CssProvider> lprv = Gtk::CssProvider::create();lprv->load_from_data(style)
+
+#define SETLOCALDECORATION  /*LOCALCSSPROVWITHSTYLE;*/ \
+             Gtk::HeaderBar *pHB = Gtk::make_managed<Gtk::HeaderBar>(); \
+             pHB->set_decoration_layout(":close"); \
+             /*uhiutil::set_css_style(pHB->get_style_context(),lprv,"toolbar");*/ \
+             set_titlebar(*pHB)
+
+#define LSCPUSE (CProc::m_lsCpu && uhiutil::cpu::cpu_fq_base)
 
 #define GTKMM_VERSION (std::to_string(GTKMM_MAJOR_VERSION) + "." + \
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \

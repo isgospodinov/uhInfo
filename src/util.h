@@ -57,7 +57,7 @@ namespace uhiutil {
 
    namespace cpu {
        template <class TBase, class TCastDown = CProcUnits> TCastDown *const UhiDownCast(TBase *const base, const TCastDown *const = nullptr) {return dynamic_cast<TCastDown *const>(base);}   
-       extern bool native_fq_state;    
+       extern bool native_fq_state,cpu_fq_base;
        extern int max_cpu_t;
    }
    

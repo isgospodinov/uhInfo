@@ -39,7 +39,9 @@ void CProcUnits::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std:
     else {
              std::string cline(""),cline_compare(""),fq_double("");
              double usgdc = 0.0,freqdc = 0.0,freqdc_compare = 0.0;
-             std::istringstream input_ci{std::istringstream(uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))},
+             std::istringstream input_ci{LSCPUSE ?
+            	uhiutil::execmd(std::string("lscpu -e=mhz | head -n" + std::to_string(cpu_units + 1) + " | tail -" + std::to_string(cpu_units)).c_str()) :
+            		                                                                        uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'")},
             		 input_sf{(m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")};
 
              std::list<cpu_chain_el>::iterator elV = units_ch->begin();

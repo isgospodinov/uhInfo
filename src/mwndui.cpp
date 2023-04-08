@@ -316,7 +316,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 	      LOCALCSSPROVWITHSTYLE;
 
           std::string line("");
-          std::istringstream instrproc(uhiutil::execmd("cat /proc/cpuinfo | egrep 'processor|physical id|core id'"));
+          std::istringstream instrproc(uhiutil::execmd("cat /proc/cpuinfo | grep -E 'processor|physical id|core id'"));
           cpu_chain_el cpu_unit;
 
           for(std::list<unit_calc_el>::const_iterator ucEl = unclel->begin(); ucEl != unclel->end(); ucEl++)
@@ -444,4 +444,10 @@ void UIHWindow::InitToolBar()
 
 	  m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
 	  m_ToolBarMenuPopup.set_menu_model(tbmenu);
+}
+
+void UIHWindow::StatusbarCpuText()
+{
+	m_sb_cpu_status.set_text(m_CPUModeSwitch.get_active() ? "scaling_cur_freq      " :
+			                      (LSCPUSE ? "lscpu      " : "cpuinfo      " ));
 }

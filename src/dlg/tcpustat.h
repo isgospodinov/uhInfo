@@ -36,7 +36,7 @@ private:
    double cpufquattent = .0;
 
    CProcUnits *const lpCPU = nullptr;
-   double *const fqmax = nullptr;
+   const double *const fqmax = nullptr;
    CDrArCpuInTempr local_CpuInTempr;
    CDrArVcore local_SensVcore;
 

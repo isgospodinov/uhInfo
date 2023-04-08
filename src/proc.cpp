@@ -7,6 +7,8 @@
 #include "uhirc.h"
 
 bool CProc::m_CpuAltCalc = true;
+//TestPoint
+bool CProc::m_lsCpu = !uhiutil::execmd("lscpu").empty();
 
 std::string CProc::Cpu_microcodes()
 {
@@ -33,7 +35,7 @@ std::string CProc::ProcInfoInit()
 	cpuname = uhiutil::execmd("cat /proc/cpuinfo | grep 'model name' | head -n1 | awk -F ': ' '{print $2}'");
 	if(cpuname.rfind('\x0A') != std::string::npos) cpuname.pop_back();
 
-	if(uhiutil::execmd("lscpu") != "") {
+	if(m_lsCpu) {
          cores = uhiutil::execmd("lscpu | grep 'Core(s) per socket:'");
          uhiutil::newline(cores,"Core(s) per socket:",Direction::RIGHT);
          uhiutil::end_intervals_remove((cores = uhiutil::start_intervals_remove(cores)));
@@ -121,7 +123,9 @@ void CProc::CalcFrecqUsage(Gtk::ProgressBar *pbF,Gtk::ProgressBar *pbU,std::list
       std::string res("");
       double cpucfq = 0.0;
 
-      std::istringstream instrm{std::istringstream(uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))};
+      std::istringstream instrm{std::istringstream(LSCPUSE ?
+    		       uhiutil::execmd(std::string("lscpu -e=mhz | head -n" + std::to_string(cpu_units + 1) + " | tail -" + std::to_string(cpu_units)).c_str()) :
+    		                                                                                   uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'"))};
       while(std::getline(instrm, res)) {
     	  cpucfq += std::stod(res);
       }

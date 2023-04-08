@@ -78,7 +78,7 @@ protected:
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain);
-  void StatusbarCpuText(){m_sb_cpu_status.set_text(m_CPUModeSwitch.get_active() ? "scaling_cur_freq      " : "cpuinfo      " );}
+  void StatusbarCpuText();
   
   virtual void about_dialog_info() = 0;
   virtual void enhanced_system_info() = 0;

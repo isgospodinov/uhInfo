@@ -4,9 +4,10 @@
  */
 
 #include "prefsdlg.h"
+#include "../proc.h"
 
 CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
-                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),l_MaxTemp("Set max. t°    ")
+                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),ch_lscpu_cpuinfo("lscpu instead cuinfo"),l_MaxTemp("Set max. t°    ")
 {
 	set_transient_for(*mWnd);
 	set_title("Preferences");
@@ -17,10 +18,14 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
 
    InitVision();
    InitData();
+
    signal_close_request().connect(sigc::mem_fun(*this, &CPrefsDlg::Wnd_close_handler),false);
    cb_MaxTmp.signal_changed().connect(sigc::mem_fun(*this,&CPrefsDlg::on_MaxTmp_changed));
-   ch_NativeFq.signal_toggled().connect(sigc::mem_fun(*this,&CPrefsDlg::on_NativeFq_changed));
+   ch_NativeFq.signal_toggled().connect([=](){uhiutil::cpu::native_fq_state = ch_NativeFq.get_active();});
+   ch_lscpu_cpuinfo.signal_toggled().connect([=](){uhiutil::cpu::cpu_fq_base = ch_lscpu_cpuinfo.get_active();});
    uhiutil::set_css_style(get_style_context(),*cp);
+
+   SETLOCALDECORATION;
 }
 
 void CPrefsDlg::InitVision()
@@ -36,6 +41,7 @@ void CPrefsDlg::InitVision()
    box_SaveImp.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_NativeFq.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_ShowCPUfq.set_orientation(Gtk::Orientation::HORIZONTAL);
+   box_cpu_lsorinfo.set_orientation(Gtk::Orientation::HORIZONTAL);
 
    box_InTmpMon.append(ch_InTmpMon);
    box_AllInput.append(ch_AllInput);
@@ -44,12 +50,14 @@ void CPrefsDlg::InitVision()
    box_ShowCPUfq.append(ch_ShowCPUfq);
    box_MaxTmp.append(l_MaxTemp);
    box_MaxTmp.append(cb_MaxTmp);
+   box_cpu_lsorinfo.append(ch_lscpu_cpuinfo);
 
    box_all.append(box_InTmpMon);
    box_all.append(box_AllInput);
    box_all.append(box_SaveImp);
    box_all.append(box_NativeFq);
    box_all.append(box_ShowCPUfq);
+   box_all.append(box_cpu_lsorinfo);
    box_all.append(box_MaxTmp);
 
    box_MaxTmp.set_halign(Gtk::Align::CENTER);
@@ -105,7 +113,6 @@ void CPrefsDlg::InitData()
            if(cmd != "")
                uhiutil::newline(cmd,"uhiNativeFqState=",Direction::RIGHTSKIP);
            SetFqState((cmd != "" ? std::stoi(cmd) == 1 : false));
-           
     }
     else {
           ch_InTmpMon.set_active(false);
@@ -115,6 +122,15 @@ void CPrefsDlg::InitData()
           SetFqState(false);
           cb_MaxTmp.set_active(2); //init default 120°
     }
+}
+
+inline void CPrefsDlg::on_show()
+{
+	Gtk::Window::on_show();
+
+	ch_lscpu_cpuinfo.set_active(uhiutil::cpu::cpu_fq_base);
+	if(!CProc::m_lsCpu)
+		ch_lscpu_cpuinfo.set_visible(false);
 }
 
 void CPrefsDlg::on_MaxTmp_changed()

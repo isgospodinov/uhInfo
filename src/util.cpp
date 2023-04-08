@@ -7,6 +7,7 @@
 
 namespace uhiutil::cpu {
    bool native_fq_state = false; // native or relative mode
+   bool cpu_fq_base = false; //cpuinfo is default value or lscpu if triue
    int max_cpu_t = 120; // maximum monitoring cpu temperature by default
 }
 

@@ -71,7 +71,7 @@ std::string CInitThread::GetDevices(DeviceType dType) const
    std::string ret(""),dpos("/sbin/lspci");
    bool pass_counter = false;
    if(!uhiutil::ExistenceVerification(dpos.c_str())) dpos = "lspci";
-   std::istringstream input(uhiutil::execmd((dpos + std::string( dType == DeviceType::AUDIO ? " -D | grep " : " | egrep -i ") + (dType == DeviceType::AUDIO ? "'Audio device:'" : "'Network controller|Ethernet controller'")).c_str()));   
+   std::istringstream input(uhiutil::execmd((dpos + std::string( dType == DeviceType::AUDIO ? " -D | grep " : " | grep -Ei ") + (dType == DeviceType::AUDIO ? "'Audio device:'" : "'Network controller|Ethernet controller'")).c_str()));
    for(std::string line; std::getline(input, line);) {
         if(pass_counter) ret += "\n";
         if(!uhiutil::newline(line,(dType == DeviceType::AUDIO ? "Audio device:" : " controller:"),Direction::RIGHT)) {
