@@ -129,10 +129,10 @@
 
 #define LOCALCSSPROVWITHSTYLE Glib::RefPtr<Gtk::CssProvider> lprv = Gtk::CssProvider::create();lprv->load_from_data(style)
 
-#define SETLOCALDECORATION  /*LOCALCSSPROVWITHSTYLE;*/ \
+#define SETLOCALDECORATION  LOCALCSSPROVWITHSTYLE; \
              Gtk::HeaderBar *pHB = Gtk::make_managed<Gtk::HeaderBar>(); \
              pHB->set_decoration_layout(":close"); \
-             /*uhiutil::set_css_style(pHB->get_style_context(),lprv,"toolbar");*/ \
+             uhiutil::set_css_style(pHB->get_style_context(),lprv,"hb_cls"); \
              set_titlebar(*pHB)
 
 #define LSCPUSE (CProc::m_lsCpu && uhiutil::cpu::cpu_fq_base)
