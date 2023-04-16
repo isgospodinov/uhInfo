@@ -10,26 +10,20 @@ To use this application,you only need to have GTKMM 4.0(with dependencies) insta
 ---------------------------------------------------------------------------------
 To BUILD it :
  1) GNOME 41 desktop environment or higher with gtkmm-4.0 >= 4.4.0
- - We assume make & g++(c++ 17 compliant compiler) are already installed
- - Taking Fedora(37) as an example you will need to install :
+ - We assume bash is set as the default shell,make & g++(c++ 17 compliant compiler) are already installed
+ - Installing the development files.Taking Fedora(37) as an example you will need to install :
           gtkmm4.0-devel    >= 4.4.0
           libudisks2-devel  >= 2.7.6
-          lm_sensors-devel >= 3.4.0
+          lm_sensors-devel  >= 3.4.0
 
 Examples on these OSs :
  - Fedora Linux 37/38 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
  - openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel
  - Ubuntu 22.10 : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev          
 
- 2) EXTREMELY IMPORTANT!
-FIX! before compiling 
-Go to '/usr/include/udisks2/udisks' directory end manualy edit *.h files.
-When you encounter '<udisks/' ,replace it with '<udisks2/udisks/'.
-Save changes.
+ 2) Finaly jast run 'make' in 'uhInfo' directory.
 
- 3) Finaly jast run 'make' in 'uhInfo' directory.
-
- 4) To SET UP,DELETE,Get HELP
+ 3) To SET UP,DELETE,Get HELP
    - To clean up type 'make clean'
    - To install run "sudo make install"
    - or to unininstal jast run "sudo make uninstall"

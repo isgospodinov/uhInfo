@@ -24,28 +24,29 @@ showhelp()
 
 before()
 {
-   if test -e /usr/include/udisks2/udisks ; then   
-      cnt=0
-      br=0
-      FILES="/usr/include/udisks2/udisks/*"
-      for file in $FILES; do
-          br=$( cat $file | grep '<udisks/' | wc -l )
-          if [ "$br" != 0 ] ; then
-               echo "Edit "$(basename $file)" in "$(dirname $file)""
-          fi
-          cnt=$(($cnt + $br))
-      done
-#cnt=0
-      if [ "$cnt" != 0 ] ; then
-          showhelp "exist" "** But check failed. "$cnt" entries to edit **" ""
-      else
-          showhelp "exist" "** And check passed. **"
-      fi
-    else
-          showhelp "don't exist" "** Install Udisks2 development files. **" ""
-    fi
-    
-    echo "** Build started. **"
+#   if test -e /usr/include/udisks2/udisks ; then   
+#      cnt=0
+#      br=0
+#      FILES="/usr/include/udisks2/udisks/*"
+#      for file in $FILES; do
+#          br=$( cat $file | grep '<udisks/' | wc -l )
+#          if [ "$br" != 0 ] ; then
+#               echo "Edit "$(basename $file)" in "$(dirname $file)""
+#          fi
+#          cnt=$(($cnt + $br))
+#      done
+#
+#      if [ "$cnt" != 0 ] ; then
+#          showhelp "exist" "** But check failed. "$cnt" entries to edit **" ""
+#      else
+#          showhelp "exist" "** And check passed. **"
+#      fi
+#    else
+#          showhelp "don't exist" "** Install Udisks2 development files. **" ""
+#    fi
+#    
+     echo "** Build started. **"
+     echo "** Skipping udisks2 files verification. **"
 }
 
 after()

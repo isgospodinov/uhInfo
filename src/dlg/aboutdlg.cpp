@@ -23,7 +23,7 @@ void CAboutDlg::InitVision()
 
 	 Gtk::Box *m_BoxAll = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
 	 Gtk::Frame *m_FrAll = Gtk::make_managed<Gtk::Frame>();
-	 Gtk::Label *m_Ver = Gtk::make_managed<Gtk::Label>("Application version : 0.22\n         Gtkmm : v." + GTKMM_VERSION);
+	 Gtk::Label *m_Ver = Gtk::make_managed<Gtk::Label>("Application version : 0.23\n         Gtkmm : v." + GTKMM_VERSION);
 
      set_child(*m_FrAll);
      m_FrAll->set_child(*m_BoxAll);
