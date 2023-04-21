@@ -5,9 +5,10 @@
 
 #include "aboutdlg.h"
 #include "../uhirc2.h"
+#include <glibmm/i18n.h>
 
-CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB("Close"),lB("http://www.uhinfo.free.bg/","Go to uhInfo website"),
-                                   lbGH("https://github.com/isgospodinov/uhInfo","uhInfo on GitHub"),m_copyright("Copyright© Ivailo Gospodinov"),
+CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),lB("http://www.uhinfo.free.bg/",_("Go to uhInfo website")),
+                                   lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),
 						           m_label("     "),uhi_img{Gdk::Pixbuf::create_from_xpm_data(uhilogo)},m_Image(uhi_img)
 {
 	uhiutil::set_css_style(get_style_context(),*cp);
@@ -23,7 +24,7 @@ void CAboutDlg::InitVision()
 
 	 Gtk::Box *m_BoxAll = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::VERTICAL);
 	 Gtk::Frame *m_FrAll = Gtk::make_managed<Gtk::Frame>();
-	 Gtk::Label *m_Ver = Gtk::make_managed<Gtk::Label>("Application version : 0.23\n         Gtkmm : v." + GTKMM_VERSION);
+	 Gtk::Label *m_Ver = Gtk::make_managed<Gtk::Label>(_("Application version : 0.23") + std::string("\n") + std::string("         Gtkmm : v.") + GTKMM_VERSION);
 
      set_child(*m_FrAll);
      m_FrAll->set_child(*m_BoxAll);

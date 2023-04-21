@@ -10,7 +10,7 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
 						local_CpuInTempr(lpCPU->GetCpuFqAvg(),fqmax),local_SensVcore(pV)
 {
 	set_transient_for(*pMWnd);
-	set_title("CPU status");
+	set_title(_("CPU status"));
 
 	set_child(fr_AllWnd);
 	fr_AllWnd.set_child(box_allWnd);
@@ -51,7 +51,7 @@ bool CpuStatDlg::Wnd_close_handler()
 
 void CpuStatDlg::InitVision()
 {
-	for(int i = 0; i < (int) SIZEOF(wrn_level); cb_WrnLevel.append(wrn_level[i]),i++);
+	for(const char *const el : {_("weak"),_("average"),_("strong"),_("heavy")}) cb_WrnLevel.append(el);
 
 	LOCALCSSPROVWITHSTYLE;
 	uhiutil::set_css_style(lc_TextView.get_style_context(),lprv,"toolbar");
@@ -102,7 +102,7 @@ void CpuStatDlg::on_show()
 	UhiDlgWnd::on_show();
 	CtrlStatMng(false);
 
-	(lc_TextView.get_buffer())->set_text("Initialization...");
+	(lc_TextView.get_buffer())->set_text(_("Initialization..."));
 
 	on_WrnLewel_changed();
 

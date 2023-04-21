@@ -7,12 +7,13 @@
 #define _ABOUTDLG_H_
 
 #include "../uhirc.h"
+#include <glibmm/i18n.h>
 
 class CAboutDlg : public Gtk::Window
 {
 public:
    CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp);
-   void set_message (std::string msg){m_Title.set_text("About...\n" + msg);}
+   void set_message (std::string msg){m_Title.set_text(_("About...") + std::string("\n") + msg);}
 private:
    void InitVision();
    Gtk::Button nB;

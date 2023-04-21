@@ -193,7 +193,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  }
 
 	  if(m_TmpWndCurrState != DAWndState::FULL && !HasActivities() && show_msg_attention) {
-	       DA_Text(layout, width, height, "Epty selection");
+	       DA_Text(layout, width, height, _("Empty selection"));
 	       DADRAWTEXT(cr,layout,(w / 2) - width / 2, h - (h / 2));
 	  }
 

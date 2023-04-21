@@ -4,6 +4,7 @@
  */
 
 #include "mwnd.h"
+#include <glibmm/i18n.h>
 
 void CInitThread::FinishThreadAndClear()
 {
@@ -63,7 +64,7 @@ std::string CInitThread::MOBO_Info() const
         }
    }
 
-   return ( "Mainboard: " + mbname + "\n" + "Vendor: " + vendor + "\n" + "BIOS ver.: " + bios + (line.size() ? (std::string("\n") + std::string("Chipset : ") + line) : ""));
+   return ( _("Mainboard: ") + mbname + "\n" + _("Vendor: ") + vendor + "\n" + _("BIOS ver. : ") + bios + (line.size() ? (std::string("\n") + std::string(_("Chipset : ")) + line) : ""));
 }
 
 std::string CInitThread::GetDevices(DeviceType dType) const
@@ -138,7 +139,7 @@ std::string CInitThread::Mem_Info() const
    uhiutil::newline(mem_path,"MemTotal:",Direction::RIGHT);
    uhiutil::end_intervals_remove(mem_path = uhiutil::start_intervals_remove(mem_path));
     
-   return ((!mem_size.empty() ? "Memory : " + mem_size + "\n" : "" ) + "Available : " + mem_path);
+   return ((!mem_size.empty() ? _("Memory : ") + mem_size + "\n" : "" ) + _("Available : ") + mem_path);
 }
 
 std::string CInitThread::OS_Info() const
@@ -208,8 +209,8 @@ std::string CInitThread::OS_Info() const
 
   uhiutil::newline((gccver = uhiutil::execmd( "gcc --version" )),"\n",Direction::LEFTSKIP);
 
-  return ("OS: " + os + "\n" + "Kernel: " + kern + "\n" + "User: " + uhiutil::GetUserName() + "\n" + "Display Server: " + workbuffer + "\n" + \
-                                                                 "Desktop environment : " + deskenv + (gccver.size() ? (std::string("\n") + std::string("Compiler: ") + gccver) : ""));
+  return (_("OS: ") + os + "\n" + _("Kernel: ") + kern + "\n" + _("User: ") + uhiutil::GetUserName() + "\n" + _("Display Server: ") + workbuffer + "\n" + \
+		                                              _("Desktop environment : ") + deskenv + (gccver.size() ? (std::string("\n") + std::string(_("Compiler: ")) + gccver) : ""));
 }
 
 void CInitThread::Init(CHWindow *plMw) const

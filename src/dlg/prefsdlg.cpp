@@ -5,12 +5,13 @@
 
 #include "prefsdlg.h"
 #include "../proc.h"
+#include <glibmm/i18n.h>
 
-CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon("HDD/SSD in t° monitor"),ch_AllInput("All input sensors"),
-                     ch_SaveImp("Improve sensors behavior"),ch_NativeFq("Native CPU frequency"),ch_ShowCPUfq("When t° show CPU Fq."),ch_lscpu_cpuinfo("lscpu instead cuinfo"),l_MaxTemp("Set max. t°    ")
+CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon(_("HDD/SSD in ") + std::string("t°") + _(" monitor")),ch_AllInput(_("All input sensors")),
+                     ch_SaveImp(_("Improve sensors behavior")),ch_NativeFq(_("Native CPU frequency")),ch_ShowCPUfq(_("When ") + std::string("t°") + _("show CPU Fq.")),ch_lscpu_cpuinfo(_("lscpu instead cuinfo")),l_MaxTemp(_("Set max. ") + std::string("t°    "))
 {
 	set_transient_for(*mWnd);
-	set_title("Preferences");
+	set_title(_("Preferences"));
 	set_resizable(false);
 	set_modal(true);
 

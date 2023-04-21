@@ -7,13 +7,14 @@
 #include "../sysens.h"
 #include "../ud2mon.h"
 #include "../mwnd.h"
+#include <glibmm/i18n.h>
 using uhiutil::cpu::UhiDownCast;
 
 CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : UhiDlgWnd(p_wnd),
                      pSensors(&pS),pUd2mon(&pUd2)
 {
 	set_transient_for(*p_wnd);
-	set_title("Settings");
+	set_title(_("Settings"));
 
     uhiutil::GetDesktopSize((unsigned int*) &dh,(unsigned int*) &dw);
 

@@ -4,6 +4,7 @@
  */
 
 #include "hdwaretc.h"
+#include <glibmm/i18n.h>
 
 void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
@@ -38,7 +39,7 @@ void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int 
   }
 
   if(lcdm == CpuDaMode::EXTENDED) {
-	  layout->set_text("Overall CPU activity");
+	  layout->set_text(_("Overall CPU activity"));
 	  layout->get_pixel_size(dw,dh);
 	  DADRAWTEXT(cr,layout,width / 2 - (dw / 2),dh  + uhiutil::draw::dofset);
 
@@ -49,12 +50,12 @@ void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int 
 	  layout->get_pixel_size(dw,dh);
 	  DADRAWTEXT(cr,layout,width / 2 - (dw / 2),dh  + (uhiutil::draw::dofset * 2));
 
-	  layout->set_text(std::to_string(*pFqAv->cu) + " active CPU units");
+	  layout->set_text(std::to_string(*pFqAv->cu) + _(" active CPU units"));
 	  layout->get_pixel_size(dw,dh);
 	  DADRAWTEXT(cr,layout,width / 2 - (dw / 2),dh * 2 + uhiutil::draw::dofset);
 
-	  layout->set_text("Last report : " + std::to_string((int)(pFqAv->FqAvg[0] * (*cpuFqMax))) + " MHz  "
-			  + std::to_string((int)(pFqAv->UsgAvg[0] * 100)) + "% usage"   );
+	  layout->set_text(_("Last report : ") + std::to_string((int)(pFqAv->FqAvg[0] * (*cpuFqMax))) + " MHz  "
+			  + std::to_string((int)(pFqAv->UsgAvg[0] * 100)) + "% " + _("usage"));
 	  layout->get_pixel_size(dw,dh);
 	  DADRAWTEXT(cr,layout,width / 2 - (dw / 2),dh * 4 + uhiutil::draw::dofset);
   }

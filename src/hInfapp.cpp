@@ -5,6 +5,7 @@
 
 #include "hInfapp.h"
 #include "mwnd.h"
+#include <glibmm/i18n.h>
 
 void ChInfApp::on_application_quit()
 {
@@ -30,19 +31,19 @@ void ChInfApp::on_startup()
    Glib::RefPtr<Gio::Menu> appmenu = Gio::Menu::create();
    Glib::RefPtr<Gio::Menu> sm(nullptr);
    // - - - - Manage menu - - - -
-   appmenu->append_submenu("Manage", sm = Gio::Menu::create());
-   sm->append_item(Gio::MenuItem::create("Extended info", "win.extinfo"));
-   sm->append_item(Gio::MenuItem::create("CPU activity", "win.cpuactivity"));
-   sm->append("Quit", "app.quit");
+   appmenu->append_submenu(_("Manage"), sm = Gio::Menu::create());
+   sm->append_item(Gio::MenuItem::create(_("Extended info"), "win.extinfo"));
+   sm->append_item(Gio::MenuItem::create(_("CPU activity"), "win.cpuactivity"));
+   sm->append(_("Quit"), "app.quit");
    add_action("quit",sigc::mem_fun(*this, &ChInfApp::on_application_quit));
    // - - - - Sensors menu - - - -
-   appmenu->append_submenu("Sensors", sm = Gio::Menu::create());
-   sm->append_item(Gio::MenuItem::create("Sensors settings", "win.sensorset"));
-   sm->append_item(Gio::MenuItem::create("t° monitor", "win.tmpmonit"));
+   appmenu->append_submenu(_("Sensors"), sm = Gio::Menu::create());
+   sm->append_item(Gio::MenuItem::create(_("Sensors settings"), "win.sensorset"));
+   sm->append_item(Gio::MenuItem::create(std::string("t°") + _(" monitor"), "win.tmpmonit"));
    // - - - - Application menu - - - -
-   appmenu->append_submenu("Application", sm = Gio::Menu::create());
-   sm->append_item(Gio::MenuItem::create("Preferences", "win.prefs"));
-   sm->append_item(Gio::MenuItem::create("About..", "win.about"));
+   appmenu->append_submenu(_("Application"), sm = Gio::Menu::create());
+   sm->append_item(Gio::MenuItem::create(_("Preferences"), "win.prefs"));
+   sm->append_item(Gio::MenuItem::create(_("About..."), "win.about"));
 
    set_menubar(appmenu);
 }

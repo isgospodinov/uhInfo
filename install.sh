@@ -167,7 +167,8 @@ setupuhIconf()
            mkdir /home/$usr/.uhInfo
            chmod o=rwx /home/$usr/.uhInfo
            touch /home/$usr/.uhInfo/uhInfo.cfg
-           chmod o=rwx /home/$usr/.uhInfo/uhInfo.cfg
+           cp -r data/locale /home/$usr/.uhInfo
+           chmod -R o=rwx /home/$usr/.uhInfo/*
            echo "  Configuration storage created."
         fi
    fi

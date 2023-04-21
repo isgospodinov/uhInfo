@@ -4,11 +4,12 @@
  */
 
 #include "../mwnd.h"
+#include <glibmm/i18n.h>
 
 ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : UhiDlgWnd(pMWnd)
 {
 	set_transient_for(*pMWnd);
-	set_title("Color choice");
+	set_title(_("Color choice"));
 
 	set_child(scrollWindow);
 
@@ -18,7 +19,7 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    scrollWindow.set_margin(7);
    scrollWindow.set_expand();
 
-   treeView.append_column(" Color ", cvColumns->color);
+   treeView.append_column(_(" Color "), cvColumns->color);
    treeView.set_headers_visible(false);
 
    InitVision();

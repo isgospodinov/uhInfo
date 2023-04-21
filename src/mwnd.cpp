@@ -4,6 +4,7 @@
  */
 
 #include "mwnd.h"
+#include <glibmm/i18n.h>
 using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
@@ -23,7 +24,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 
   InitVision();
 
-  tgBuff->set_text("Init application...");
+  tgBuff->set_text(_("Init application..."));
 
   Gtk::CellRendererToggle* ptRenderer = UhiDownCast<Gtk::CellRenderer,Gtk::CellRendererToggle>((m_temperatureTreeView.get_column(0))->get_first_cell());
   if(ptRenderer)
@@ -83,14 +84,14 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 
 	TEMPERATUREWNDVIEW(visiblity);
 	m_DAtemperature.m_TmpWndCurrState = state;
-	set_title((visiblity ? "uhInfo - Temperature monitor" : "uhInfo - Selected temperatures"));
+	set_title((visiblity ? _("uhInfo - Temperature monitor") : _("uhInfo - Selected temperatures")));
 }
 
 void CHWindow::InitVision()
 {
   InitUI();
 
-  set_title("uhInfo - Summary");
+  set_title(_("uhInfo - Summary"));
 
   int width = 0, height = 0,posit = 0;
   std::string cmd("");
@@ -245,7 +246,7 @@ void CHWindow::Posthreadnotify()
     if(item_infomode) {
            item_infomode->set_enabled(sensors_printing_enable); // init again
            item_infomode->change_state(sensors_printing_enable);
-           m_sb_status.set_text((sensors_printing_enable ? "ON      " : "OFF     ")); //ADD
+           m_sb_status.set_text((sensors_printing_enable ? _("ON      ") : _("OFF     "))); //ADD
            if(sensors_printing_enable) { //ADD
                  STATUSIMAGES_CLEAR;
                  STATUSIMAGES_SET_ACTIVE;
@@ -345,8 +346,8 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
 
            unsigned int nchips = 0,nsensors = 0;
            CHIPSENSORSNUMBER(nchips,nsensors);
-           buff->insert(buff->get_iter_at_line(buff->get_line_count()),(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected.\n " +
-        		 (!temperature_mode_status ? "All" : "Temperature")  + " sensors are deselected." + (temperature_mode_status ? "\nLook at:\n  Sensors -> Sensors settings\n  Application -> Preferences" : "")));
+           buff->insert(buff->get_iter_at_line(buff->get_line_count()),(" " + std::to_string(nchips) + _(" sensor nodes ") + std::to_string(nsensors) + _(" sensors detected.") + std::string("\n ") +
+        		 (!temperature_mode_status ? _("All") : _("Temperature"))  + _(" sensors are deselected.") + (temperature_mode_status ? std::string("\n") + _("Look at:") + std::string("\n") + std::string("  Sensors -> Sensors settings\n  Application -> Preferences") : "")));
        }
        else {
            if(item_temperature && !temperature_mode_status) {
@@ -370,7 +371,7 @@ void CHWindow::enhanced_system_info()
 	   item_infomode->get_state(infomode);
 	   infomode = !infomode;
 	   item_infomode->change_state(infomode);
-       m_sb_status.set_text((infomode ? "ON      " : "OFF     "));
+       m_sb_status.set_text((infomode ? _("ON      ") : _("OFF     ")));
        if(infomode) {
 		   STATUSIMAGES_SET_ACTIVE;
 		   if(!sensors_printing_enable) sensors_printing_enable = infomode;
@@ -379,14 +380,14 @@ void CHWindow::enhanced_system_info()
 		   STATUSIMAGES_SET_INACTIVE;
 		   if(sensors_printing_enable) {
 			   sensors_printing_enable = infomode;
-			   UIBCF((&m_pbFreq),0.0,"Frequency");
-			   UIBCF((&m_pbUse),0.0,"Usage");
+			   UIBCF((&m_pbFreq),0.0,_("Frequency"));
+			   UIBCF((&m_pbUse),0.0,_("Usage"));
 			   m_Label_VGA_cond_status.set_label("- / -");
 
-			   std::string sysmess("Sensors activity turned off...\n");
+			   std::string sysmess(_("Sensors activity turned off...") + std::string("\n"));
 			   unsigned int nchips = 0,nsensors = 0;
 			   CHIPSENSORSNUMBER(nchips,nsensors);
-			   sysmess.append(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected.");
+			   sysmess.append(" " + std::to_string(nchips) + _(" sensor nodes ") + std::to_string(nsensors) + _(" sensors detected."));
 
 			   (m_TextView.get_buffer())->set_text(sysmess);
 		   }
@@ -412,9 +413,9 @@ void CHWindow::show_cpu_activity_all()
        else {
            if(pntProcessor) {
                for(cpu_chain_el el : cpu_units_monit_chain)  {
-                   UIBCF(el.cpuid_m_pbF,0.0,"Frequency");
-                   UIBCF(el.cpuid_m_pbCF,0.0,"Copr.Freq.");
-                   UIBCF(el.cpuid_m_pbU,0.0,"Usage");
+                   UIBCF(el.cpuid_m_pbF,0.0,_("Frequency"));
+                   UIBCF(el.cpuid_m_pbCF,0.0,_("Copmr.Freq."));
+                   UIBCF(el.cpuid_m_pbU,0.0,_("Usage"));
                }
                CPUCALCDATACTION(m_ClearCalcData);
            }
@@ -431,8 +432,8 @@ void CHWindow::show_cpu_activity_all()
        m_VBoxCPUActivityAll.set_visible(cpumode);
        m_sb_cpu_labeltext.set_visible(cpumode);
        m_sb_cpu_status.set_visible(cpumode);
-       set_title((cpumode ? "uhInfo - CPU units" : "uhInfo - Summary"));
-       m_sb_status.set_text((!cpumode ? (sensors_printing_enable ? "ON      " : "OFF     ") : "OFF     ")); //ADD
+       set_title((cpumode ? _("uhInfo - CPU units") : _("uhInfo - Summary")));
+       m_sb_status.set_text((!cpumode ? (sensors_printing_enable ? _("ON      ") : _("OFF     ")) : _("OFF     "))); //ADD
    }
 }
 
@@ -465,7 +466,7 @@ void CHWindow::monitor_temperature()
 
 	   m_VPanedTrmpetature.set_visible(tmode);
 	   temperature_mode_status = tmode;
-	   set_title((tmode ? "uhInfo - Temperature monitor" : "uhInfo - Summary"));
+	   set_title((tmode ? _("uhInfo - Temperature monitor") : _("uhInfo - Summary")));
    }
 }
 
@@ -515,7 +516,7 @@ void CHWindow::On_CPUOverall_changed()
 
 void CHWindow::On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column)
 {
-    if(clrDlg && column->get_title() == Glib::ustring("Color"))
+    if(clrDlg && column->get_title() == Glib::ustring(_("Color")))
 	{
 		 m_Box_TmpControls.set_sensitive(false);
 	     clrDlg->show();

@@ -8,6 +8,7 @@
 
 #include "../dar/hdwaretc.h"
 #include "../dar/hdwarev.h"
+#include <glibmm/i18n.h>
 
 class CpuStatDlg : public UhiDlgWnd
 {
@@ -31,7 +32,7 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::TextView lc_TextView;
    Gtk::ComboBoxText cb_WrnLevel;
-   Gtk::Label l_InfoLabel,l_InfoCpu{"Overall : CPU Fq. / CPU usage"},l_VCstat{"Vcore`s statistic"};
+   Gtk::Label l_InfoLabel,l_InfoCpu{_("Overall : CPU Fq. / CPU usage")},l_VCstat{_("Vcore`s statistic")};
    const char *const tag_attention = "cpu_f_attent";
    double cpufquattent = .0;
 

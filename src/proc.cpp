@@ -5,6 +5,7 @@
 
 #include "proc.h"
 #include "uhirc.h"
+#include <glibmm/i18n.h>
 
 bool CProc::m_CpuAltCalc = true;
 //TestPoint
@@ -59,7 +60,7 @@ std::string CProc::ProcInfoInit()
 
    std::string cpu_mcodes = Cpu_microcodes();
 
-   return  ("CPU name: " + cpuname + "\n" + "Microcode(s) : " + cpu_mcodes + "\n" + "CPU cores/threads: " + cores + " / " + threads + "\n" + "CPU min/max: " + \
+   return  (_("CPU name: ") + cpuname + "\n" + _("Microcode(s) : ") + cpu_mcodes + "\n" + _("CPU cores/threads: ") + cores + " / " + threads + "\n" + _("CPU min/max: ") + \
                                                std::to_string(std::atoi(min.c_str())) + "MHz" + " / " + std::to_string(std::atoi(max.c_str())) + "MHz");
 }
 
@@ -73,7 +74,7 @@ double CProc::FreqCalc(std::string &Fq, bool bc, bool fast)
       else
          if(dres < cpu_min_mhz) dres = cpu_min_mhz;
 
-      if(!fast) Fq = (bc ? "Compr.Freq. : " : "Freq. : " ) + std::to_string(std::atoi(Fq.data())) + " MHz";
+      if(!fast) Fq = (bc ? _("Compr.Freq. : ") : _("Freq. : ")) + std::to_string(std::atoi(Fq.data())) + " MHz";
          
       double val_max = (cpu_max_mhz / (double) 1000) - (((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000);
       double val_min = ((((fast || uhiutil::cpu::native_fq_state) ?  0.0 : cpu_min_mhz) / (double) 1000));

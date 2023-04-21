@@ -5,11 +5,12 @@
  
 #include "mwndui.h"
 #include "procun.h"
+#include <glibmm/i18n.h>
 
 post_init_sig UIHWindow::sig_postinit_param;
 
-UIHWindow::UIHWindow() : m_ButtCPUOverall("Sum\nDlg"), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
-                         m_status_bar("  Everything at a glance..."), m_TextView(), m_TreeView(m_refTreeModel),
+UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Sum") + std::string("\n") + _("Dlg")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
+                         m_status_bar(_("  Everything at a glance...")), m_TextView(), m_TreeView(m_refTreeModel),
 						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
 {
    m_CPUModeGrid.attach(m_CPUModeLabel, 0, 1, 1, 1);
@@ -33,15 +34,15 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall("Sum\nDlg"), m_ScrolledWindow(), m_Scr
   m_VPanedTrmpetature.set_end_child(mT_All);
 
   m_temperatureTreeView.append_column_editable("+/-", tColumns->col_tcheck);
-  m_temperatureTreeView.append_column("Color", tColumns->color);
-  m_temperatureTreeView.append_column("Node", tColumns->tsensor_node);
-  m_temperatureTreeView.append_column("Sensor", tColumns->tsensor_name);
+  m_temperatureTreeView.append_column(_("Color"), tColumns->color);
+  m_temperatureTreeView.append_column(_("Node"), tColumns->tsensor_node);
+  m_temperatureTreeView.append_column(_("Sensor"), tColumns->tsensor_name);
 
   m_TreeView.append_column("No", dColumns->No);
-  m_TreeView.append_column("Link", dColumns->sys_link);
-  m_TreeView.append_column("Name", dColumns->device_name);
-  m_TreeView.append_column("Type", dColumns->type);
-  m_TreeView.append_column("Specificity", dColumns->specificity);
+  m_TreeView.append_column(_("Link"), dColumns->sys_link);
+  m_TreeView.append_column(_("Name"), dColumns->device_name);
+  m_TreeView.append_column(_("Type"), dColumns->type);
+  m_TreeView.append_column(_("Specificity"), dColumns->specificity);
 
    m_VBoxVRight.append(m_Frame_MOBO);
    m_VBoxVRight.append(m_Frame_Memory);
@@ -119,7 +120,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall("Sum\nDlg"), m_ScrolledWindow(), m_Scr
 
   Gtk::Box *pBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
   Gtk::Image *bqImg = Gtk::make_managed<Gtk::Image>();
-  Gtk::Label *bqLabel = Gtk::make_managed<Gtk::Label>("Quit");
+  Gtk::Label *bqLabel = Gtk::make_managed<Gtk::Label>(_("Quit"));
   bqImg->set_from_icon_name("application-exit");
   bqLabel->set_hexpand();
   bqLabel->set_margin_start(2);
@@ -177,15 +178,15 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall("Sum\nDlg"), m_ScrolledWindow(), m_Scr
  
 void UIHWindow::InitUI()
 {
-  m_Frame_MOBO.set_label("Mainboard :");
-  m_Frame_Memory.set_label("Memory :");
-  m_Frame_CPU.set_label("CPU :");
-  m_Frame_VGA.set_label("GPU :");
-  m_Frame_Monitors.set_label("Monitor(s) :");
-  m_Frame_Audio.set_label("Audio :");
-  m_Frame_Network.set_label("Network :");
-  m_Frame_Disks.set_label("Disks :");
-  m_Frame_OS.set_label("OS :");
+  m_Frame_MOBO.set_label(_("Mainboard :"));
+  m_Frame_Memory.set_label(_("Memory :"));
+  m_Frame_CPU.set_label(_("CPU :"));
+  m_Frame_VGA.set_label(_("GPU :"));
+  m_Frame_Monitors.set_label(_("Monitor(s) :"));
+  m_Frame_Audio.set_label(_("Audio :"));
+  m_Frame_Network.set_label(_("Network :"));
+  m_Frame_Disks.set_label(_("Disks :"));
+  m_Frame_OS.set_label(_("OS :"));
 
   m_Frame_MOBO.set_margin(4);
   m_Frame_Memory.set_margin(4);
@@ -212,28 +213,28 @@ void UIHWindow::InitUI()
   m_CPUModeGrid.set_margin(4);
   m_ScrolledWindowCPUActivityAll.set_margin(4);
 
-  m_Label_MOBO.set_text("Vendor :\nMainboard :\nBIOS ver. :");
-  m_Label_Memory.set_text("Memory size :\nAvailable :");
-  m_Label_CPU.set_text("CPU name:\nCPU cores/threads:\nCPU min/max:");
-  m_Label_VGA.set_text("GPU :\nResolution :");
-  m_Label_VGA_cond.set_text("PCIE link current : ");
+  m_Label_MOBO.set_text(_("Vendor :") + std::string("\n") + _("Mainboard :") + std::string("\n") + _("BIOS ver. : "));
+  m_Label_Memory.set_text(_("Memory size :") + std::string("\n") + _("Available :"));
+  m_Label_CPU.set_text(_("CPU name:") + std::string("\n") + _("CPU cores/threads:") + std::string("\n") + _("CPU min/max:"));
+  m_Label_VGA.set_text(_("GPU :") + std::string("\n") + _("Resolution :"));
+  m_Label_VGA_cond.set_text(_("PCIE link current : "));
   m_Label_VGA_cond_status.set_text("- / -");
-  m_Label_Audio.set_text("Audio device:");
-  m_Label_Network.set_text("Ethernet controller:");
-  m_Label_OS.set_text("OS :\nKernel :\nDisplay Server :\nCompiler :");
+  m_Label_Audio.set_text(_("Audio device:"));
+  m_Label_Network.set_text(_("Ethernet controller:"));
+  m_Label_OS.set_text(_("OS :") + std::string("\n") + _("Kernel :") + std::string("\n") + _("Display Server :") + std::string("\n") + _("Compiler :"));
 
-  m_CPUCompareLabel.set_text("Compare ");
-  m_CPUNativeFqLabel.set_text("Relative/Native ");
-  m_CPUModeLabel.set_text("Fq. source ");
-  m_CPUOverallLabel.set_text("Units/Sum ");
-  m_BlinkLabel.set_text("Indicators blinking    ");
-  m_Label_Sensors.set_text(" Sensors :");
+  m_CPUCompareLabel.set_text(_("Compare "));
+  m_CPUNativeFqLabel.set_text(_("Relative/Native "));
+  m_CPUModeLabel.set_text(_("Fq. source "));
+  m_CPUOverallLabel.set_text(_("Units/Sum "));
+  m_BlinkLabel.set_text(_("Indicators blinking    "));
+  m_Label_Sensors.set_text(_(" Sensors :"));
   m_VBoxCPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
 
-  m_sb_labeltext.set_text("sensors status : ");
-  m_sb_cpu_labeltext.set_text("CPU freq. : ");
-  m_sb_cpu_status.set_text("N/A     ");
-  m_sb_status.set_text("OFF     ");
+  m_sb_labeltext.set_text(_("sensors status : "));
+  m_sb_cpu_labeltext.set_text(_("CPU freq. : "));
+  m_sb_cpu_status.set_text(_("N/A     "));
+  m_sb_status.set_text(_("OFF     "));
 
   mT_All.set_orientation(Gtk::Orientation::VERTICAL);
   m_HPaned.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -354,9 +355,9 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_unit.cpuid_m_pbU = Gtk::make_managed<Gtk::ProgressBar>();
                cpu_unit.lCompareColor = Gtk::make_managed<Gtk::Label>();
 
-               lCcpuColor->set_text("  freq  ");
-               cpu_unit.lCompareColor->set_text(" compr ");
-               lUsageColor->set_text(" usage ");
+               lCcpuColor->set_text(_("  freq  "));
+               cpu_unit.lCompareColor->set_text(_(" compr "));
+               lUsageColor->set_text(_(" usage "));
 
                pLabelBoxCU->append(*lCcpuColor);
                pLabelBoxCU->append(*cpu_unit.lCompareColor);
@@ -389,17 +390,17 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 
                cpu_unit.cpuid_m_pbF->set_halign(Gtk::Align::CENTER);
                cpu_unit.cpuid_m_pbF->set_valign(Gtk::Align::CENTER);
-               cpu_unit.cpuid_m_pbF->set_text("Frequency");
+               cpu_unit.cpuid_m_pbF->set_text(_("Frequency"));
                cpu_unit.cpuid_m_pbF->set_show_text();
 
                cpu_unit.cpuid_m_pbCF->set_halign(Gtk::Align::CENTER);
                cpu_unit.cpuid_m_pbCF->set_valign(Gtk::Align::CENTER);
-               cpu_unit.cpuid_m_pbCF->set_text("Compr.Freq.");
+               cpu_unit.cpuid_m_pbCF->set_text(_("Compr.Freq."));
                cpu_unit.cpuid_m_pbCF->set_show_text();
 
                cpu_unit.cpuid_m_pbU->set_halign(Gtk::Align::CENTER);
                cpu_unit.cpuid_m_pbU->set_valign(Gtk::Align::CENTER);
-               cpu_unit.cpuid_m_pbU->set_text("Usage");
+               cpu_unit.cpuid_m_pbU->set_text(_("Usage"));
                cpu_unit.cpuid_m_pbU->set_show_text();
 
                m_Fbox_CPUActivityAll.insert(*pUnitFrame, -1);
@@ -408,7 +409,7 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 
           Gtk::Frame *ptFrame = Gtk::make_managed<Gtk::Frame>();
           ptFrame->set_child(m_ToolbarChoice);
-          mDA_ToolBar.append(*Gtk::make_managed<Gtk::Label>("Utility :"));
+          mDA_ToolBar.append(*Gtk::make_managed<Gtk::Label>(_("Utility :")));
           mDA_ToolBar.append(*ptFrame);
           ptFrame->set_margin_start(12);
           ptFrame->set_margin_end(4);
@@ -439,8 +440,8 @@ void UIHWindow::InitToolBar()
 	  insert_action_group("tbchoice",refTBAcGr);
 
 	  Glib::RefPtr<Gio::Menu> tbmenu = Gio::Menu::create();
-	  tbmenu->append_item(Gio::MenuItem::create("Show CPU load","tbchoice.show"));
-	  tbmenu->append_item(Gio::MenuItem::create("Hide toolbar","tbchoice.hide"));
+	  tbmenu->append_item(Gio::MenuItem::create(_("Show CPU load"),"tbchoice.show"));
+	  tbmenu->append_item(Gio::MenuItem::create(_("Hide toolbar"),"tbchoice.hide"));
 
 	  m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
 	  m_ToolBarMenuPopup.set_menu_model(tbmenu);
