@@ -1,7 +1,8 @@
 CPP = c++
 BUILD = build
-PROGRAM = $(BUILD)/uhInfo
-PODIR = po
+PRGNAME = uhInfo
+PROGRAM = $(BUILD)/$(PRGNAME)
+POTEMPLDIR = pot
 FLS = src/*.cpp src/*.h src/*/*.*
 OBJS = $(patsubst src/%.cpp,$(BUILD)/%.o,$(wildcard */*.cpp)) \
                $(patsubst src/dar/%.cpp,$(BUILD)/%.o,$(wildcard */dar/*.cpp)) \
@@ -19,7 +20,7 @@ $(BUILD)/%.o:*/*/%.cpp ; $(CMPGO)
 
 all: bldaf	
 
-cmsg: pot
+cmsg: potf
 	@echo '$(shell printf "** Build time : %ds **" $(shell expr $(shell date +%s) - $(DT)))'
 	
 bldst: bldbf
@@ -29,18 +30,18 @@ bldrl: $(OBJS)
 	$(CPP) -o $(PROGRAM) $(OBJS) $(GTKMMLIBS) $(ELIBS)
 	
 bldbf:  
-	@mkdir -p $(BUILD)  $(PODIR)
+	@mkdir -p $(BUILD)  $(POTEMPLDIR)
 	@bash install.sh -ib $(BFLAGS)
 
 bldaf: bldst cmsg
 	@bash install.sh -ia
 
-pot:
-	@xgettext --keyword=_ --language=c++ --add-comments --sort-output -o $(PODIR)/uhInfo.pot $(FLS)
-	@mv -f $(PODIR)/uhInfo.pot $(PODIR)/uhInfo.po
+potf: 
+	@xgettext --keyword=_ --language=c++ --add-comments --sort-output -o $(POTEMPLDIR)/$(PRGNAME).pot $(FLS)
+	#@mv -f $(POTEMPLDIR)/$(PRGNAME).pot $(POTEMPLDIR)/$(PRGNAME).po
 
 clean:
-	$(RM) -r $(BUILD) $(PODIR)	
+	$(RM) -r $(BUILD) $(POTEMPLDIR)	
 
 install:
 	@bash install.sh -i

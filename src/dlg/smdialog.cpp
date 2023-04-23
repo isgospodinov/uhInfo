@@ -31,9 +31,9 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    scrollWindow.set_expand();
 
    treeView.append_column_editable("+/-", vColumns->col_tcheck);
-   treeView.append_column("Type", vColumns->description);
-   treeView.append_column("Node", vColumns->tsensor_node);
-   treeView.append_column("Sensor", vColumns->tsensor_name);
+   treeView.append_column(_("Type"), vColumns->description);
+   treeView.append_column(_("Node"), vColumns->tsensor_node);
+   treeView.append_column(_("Sensor"), vColumns->tsensor_name);
 
 
    Gtk::CellRendererToggle* pRenderer = nullptr;

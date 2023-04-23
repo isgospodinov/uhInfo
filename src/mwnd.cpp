@@ -220,12 +220,12 @@ void CHWindow::Posthreadnotify()
     unsigned int nchips = 0,nsensors = 0;
     CHIPSENSORSNUMBER(nchips,nsensors);
 
-    sysmess = sysmess + "\n... done.\n";
+    sysmess = sysmess + "\n... " + _("+done.") + "\n";
 
     if(nchips)
-        sysmess.append(" " + std::to_string(nchips) + " sensor nodes " + std::to_string(nsensors) + " sensors detected."); 
+        sysmess.append(" " + std::to_string(nchips) + _(" sensor nodes ") + std::to_string(nsensors) + _(" sensors detected."));
     else
-        sysmess.append("No sensors detected.");
+        sysmess.append(_("No sensors detected."));
 
     TVBuff->set_text(sysmess);
 
@@ -347,7 +347,7 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
            unsigned int nchips = 0,nsensors = 0;
            CHIPSENSORSNUMBER(nchips,nsensors);
            buff->insert(buff->get_iter_at_line(buff->get_line_count()),(" " + std::to_string(nchips) + _(" sensor nodes ") + std::to_string(nsensors) + _(" sensors detected.") + std::string("\n ") +
-        		 (!temperature_mode_status ? _("All") : _("Temperature"))  + _(" sensors are deselected.") + (temperature_mode_status ? std::string("\n") + _("Look at:") + std::string("\n") + std::string("  Sensors -> Sensors settings\n  Application -> Preferences") : "")));
+        		 (!temperature_mode_status ? _("All") : _("Temperature"))  + _(" sensors are deselected.") + (temperature_mode_status ? std::string("\n") + _("Look at:") + std::string("\n") + _("  Application -> Preferences") : "")));
        }
        else {
            if(item_temperature && !temperature_mode_status) {

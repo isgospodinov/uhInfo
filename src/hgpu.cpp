@@ -44,7 +44,7 @@ void CGpus::Gpus_Info_Init()
                  }
           }
 
-          adapter.adapter_set = ("PCIE link max : x" + swidth + " / "  + speed + "\n" + "Driver : " + device);
+          adapter.adapter_set = ("PCIE link max : x" + swidth + " / "  + speed + "\n" + _("Driver : ") + device);
           adapter.number = m_vga_adapters.size() + 1;
           m_vga_adapters.push_back(adapter);
    }
