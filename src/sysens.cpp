@@ -6,7 +6,7 @@
 #include "sysens.h"
 #include "mwnd.h"
 
-CSysens::CSysens (CDrArTempr::VCORESBUNCH*const dvc) : ldvc(dvc)
+CSysens::CSysens (CDrArVcore::VCORESBUNCH*const dvc) : ldvc(dvc)
 {
    bool libopen = false;
    for(unsigned int l = 0; !libopen && l < SIZEOF(Libs); libopen = LibSensorsOpen(Libs[l]),l++);

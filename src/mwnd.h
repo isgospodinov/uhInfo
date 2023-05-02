@@ -45,6 +45,9 @@ private:
   friend void ClrDialog::on_show();
   friend void CpuStatDlg::CtrlStatMng(const bool) const;
 
+  friend void CDrArCpu::on_gckpress_event(int npress, double x, double y) const;
+  friend void CDrArCpuInTempr::on_gckpress_event(int npress, double x, double y) const;
+
   void Post_Init_Param() {sig_postinit_param.emit(get_width(),get_height());}
 
   virtual void on_tbt_clicked(bool param) override {if(param) cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG); else mDA_ToolBar.set_visible(param);} //ToolBar functionality
@@ -74,7 +77,6 @@ private:
   virtual void On_CPUActivityAll_switch_changed() override;
   virtual void On_Compare_mode_switch_changed() override;
   virtual void On_NativeFq_changed() override {pfDlg->SetFqState(m_CPUNativeFqSwitch.get_active());}
-  virtual void On_CPUOverall_changed() override;
   virtual void on_gpus_selection_changed() override {if(pGpus)m_Label_VGA.set_text(pGpus->GpuStatus(m_Gpus.get_active_row_number()));}
   bool Wnd_close_handler() override {QuitTasks();return false;}
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}

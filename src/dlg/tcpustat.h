@@ -13,7 +13,7 @@
 class CpuStatDlg : public UhiDlgWnd
 {
 public:
-	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV);
+	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,const std::unique_ptr<CProcUnits> *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
 	using WrcMode = enum class WmDlg{CPUOVLDLG,TEMPRTDLG};
@@ -36,7 +36,7 @@ private:
    const char *const tag_attention = "cpu_f_attent";
    double cpufquattent = .0;
 
-   CProcUnits *const lpCPU = nullptr;
+   const std::unique_ptr<CProcUnits> *const lpCPU;
    const double *const fqmax = nullptr;
    CDrArCpuInTempr local_CpuInTempr;
    CDrArVcore local_SensVcore;

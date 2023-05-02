@@ -5,9 +5,9 @@
 
 #include "../mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,CProc *const pCpu,const CDrArTempr::VCORESBUNCH *const pV) : UhiDlgWnd(pMWnd),lc_TextView(),
-                        cb_WrnLevel(),lpCPU((CProcUnits*)pCpu),fqmax(lpCPU->Get_PtrCpu_fqmax()),
-						local_CpuInTempr(lpCPU->GetCpuFqAvg(),fqmax),local_SensVcore(pV)
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,const std::unique_ptr<CProcUnits> *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
+                        cb_WrnLevel(),lpCPU(pCpu),fqmax((*lpCPU)->Get_PtrCpu_fqmax()),
+						local_CpuInTempr((*lpCPU)->GetCpuFqAvg(),fqmax,pMWnd)
 {
 	set_transient_for(*pMWnd);
 	set_title(_("CPU status"));
@@ -127,7 +127,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
     lc_buff->erase(lc_buff->begin(),lc_buff->end());
     Gtk::TextBuffer::iterator bfit = lc_buff->get_iter_at_line(lc_buff->get_line_count());
     std::istringstream fsinstrm{(CProc::m_CpuAltCalc ? uhiutil::execmd("cat /sys/devices/system/cpu/cpu*/cpufreq/scaling_cur_freq") : "")},
-                       fcinstrm{LSCPUSE ? uhiutil::execmd(std::string("lscpu -e=mhz | head -n" + std::to_string(lpCPU->Get_cpu_units() + 1) + " | tail -" + std::to_string(lpCPU->Get_cpu_units())).c_str()) :
+                       fcinstrm{LSCPUSE ? uhiutil::execmd(std::string("lscpu -e=mhz | head -n" + std::to_string((*lpCPU)->Get_cpu_units() + 1) + " | tail -" + std::to_string((*lpCPU)->Get_cpu_units())).c_str()) :
                                                 		uhiutil::execmd("grep 'cpu MHz' /proc/cpuinfo | awk -F ': ' '{print $2}'")};
 
 	bfit = lc_buff->insert(bfit,"cpu :  " + std::string(CProc::m_CpuAltCalc ? "scaling frequency  /  " : "") + (LSCPUSE ? "lscpu"  : "cpuinfo") + "\n\n");
@@ -136,7 +136,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 		      if(fq_line.rfind('\x0A') != std::string::npos) fq_line.pop_back();
 		      cv = std::stod(fq_line);
 			  if(lcWrMode == WmDlg::TEMPRTDLG && !CProc::m_CpuAltCalc) {
-			           sum += lpCPU->FreqCalc(fq_line,false,true);
+			           sum += (*lpCPU)->FreqCalc(fq_line,false,true);
 			  }
 
 			  if(CProc::m_CpuAltCalc && std::getline(fsinstrm, fq_line)) {
@@ -144,7 +144,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 				   fq_line = std::to_string((std::stod(fq_line) / (double) 1000));
 				   sv = std::stod(fq_line);
 				   if(lcWrMode == WmDlg::TEMPRTDLG) {
-			              sum += lpCPU->FreqCalc(fq_line,false,true);
+			              sum += (*lpCPU)->FreqCalc(fq_line,false,true);
 				   }
 			  }
 
@@ -168,7 +168,7 @@ bool CpuStatDlg::ot_timer(int tmNo)
 
 	if(lcWrMode == WmDlg::TEMPRTDLG) {
 	    std::string res = uhiutil::execmd("head -n1 /proc/stat");
-	    lpCPU->SetAverageData(sum / (double) lpCPU->Get_cpu_units(),lpCPU->UsageCalc(res));
+	    (*lpCPU)->SetAverageData(sum / (double) (*lpCPU)->Get_cpu_units(),(*lpCPU)->UsageCalc(res));
 	}
 
 	Redraw();
@@ -191,13 +191,13 @@ void CpuStatDlg::on_WrnLewel_changed()
 void CpuStatDlg::stop_cpustat_timer()
 {
 	if(l_timer) {
-		l_timer.get()->disconnect();
+		l_timer->disconnect();
 		l_timer = std::unique_ptr<sigc::connection>(nullptr);
 		hide();
 	}
 
 	if(lcWrMode == WmDlg::TEMPRTDLG) {
-	    lpCPU->ClearAverageData();
+	    (*lpCPU)->ClearAverageData();
 
 	    if(local_SensVcore.VCoresActivities())local_SensVcore.ClearOrActivateVCStatistic();
 	}
@@ -210,7 +210,5 @@ inline void CpuStatDlg::CtrlStatMng(const bool st) const
 	else {
 		PTSMNG(set_show_menubar(st));
 		PTSMNG(m_ButtCPUOverall).set_visible(st);
-		PTSMNG(m_CPUOverallSwitch).set_visible(st);
-		PTSMNG(m_CPUOverallLabel).set_visible(st);
 	}
 }

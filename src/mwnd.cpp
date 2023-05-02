@@ -10,8 +10,8 @@ using uhiutil::cpu::UhiDownCast;
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smWndResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
-					   clrDlg(new ClrDialog(this,&css_prov)),cpuStatDlg(new CpuStatDlg(this,&css_prov,pntProcessor.get(),m_DAtemperature.GetDAVcoreAccess())),
-					   da_CpuOverall((UhiDownCast(pntProcessor.get()))->GetCpuFqAvg(),pntProcessor->Get_PtrCpu_fqmax(),CDrArCpuInTempr::CpuDaMode::EXTENDED)
+					   clrDlg(new ClrDialog(this,&css_prov)),cpuStatDlg(new CpuStatDlg(this,&css_prov,reinterpret_cast<const std::unique_ptr<CProcUnits>*const>(&pntProcessor))),
+					   da_CpuOverall((UhiDownCast(pntProcessor.get()))->GetCpuFqAvg(),pntProcessor->Get_PtrCpu_fqmax(),this,CDrArCpuInTempr::CpuDaMode::EXTENDED)
 {
   set_child(m_VBoxAll);
 
@@ -49,7 +49,6 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
   m_VPanedTrmpetature.set_visible(false);
 
   da_CpuOverall.set_visible(false);
-  m_CPUOverallSwitch.set_active(false);
 
   set_show_menubar(true);
 
@@ -63,12 +62,12 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	Glib::RefPtr<Gdk::Event> evbntpress = m_DAtemperature.msbntpress->get_last_event(m_DAtemperature.msbntpress->get_current_sequence());
 
 	if(!evbntpress) return;
-		else {
+	else {
 		   Gdk::Event::Type et = evbntpress->get_event_type();
 		   if(!((et != Gdk::Event::Type::BUTTON_PRESS) && (et != Gdk::Event::Type::PAD_BUTTON_PRESS)) && npress != 2) return;
 		   else
 			   if(!m_DAtemperature.HasActivities()) {m_DAtemperature.SetAttentState(true); return;}
-		}
+	}
 
 	CDrArTempr::TmpWndState state = CDrArTempr::DAWndState::NORMAL;
 	bool visiblity = true;
@@ -421,7 +420,6 @@ void CHWindow::show_cpu_activity_all()
            }
        }
 
-       m_CPUOverallSwitch.set_active(false);
        (UhiDownCast(pntProcessor.get()))->ClearAverageData();
 
        MENUITESTAUS((cpumode ? !cpumode : remeber_activity));
@@ -504,14 +502,6 @@ void CHWindow::On_Compare_mode_switch_changed()
           CPUMNGBTNSTATE(m_CPUModeSwitch);
           CPUMNGBTNSTATE(m_CPUCompareSwitch);
     }
-}
-
-void CHWindow::On_CPUOverall_changed()
-{
-	bool state = m_CPUOverallSwitch.get_active();
-	CONDITCPUSUMMARY(!state);
-    da_CpuOverall.set_visible(state);
-
 }
 
 void CHWindow::On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column)

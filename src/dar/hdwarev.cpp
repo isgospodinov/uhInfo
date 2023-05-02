@@ -6,6 +6,50 @@
 #include "hdwarev.h"
 #include "../sysens.h"
 
+CDrArVcore::VCORESBUNCH CDrArVcore::draw_Vcores;
+
+void CDrArVcore::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
+{
+	if(!X) {
+	   double cw = (dwidth - (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0)) / 2;
+
+       for(int b = 1; b < (int) draw::uhi_draw_xscale ; b *= 2) {
+           double cl =  cw; // centering
+           int c = 0;
+
+           cl -= ((cw / (double)b) * (b - 1)); // offset
+
+		   while(c++ < b) {
+		       crtx->move_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),0);
+			   crtx->line_to(cl + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),dheight);
+			   cl += ((cw / ((double)b / 2)));
+		   }
+       }
+	}
+	else {
+       int cnt = (double) dheight / (double) draw::uhi_draw_yscale,up = cnt;
+       while(cnt <= (X ? dheight : dwidth)) {
+           crtx->move_to((X ? (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset - draw::dofset :  0) : cnt),(X ? cnt : 0));
+           crtx->line_to((X ? dwidth : cnt),(X ? cnt : dheight));
+           cnt += up;
+       }
+	}
+
+    crtx->stroke();
+}
+
+void CDrArVcore::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth) const
+{
+  if((tmpmon ? (*tmpmon).size() : 0) < 2) return;
+
+  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, ((tmpmon ? (*tmpmon)[0] : 0)) * dheight);
+  for(long unsigned int br = 1; br < (tmpmon ? (((*tmpmon).size() < uhiutil::calc::t_statistic_len) ? (*tmpmon).size() : uhiutil::calc::t_statistic_len) : 0);br++) {
+    	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),
+    	               		               ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
+  }
+  crtx->stroke();
+}
+
 void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height)
 {
 	   cr->save();
@@ -27,7 +71,7 @@ void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
 	   Glib::RefPtr<Pango::Layout> layout = create_pango_layout("");
 	   layout->set_font_description(DA_DrawFont(false));
 
-	   for(Sensor_node* snc : *pVcores)  {
+	   for(Sensor_node* snc : draw_Vcores) {
 		          tmpmon = &snc->t_statistic;
 		          Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA(snc->statistic_color));
 	              DrawActivity(cr,(double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0),height,width);
@@ -66,7 +110,7 @@ void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
 void CDrArVcore::ClearOrActivateVCStatistic(bool active)
 {
 	int cv = 0;
-	for(Sensor_node* snc : *pVcores) {
+	for(Sensor_node* snc : draw_Vcores) {
 
 		if(active && snc->visible) {
 			snc->SetStatisticFeatures(true,"Red");
@@ -79,9 +123,9 @@ void CDrArVcore::ClearOrActivateVCStatistic(bool active)
 	draw_sensor_name = (active && (cv > 1));
 }
 
-const bool CDrArVcore::VCoresActivities() const
+const bool CDrArVcore::VCoresActivities()
 {
-	for(Sensor_node* snc : *pVcores) {
+	for(Sensor_node* snc : draw_Vcores) {
 		 if(snc->visible)
 					return true;
 	}

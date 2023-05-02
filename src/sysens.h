@@ -8,6 +8,7 @@
 
 #include "sensmon.h"
 #include "dlg/smdialog.h"
+#include "dar/hdwarev.h"
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -43,7 +44,7 @@ using Chip_node = struct _Chip_node {
 class CSysens : public CSensMon
 {
 public :
-    CSysens(CDrArTempr::VCORESBUNCH*const dvc);
+    CSysens(CDrArVcore::VCORESBUNCH*const dvc);
     virtual ~CSysens() override;
 
     friend class CSmDialog;
@@ -65,7 +66,7 @@ private:
     sensors::fp_sValue     sysens_get_value;
     // ------------- Skipping libsensors runtime dependency -------------
 
-    CDrArTempr::VCORESBUNCH*const ldvc = nullptr;
+    CDrArVcore::VCORESBUNCH*const ldvc = nullptr;
     void *libsensh = nullptr;
     std::list<Chip_node> monitoring;
     bool LibSensorsOpen(const char * filename);

@@ -3,6 +3,7 @@
  *    Copyright (C) 2023
  */
 
+#include "../mwnd.h"
 #include "hdwaretc.h"
 #include <glibmm/i18n.h>
 
@@ -65,6 +66,9 @@ void CDrArCpuInTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int 
   cr->restore();
 }
 
+void CDrArCpuInTempr::on_gckpress_event(int npress, double x, double y) const {
 
+	if(lcdm == CpuDaMode::NORMAL || npress != 2) return;
 
-
+	CONDITCPUSUMMARY(true);
+}

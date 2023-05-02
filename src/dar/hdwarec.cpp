@@ -10,11 +10,13 @@
 
 const Gtk::Switch *CDrArCpu::l_CPUModeSwitch = nullptr,*CDrArCpu::l_CPUCompareSwitch = nullptr;
 
-CDrArCpu::CDrArCpu(const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg)
+CDrArCpu::CDrArCpu(const TUDRAWVECTOR *dw_frec,const TUDRAWVECTOR *dw_frec_cp,const TUDRAWVECTOR *dw_usg, const Gtk::Window *const m_wnd) : plMw(m_wnd)
 {
   valfreq = dw_frec;
   valusg = dw_usg;
   valfreqcmpr = dw_frec_cp;
+
+  da_init_gck();
 }
 
 void CDrArCpu::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth,StatPaint pm) const
@@ -81,4 +83,11 @@ void CDrArCpu::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, 
    }
 
    cr->restore();
+}
+
+void CDrArCpu::on_gckpress_event(int npress, double x, double y) const {
+
+	if(PTSMNG(cpuStatDlg)->is_visible() || npress != 2) return;
+
+    CONDITCPUSUMMARY(false);
 }

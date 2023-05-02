@@ -45,8 +45,8 @@ protected:
 
   //CPU activity all
   Gtk::Grid m_BlinkGrid,m_CPUModeGrid;
-  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUOverallLabel, m_CPUNativeFqLabel;
-  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_CPUOverallSwitch, m_BlinkSwitch;
+  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUNativeFqLabel;
+  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch;
 
   Gtk::FlowBox m_Fbox_CPUActivityAll;
   Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature,m_TbFrame,mFr_GRrid;
@@ -95,7 +95,6 @@ protected:
   virtual void On_CPUActivityAll_switch_changed() = 0;
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
-  virtual void On_CPUOverall_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
 
   virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}
