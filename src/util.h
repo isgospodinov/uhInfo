@@ -52,6 +52,7 @@ namespace uhiutil {
    namespace ui {     
        const char *const active_tag = "sensor_in_monitor";
        const char *const max_tag = "sensor_max";
+       const char *const cold_tag = "cold";
        //const unsigned int app_font_size = 10;
    }
 

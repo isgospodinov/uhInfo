@@ -6,7 +6,7 @@
 #include "hdwarev.h"
 #include "../sysens.h"
 
-CDrArVcore::VCORESBUNCH CDrArVcore::draw_Vcores;
+CDrArVcore::SENSBUNCH CDrArVcore::dwVCF;
 
 void CDrArVcore::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X) const
 {
@@ -71,7 +71,7 @@ void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
 	   Glib::RefPtr<Pango::Layout> layout = create_pango_layout("");
 	   layout->set_font_description(DA_DrawFont(false));
 
-	   for(Sensor_node* snc : draw_Vcores) {
+	   for(Sensor_node* snc : dwVCF) {
 		          tmpmon = &snc->t_statistic;
 		          Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA(snc->statistic_color));
 	              DrawActivity(cr,(double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0),height,width);
@@ -110,9 +110,9 @@ void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
 void CDrArVcore::ClearOrActivateVCStatistic(bool active)
 {
 	int cv = 0;
-	for(Sensor_node* snc : draw_Vcores) {
+	for(Sensor_node* snc : dwVCF) {
 
-		if(active && snc->visible) {
+		if(active && snc->visible && snc->is_Vcore) {
 			snc->SetStatisticFeatures(true,"Red");
 			cv++;
 		}
@@ -125,8 +125,8 @@ void CDrArVcore::ClearOrActivateVCStatistic(bool active)
 
 const bool CDrArVcore::VCoresActivities()
 {
-	for(Sensor_node* snc : draw_Vcores) {
-		 if(snc->visible)
+	for(Sensor_node* snc : dwVCF) {
+		 if(snc->is_Vcore && snc->visible)
 					return true;
 	}
 

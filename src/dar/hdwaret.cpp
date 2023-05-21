@@ -127,24 +127,28 @@ std::string CDrArTempr::GetDurationString()
 
 void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h)
 {
-	  int width = 0,height = 0,dtxt = 0;
+	  int width = 0,height = 0,dtxt = 0,mv = 0;
 	  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
 	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
-	  Pango::FontDescription font = DA_DrawFont();
-
-	  layout->set_font_description(font);
+	  layout->set_font_description(DA_DrawFont());
 	  cr->move_to(draw::dofset,draw::dofset);
 	  layout->show_in_cairo_context(cr); // duration
+	  layout->get_pixel_size(width,height);
+	  mv = height + draw::dofset;
+
+	  layout->unset_font_description();
+	  layout->set_font_description(DA_DrawFont(true,14));
 
 	  if(FULLAPPWNDMODE(w,h) && HasVCores() && !(duration == "0:00:00")) {
 		  cr->save();
-		  cr->set_source_rgb(0.8, 0.2, 0.4);
-		  int mv = 0;
-		  for(Sensor_node *di : draw_Vcores)  {
+		  for(Sensor_node *di : dwVCF)  {
 			   if(di->visible) {
-			        DA_Text(layout, width , height,di->label + " : " + (std::to_string(di->max)).substr(0,5) + "V");
+					cr->save();
+					cr->set_source_rgb(di->is_Vcore ? 0.8 : 0.3, 0.2, di->is_Vcore ? 0.4 : 0.9);
+			        DA_Text(layout, width , height,di->label + " : " + (di->is_Vcore ? (std::to_string(di->max)).substr(0,5) : (std::to_string((int)di->max)).substr(0,5)) + (di->is_Vcore ? "V" : "rpm"));
+			        DADRAWTEXT(cr, layout, draw::dofset,mv); // Vcore or Fan
 			        mv += height;
-			        DADRAWTEXT(cr, layout, draw::dofset,mv); // Vcore
+			        cr->restore();
 			   }
 		  }
 		  cr->restore();
@@ -156,8 +160,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  }
 
 	  layout->unset_font_description();
-	  font = DA_DrawFont(false);
-	  layout->set_font_description(font);
+	  layout->set_font_description(DA_DrawFont(false));
 
 	  for(int br  = 0; br <= (int) draw::uhi_draw_yscale ;
 			  ((m_TmpWndCurrState == DAWndState::NORMAL && br < (int) draw::uhi_draw_yscale) ?

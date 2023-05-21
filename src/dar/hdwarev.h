@@ -17,21 +17,20 @@ public:
 	virtual ~CDrArVcore() = default;
 
     using TmpWndState = enum class DAWndState{NORMAL,FULL};
-	using VCORESBUNCH = std::list<Sensor_node*>;
+	using SENSBUNCH = std::list<Sensor_node*>;
 	const bool VCoresActivities();
-	VCORESBUNCH *const GetDAVcoreAccess() {return &draw_Vcores;}
 	void ClearOrActivateVCStatistic(bool active = false);
 
     TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
+    static SENSBUNCH dwVCF;
 protected:
     using DRAWVECTOR = const std::vector<double>*;
 
 	virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
-	const bool HasVCores() const {return !draw_Vcores.empty();}
+	const bool HasVCores() const {return !dwVCF.empty();}
 private:
 	bool draw_sensor_name = false;
 protected:
-	static VCORESBUNCH draw_Vcores;
 	DRAWVECTOR tmpmon = nullptr;
 
 	virtual void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const override;

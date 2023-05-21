@@ -6,7 +6,7 @@
 #include "sysens.h"
 #include "mwnd.h"
 
-CSysens::CSysens (CDrArVcore::VCORESBUNCH*const dvc) : ldvc(dvc)
+CSysens::CSysens ()
 {
    bool libopen = false;
    for(unsigned int l = 0; !libopen && l < SIZEOF(Libs); libopen = LibSensorsOpen(Libs[l]),l++);
@@ -124,9 +124,9 @@ void CSysens::SensorsDetect(bool *flag)
                             chnd.sensors.push_back(Sensor_node(subfeature->number,lbl,feature->type,visnode,VCORECHECK));
                             if(!visnode) ++chnd.inactive_sensors_number;
 
-                            if(chnd.sensors.back().is_Vcore) {
+                            if(chnd.sensors.back().is_Vcore || subfeat_type == SENSORS_SUBFEATURE_FAN_INPUT) {
                             	   //TestPoint
-                            	   ldvc->push_back(&chnd.sensors.back());
+                            	CDrArVcore::dwVCF.push_back(&chnd.sensors.back());
                             }
 
 
@@ -168,8 +168,8 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
 	                cn.addr = n->chip_name.cnip_addr;
 	                cn.path = (char*) n->chip_name.cnip_path.data();
                     for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {//sensors
-                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !sn->is_Vcore) || (printmode && tmp_in_sens_count == 0) ||
-                        		                                                              (!printmode && !advanced && SNTP(SENSORS_FEATURE_IN) && !sn->is_Vcore)) {
+                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !(SNTP(SENSORS_FEATURE_FAN)) && !sn->is_Vcore) || (printmode && tmp_in_sens_count == 0) ||
+                        		                                        (!printmode && !advanced && SNTP(SENSORS_FEATURE_IN) && !sn->is_Vcore)) {
                         	   if(sn->is_Vcore) sn->max = .0;
                         	   continue;
                            }
@@ -182,7 +182,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            if(sn->t_statistic_active && (!blink_global_status || blink)) {itxbf = txtbuff->insert(itxbf," ");itxbf = txtbuff->insert_with_tag(itxbf,"      ",sn->statistic_color);itxbf = txtbuff->insert(itxbf," ");}                           
                            else itxbf = txtbuff->insert(itxbf,"        ");
                            
-                           if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && sn->is_Vcore)) {
+                           if(sn->t_statistic_active || (printmode && SNTP(SENSORS_FEATURE_IN) && sn->is_Vcore) || (printmode && SNTP(SENSORS_FEATURE_FAN))) {
                         	   itxbf = txtbuff->insert_with_tag(itxbf,sn->label,
                         		                                   sn->t_statistic_active ? uhiutil::ui::active_tag : uhiutil::ui::max_tag);
                            }
@@ -203,7 +203,12 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                 	 else itxbf = txtbuff->insert(itxbf,((std::to_string(value)).substr(0,5) + "V\n"));
                                      break;
                                  case SENSORS_FEATURE_FAN: 
-                                     itxbf = txtbuff->insert(itxbf,(std::to_string((int)value) + "rpm\n"));
+                                	 if(printmode) {
+                                		 itxbf = txtbuff->insert_with_tag(itxbf,(std::to_string((int)value) + "rpm\n"),uhiutil::ui::cold_tag);
+                                	 }
+                                	 else
+                                		 itxbf = txtbuff->insert(itxbf,(std::to_string((int)value) + "rpm\n"));
+                                	 sn->max = (int)value;
                                      break;
                                  case SENSORS_FEATURE_TEMP: 
                                      if(sn->t_statistic_active) {

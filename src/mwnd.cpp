@@ -7,7 +7,7 @@
 #include <glibmm/i18n.h>
 using uhiutil::cpu::UhiDownCast;
 
-CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens(m_DAtemperature.GetDAVcoreAccess())),pUd2Manager(new Ud2mon(this)),
+CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens()),pUd2Manager(new Ud2mon(this)),
 		               pntProcessor(new CProcUnits),pGpus(new CGpus),pMonitor(new CMonitor),pfDlg(new CPrefsDlg(this,&css_prov)),
 					   smDlg(new CSmDialog(this,*pSysensors,*pUd2Manager,&css_prov,&CHWindow::smWndResponse)),abtDlg(new CAboutDlg(this,&css_prov)),
 					   clrDlg(new ClrDialog(this,&css_prov)),cpuStatDlg(new CpuStatDlg(this,&css_prov,reinterpret_cast<const std::unique_ptr<CProcUnits>*const>(&pntProcessor))),
@@ -19,6 +19,7 @@ CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSyse
 
   Glib::RefPtr<Gtk::TextBuffer> tgBuff = m_TextView.get_buffer();
   tgBuff->create_tag(uhiutil::ui::active_tag)->property_foreground() = "red";
+  tgBuff->create_tag(uhiutil::ui::cold_tag)->property_foreground() = "blue";
   tgBuff->create_tag(uhiutil::ui::max_tag)->property_weight() = Pango::Weight::BOLD;
   for(int index = 0; index < (int)SIZEOF(clrID); tgBuff->create_tag(clrID[index])->property_background() = clrID[index],index++);
 
