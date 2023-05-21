@@ -271,6 +271,7 @@ void UIHWindow::InitUI()
   m_BlinkGrid.set_halign(Gtk::Align::CENTER);
 
   m_TextView.set_editable(false);
+  m_TextView.set_can_target(false);
 
   mDA_ToolBar.set_halign(Gtk::Align::END);
   mDA_ToolBar.set_valign(Gtk::Align::START);

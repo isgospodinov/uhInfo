@@ -78,6 +78,7 @@ void CpuStatDlg::InitVision()
     lc_TextView.property_justification() = Gtk::Justification::CENTER;
     scrollWindow.set_margin(4);
     scrollWindow.set_expand();
+    lc_TextView.set_can_target(false);
 
     mCPU_Stat_ToolBar.set_halign(Gtk::Align::END);
     mCPU_Stat_ToolBar.set_valign(Gtk::Align::START);
