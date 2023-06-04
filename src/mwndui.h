@@ -45,8 +45,8 @@ protected:
 
   //CPU activity all
   Gtk::Grid m_BlinkGrid,m_CPUModeGrid;
-  Gtk::Label m_BlinkLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUNativeFqLabel;
-  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch;
+  Gtk::Label m_BlinkLabel,m_MoreInfoLabel, m_CPUModeLabel, m_CPUCompareLabel, m_CPUNativeFqLabel;
+  Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch, m_MoreInfoSwitch;
 
   Gtk::FlowBox m_Fbox_CPUActivityAll;
   Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature,m_TbFrame,mFr_GRrid;

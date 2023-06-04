@@ -22,6 +22,8 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Sum") + std::string("\n") + _("Dlg"
 
   m_BlinkGrid.attach(m_BlinkLabel, 0, 1, 1, 1);
   m_BlinkGrid.attach(m_BlinkSwitch, 1, 1, 1, 1);
+  m_BlinkGrid.attach(m_MoreInfoLabel, 2, 1, 1, 1);
+  m_BlinkGrid.attach(m_MoreInfoSwitch, 3, 1, 1, 1);
 
   m_Box_TmpControls.append(m_ScrolledWindowTemperatures);
 
@@ -166,6 +168,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Sum") + std::string("\n") + _("Dlg"
   m_Gpus.signal_changed().connect(sigc::mem_fun(*this,&UIHWindow::on_gpus_selection_changed));
   m_CPUModeSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_CPUActivityAll_switch_changed));
   m_CPUCompareSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_Compare_mode_switch_changed));
+  m_MoreInfoSwitch.property_active().signal_changed().connect([=](){uhiutil::draw::more_info = m_MoreInfoSwitch.get_active();});
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
@@ -224,6 +227,7 @@ void UIHWindow::InitUI()
   m_CPUNativeFqLabel.set_text(_("Relative/Native "));
   m_CPUModeLabel.set_text(_("Fq. source "));
   m_BlinkLabel.set_text(_("Indicators blinking    "));
+  m_MoreInfoLabel.set_text(_("  More Info    "));
   m_Label_Sensors.set_text(_(" Sensors :"));
   m_VBoxCPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
 
@@ -301,7 +305,9 @@ void UIHWindow::InitUI()
   m_CPUCompareSwitch.set_halign(Gtk::Align::START);
   m_CPUNativeFqSwitch.set_halign(Gtk::Align::START);
   m_BlinkLabel.set_halign(Gtk::Align::START);
+  m_MoreInfoLabel.set_halign(Gtk::Align::START);
   m_BlinkSwitch.set_halign(Gtk::Align::END);
+  m_MoreInfoSwitch.set_halign(Gtk::Align::END);
   
   STATUSIMAGES_SET_INACTIVE;
   SET_CUSTOM_LABELS;

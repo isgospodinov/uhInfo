@@ -168,8 +168,8 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
 	                cn.addr = n->chip_name.cnip_addr;
 	                cn.path = (char*) n->chip_name.cnip_path.data();
                     for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {//sensors
-                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !(SNTP(SENSORS_FEATURE_FAN)) && !sn->is_Vcore) || (printmode && tmp_in_sens_count == 0) ||
-                        		                                        (!printmode && !advanced && SNTP(SENSORS_FEATURE_IN) && !sn->is_Vcore)) {
+                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !(SNTP(SENSORS_FEATURE_FAN)) && !sn->is_Vcore) || (printmode && (sn->is_Vcore || (SNTP(SENSORS_FEATURE_FAN))) && !uhiutil::draw::more_info)
+                        		    || (printmode && tmp_in_sens_count == 0) || (!printmode && !advanced && (SNTP(SENSORS_FEATURE_IN) || SNTP(SENSORS_FEATURE_POWER) || SNTP(SENSORS_FEATURE_CURR)) && !sn->is_Vcore)) {
                         	   if(sn->is_Vcore) sn->max = .0;
                         	   continue;
                            }
@@ -206,9 +206,10 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                                 	 if(printmode) {
                                 		 itxbf = txtbuff->insert_with_tag(itxbf,(std::to_string((int)value) + "rpm\n"),uhiutil::ui::cold_tag);
                                 	 }
-                                	 else
+                                	 else {
                                 		 itxbf = txtbuff->insert(itxbf,(std::to_string((int)value) + "rpm\n"));
-                                	 sn->max = (int)value;
+                                     }
+                                	 sn->max = (printmode ? (int)value : .0);
                                      break;
                                  case SENSORS_FEATURE_TEMP: 
                                      if(sn->t_statistic_active) {

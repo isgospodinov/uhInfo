@@ -139,7 +139,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  layout->unset_font_description();
 	  layout->set_font_description(DA_DrawFont(true,14));
 
-	  if(FULLAPPWNDMODE(w,h) && HasVCores() && !(duration == "0:00:00")) {
+	  if(FULLAPPWNDMODE(w,h) && HasVFSensors() && !(duration == "0:00:00") && uhiutil::draw::more_info) {
 		  cr->save();
 		  for(Sensor_node *di : dwVCF)  {
 			   if(di->visible) {

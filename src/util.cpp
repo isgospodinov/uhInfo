@@ -11,6 +11,10 @@ namespace uhiutil::cpu {
    int max_cpu_t = 120; // maximum monitoring cpu temperature by default
 }
 
+namespace uhiutil::draw {
+   bool more_info = false;
+}
+
 void uhiutil::end_intervals_remove(std::string& str)
 {
        if(!str.length()) return; // empty return 1

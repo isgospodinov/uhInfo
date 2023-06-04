@@ -71,6 +71,7 @@ namespace uhiutil {
        const unsigned int dwah = 50;
        const unsigned int uhi_draw_yscale = 5,uhi_draw_xscale = 15;
        const int HWmax = 510;
+       extern bool more_info;
     }
 
    namespace monitor {

@@ -20,6 +20,7 @@ public:
 	using SENSBUNCH = std::list<Sensor_node*>;
 	const bool VCoresActivities();
 	void ClearOrActivateVCStatistic(bool active = false);
+	const bool HasVFSensors() const {return !dwVCF.empty();}
 
     TmpWndState m_TmpWndCurrState = DAWndState::NORMAL;
     static SENSBUNCH dwVCF;
@@ -27,7 +28,6 @@ protected:
     using DRAWVECTOR = const std::vector<double>*;
 
 	virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
-	const bool HasVCores() const {return !dwVCF.empty();}
 private:
 	bool draw_sensor_name = false;
 protected:

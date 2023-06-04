@@ -113,6 +113,11 @@ void CHWindow::InitVision()
        if(cmd != "") uhiutil::newline(cmd,"uhiBlink=",Direction::RIGHTSKIP);
        m_BlinkSwitch.set_active((cmd != "" ? std::stoi(cmd) == 1 : true));
        
+       cmd = "cat " + path + " | grep uhiMoreInfo=";
+       cmd = uhiutil::execmd(cmd.c_str());
+       if(cmd != "") uhiutil::newline(cmd,"uhiMoreInfo=",Direction::RIGHTSKIP);
+       m_MoreInfoSwitch.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
+
        cmd = "cat " + path + " | grep uhiCpuAltCalc=";
        cmd = uhiutil::execmd(cmd.c_str());
        if(cmd != "") uhiutil::newline(cmd,"uhiCpuAltCalc=",Direction::RIGHTSKIP);
@@ -127,6 +132,7 @@ void CHWindow::InitVision()
   else {
       m_BlinkSwitch.set_active(true);
       m_CPUModeSwitch.set_active(false);
+      m_MoreInfoSwitch.set_active(false);
   }
   
   m_CPUCompareSwitch.set_active(false);
@@ -196,6 +202,7 @@ void CHWindow::QuitTasks() const
           wbuffer.append("uhiCpuBase="  + (std::to_string(uhiutil::cpu::cpu_fq_base) + "\n"));
           wbuffer.append("uhiNativeFqState="  + (std::to_string(uhiutil::cpu::native_fq_state) + "\n"));             
           wbuffer.append("uhiBlink=" + (std::to_string(m_BlinkSwitch.get_active()) + "\n"));           
+          wbuffer.append("uhiMoreInfo=" + (std::to_string(m_MoreInfoSwitch.get_active()) + "\n"));
           wbuffer.append("uhiCpuFqWrn=" + (cpuStatDlg ? std::to_string(cpuStatDlg->get_CpuFqWrnLevel()) : "0") + "\n");
           wbuffer.append("uhiMaxTmp=" + (pfDlg ? std::to_string(pfDlg->GetMaxTmpStat()) : "2") + "\n");//default 120°
           if(width > 0 && height > 0) {
@@ -220,7 +227,7 @@ void CHWindow::Posthreadnotify()
     unsigned int nchips = 0,nsensors = 0;
     CHIPSENSORSNUMBER(nchips,nsensors);
 
-    sysmess = sysmess + "\n... " + _("+done.") + "\n";
+    sysmess = sysmess + "\n... " + _("done.") + "\n";
 
     if(nchips)
         sysmess.append(" " + std::to_string(nchips) + _(" sensor nodes ") + std::to_string(nsensors) + _(" sensors detected."));
@@ -267,6 +274,14 @@ void CHWindow::Posthreadnotify()
 
      if(!c_Timer)
              c_Timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval,&CHWindow::uhI_Timer);
+
+     if(m_DAtemperature.HasVFSensors())
+    	 uhiutil::draw::more_info = m_MoreInfoSwitch.get_active();
+     else {
+    	 m_MoreInfoSwitch.set_active(false);
+    	 m_MoreInfoSwitch.set_sensitive(false);
+     }
+
 
      FinishThreadAndClear();
 }
