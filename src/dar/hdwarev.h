@@ -18,7 +18,7 @@ public:
 
     using TmpWndState = enum class DAWndState{NORMAL,FULL};
 	using SENSBUNCH = std::list<Sensor_node*>;
-	const bool VCoresActivities();
+	const bool VCoresActivities() const;
 	void ClearOrActivateVCStatistic(bool active = false);
 	const bool HasVFSensors() const {return !dwVCF.empty();}
 

@@ -109,7 +109,7 @@ void CpuStatDlg::on_show()
 
 	if(!l_timer) l_timer = SETIMER(uhiutil::timer_id,uhiutil::timer_interval,&CpuStatDlg::ot_timer);
 
-	if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities()){
+	if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities() && uhiutil::draw::more_info){
 		lfr_VCativ.set_visible(true);
 		local_SensVcore.ClearOrActivateVCStatistic(true);
 	}

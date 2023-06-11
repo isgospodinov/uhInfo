@@ -446,6 +446,7 @@ void UIHWindow::InitToolBar()
 
 	  m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
 	  m_ToolBarMenuPopup.set_menu_model(tbmenu);
+	  m_ToolBarMenuPopup.set_has_arrow(false); //NOTE - After gtk4-4.10.4 if enabled generates a critical warning.So will be disabled for now.
 }
 
 void UIHWindow::StatusbarCpuText()

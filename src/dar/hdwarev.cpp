@@ -123,7 +123,7 @@ void CDrArVcore::ClearOrActivateVCStatistic(bool active)
 	draw_sensor_name = (active && (cv > 1));
 }
 
-const bool CDrArVcore::VCoresActivities()
+const bool CDrArVcore::VCoresActivities() const
 {
 	for(Sensor_node* snc : dwVCF) {
 		 if(snc->is_Vcore && snc->visible)

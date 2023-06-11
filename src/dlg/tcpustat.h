@@ -48,7 +48,7 @@ private:
 
    virtual void InitVision() override;
    void on_WrnLewel_changed();
-   void Redraw(){local_CpuInTempr.Redraw();if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities()) local_SensVcore.Redraw();}
+   void Redraw(){local_CpuInTempr.Redraw();if(lcWrMode == WmDlg::TEMPRTDLG && local_SensVcore.VCoresActivities() && uhiutil::draw::more_info) local_SensVcore.Redraw();}
    void set_InfoLabel(std::string wf) {l_InfoLabel.set_text("Max : " + std::to_string((int) *fqmax) + " MHz" + "\nWrn : " + wf + " MHz");}
 };
 
