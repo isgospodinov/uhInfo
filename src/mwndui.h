@@ -39,7 +39,6 @@ protected:
   Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar,m_Box_CPUActivityAll,m_Box_GRridAndButt;
   Gtk::Button m_ButtonQuit,m_ButtCPUOverall;
   Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
-  Gtk::Label m_Label_Sensors,m_ToolbarChoice{"  >  "};
   Gtk::Box hbox_operation_status_cpu,hbox_operation_status_pcie,hbox_operation_status_sensors;
   Gtk::Image operation_status_image_cpu,operation_status_image_pcie,operation_status_image_sensors;
 
@@ -53,7 +52,7 @@ protected:
 
   Gtk::ProgressBar m_pbFreq,m_pbUse;
   Gtk::Separator m_separator;
-  Gtk::Label m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status,m_status_bar;
+  Gtk::Label m_Label_Sensors,m_sb_labeltext,m_sb_status,m_sb_cpu_labeltext,m_sb_cpu_status,m_status_bar;
 
   bool smDlg_shown = false,sensors_printing_enable = false,temperature_mode_status = false;
 
@@ -70,8 +69,10 @@ protected:
   CDrArTempr m_DAtemperature;
 
   // ------------------ ToolBar functionality ------------------
-  Gtk::PopoverMenu m_ToolBarMenuPopup;
-  Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
+  //Gtk::Label m_ToolbarChoice{"  >  "};
+  //Gtk::PopoverMenu m_ToolBarMenuPopup;
+  //Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
+  Gtk::MenuButton mb_Choice;
   void InitToolBar();
   virtual void on_tbt_clicked(bool param) = 0;
   // ------------------ ToolBar functionality ------------------
@@ -97,7 +98,8 @@ protected:
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
 
-  virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}
+  //virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}
+  virtual ~UIHWindow() = default;
 };
 
 #endif // _MWNDUI_H_

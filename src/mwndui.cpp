@@ -408,15 +408,21 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
                cpu_units_monit_chain.push_back(cpu_unit);
           }
 
-          Gtk::Frame *ptFrame = Gtk::make_managed<Gtk::Frame>();
-          ptFrame->set_child(m_ToolbarChoice);
-          mDA_ToolBar.append(*Gtk::make_managed<Gtk::Label>(_("Utility :")));
-          mDA_ToolBar.append(*ptFrame);
-          ptFrame->set_margin_start(12);
-          ptFrame->set_margin_end(4);
+          //Gtk::Frame *ptFrame = Gtk::make_managed<Gtk::Frame>();
+          //ptFrame->set_child(m_ToolbarChoice);
+          //mDA_ToolBar.append(*Gtk::make_managed<Gtk::Label>(_("Utility :")));
+          //mDA_ToolBar.append(*ptFrame);
+          //ptFrame->set_margin_start(12);
+          //ptFrame->set_margin_end(4);
+
+          mb_Choice.set_label(_("Utility"));
+          mDA_ToolBar.append(mb_Choice);
+          mb_Choice.set_margin_start(4);
+          mb_Choice.set_margin_end(4);
 
           uhiutil::set_css_style(mDA_ToolBar.get_style_context(),lprv,"toolbar");
-          uhiutil::set_css_style(ptFrame->get_style_context(),lprv,"tbext_cls");
+          //uhiutil::set_css_style(ptFrame->get_style_context(),lprv,"tbext_cls");
+          uhiutil::set_css_style(mb_Choice.get_first_child()->get_style_context(),lprv,"tb_cls");
           uhiutil::set_css_style(m_TbFrame.get_style_context(),lprv,"ls_cls");
           uhiutil::set_css_style(m_DAFrame_Temperature.get_style_context(),lprv,"ls_cls");
           uhiutil::set_css_style(m_pbUse.get_style_context(),lprv,"fu_cls");
@@ -431,9 +437,9 @@ void UIHWindow::InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std
 
 void UIHWindow::InitToolBar()
 {
-	  m_refToolBarChoice->set_button(GDK_BUTTON_PRIMARY);
-	  m_refToolBarChoice->signal_pressed().connect([&](int , double x, double y){m_ToolBarMenuPopup.set_pointing_to(Gdk::Rectangle(x,y,1,1));m_ToolBarMenuPopup.popup();});
-	  m_ToolbarChoice.add_controller(m_refToolBarChoice);
+	  //m_refToolBarChoice->set_button(GDK_BUTTON_PRIMARY);
+	  //m_refToolBarChoice->signal_pressed().connect([&](int , double x, double y){m_ToolBarMenuPopup.set_pointing_to(Gdk::Rectangle(x,y,1,1));m_ToolBarMenuPopup.popup();});
+	  //m_ToolbarChoice.add_controller(m_refToolBarChoice);
 
 	  Glib::RefPtr<Gio::SimpleActionGroup> refTBAcGr = Gio::SimpleActionGroup::create();
 	  refTBAcGr->add_action("show",sigc::bind(sigc::mem_fun(*this,&UIHWindow::on_tbt_clicked),true));
@@ -444,9 +450,13 @@ void UIHWindow::InitToolBar()
 	  tbmenu->append_item(Gio::MenuItem::create(_("Show CPU load"),"tbchoice.show"));
 	  tbmenu->append_item(Gio::MenuItem::create(_("Hide toolbar"),"tbchoice.hide"));
 
-	  m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
-	  m_ToolBarMenuPopup.set_menu_model(tbmenu);
-	  m_ToolBarMenuPopup.set_has_arrow(false); //NOTE - After gtk4-4.10.4 if enabled generates a critical warning.So will be disabled for now.
+	  //m_ToolBarMenuPopup.set_parent(m_ToolbarChoice);
+	  //m_ToolBarMenuPopup.set_has_arrow(false); //NOTE - After gtk4-4.10.4 if enabled generates a critical warning.So will be disabled for now.
+	  //m_ToolBarMenuPopup.set_menu_model(tbmenu);
+
+	  Gtk::PopoverMenu *tb_MenuPopup = Gtk::make_managed<Gtk::PopoverMenu>(tbmenu,Gtk::PopoverMenu::Flags::NESTED);
+	  tb_MenuPopup->set_has_arrow(false); //NOTE - After gtk4-4.10.4 if enabled generates a critical warning.So will be disabled for now.
+	  mb_Choice.set_popover(*tb_MenuPopup);
 }
 
 void UIHWindow::StatusbarCpuText()
