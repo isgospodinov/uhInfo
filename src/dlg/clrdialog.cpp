@@ -8,12 +8,18 @@
 
 ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : UhiDlgWnd(pMWnd)
 {
-	set_transient_for(*pMWnd);
-	set_title(_("Color choice"));
+   set_transient_for(*pMWnd);
+   set_title(_("Color choice"));
 
-	set_child(scrollWindow);
+   set_child(allBox);
+
+   allBox.set_orientation(Gtk::Orientation::VERTICAL);
+
+   allBox.append(l_chSeName);
+   allBox.append(scrollWindow);
 
    scrollWindow.set_child(treeView);
+
    treeView.set_model(pRefTreeModel);
 
    scrollWindow.set_margin(7);
@@ -34,6 +40,7 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    treeView.property_enable_grid_lines() = true;
 
    SETLOCALDECORATION;
+   uhiutil::set_css_style(l_chSeName.get_style_context(),lprv,"ctext_cls");
 }
 
 bool ClrDialog::Wnd_close_handler()
@@ -70,13 +77,13 @@ void ClrDialog::InitVision()
     for(int i = 0 ; i < indexlimit ; i++) {
     	Gtk::TreeModel::Row row = *(pRefTreeModel->append());
         row[cvColumns->color_name] = clrID[i];
-  }
+    }
 
     Gtk::TreeViewColumn* ptColumn = treeView.get_column(0);
-      if(ptColumn) {
+    if(ptColumn) {
           Gtk::CellRenderer *ptRend = (ptColumn->get_first_cell());
           if(ptRend) ptColumn->add_attribute(*ptRend,"cell-background", 1);
-      }
+    }
 }
 
 void ClrDialog::on_show()
@@ -87,6 +94,8 @@ void ClrDialog::on_show()
 
 	CDrArTempr::DRAWVECTORPLUS ldv{nullptr,nullptr};
 	citl = PTSMNG(m_temperatureTreeView).get_selection()->get_selected();
+
+	l_chSeName.set_text((*citl)[TCOLUMNS(tsensor_node)] + " : " + (*citl)[TCOLUMNS(tsensor_name)]);
 
 	if(citl) {
         if((*citl)[TCOLUMNS(tsensor_node)] == sensors::nud2)

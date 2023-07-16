@@ -158,6 +158,7 @@ const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin
 		  ".afu_cls {color: #000000; font-style: italic;}" \
 		  ".tb_cls {color: #FFFFFF;}" \
 		  ".tbext_cls {color: #FFFFFF; border-style: solid; border-color: white; border-width: 1px;}" \
+		  ".ctext_cls {background: #778899; color: #FFFFFF; border-style: solid; border-color: black; border-width: 1px;}" \
 		  ".als_cls {color: #000000; font-weight: bold; font-size: 16px;}" \
 		  ".toolbar {background: #778899; color: #FFFFFF;}"  \
           ".hb_cls {min-height: 32px;}" };

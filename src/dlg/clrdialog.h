@@ -24,6 +24,8 @@ private:
    const Glib::RefPtr<Gtk::ListStore> pRefTreeModel = Gtk::ListStore::create(*cvColumns);
 
    Gtk::ScrolledWindow scrollWindow;
+   Gtk::Box allBox;
+   Gtk::Label l_chSeName;
    Gtk::TreeView treeView;
    std::string* cName = nullptr;
    Gtk::TreeModel::iterator citl{nullptr};
