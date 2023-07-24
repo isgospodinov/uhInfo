@@ -89,7 +89,7 @@
 	      m_VBoxVLeft.set_visible(wndstat);  \
 	      m_Box_TmpControls.set_visible(wndstat); \
 	      set_show_menubar(wndstat); \
-		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? (pfDlg->GetShowCPUfq() && m_DAtemperature.HasActivities()): false) && !wndstat)
+		  if(!clrDlg->is_visible()) mDA_ToolBar.set_visible((pfDlg ? (pfDlg->GetShowCPUfq() && m_DAtemperature.HasActivities()) : false) && !wndstat)
 
 #define  CHIPSENSORSNUMBER(chips,sensors) chips = pSysensors->GetSensorNodesNumb() + pUd2Manager->GetSensorNodesNumb(); \
                                           sensors = pSysensors->GetSensorsDetectedNumb() + pUd2Manager->GetSensorsDetectedNumb()

@@ -6,7 +6,7 @@
 #include "../mwnd.h"
 
 CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,const std::unique_ptr<CProcUnits> *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
-                        cb_WrnLevel(),lpCPU(pCpu),fqmax((*lpCPU)->Get_PtrCpu_fqmax()),
+                        lpCPU(pCpu),fqmax((*lpCPU)->Get_PtrCpu_fqmax()),
 						local_CpuInTempr((*lpCPU)->GetCpuFqAvg(),fqmax,pMWnd)
 {
 	set_transient_for(*pMWnd);

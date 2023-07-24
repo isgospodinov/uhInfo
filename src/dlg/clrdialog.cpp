@@ -16,6 +16,7 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    allBox.set_orientation(Gtk::Orientation::VERTICAL);
 
    allBox.append(l_chSeName);
+   allBox.append(cb_chSeName);
    allBox.append(scrollWindow);
 
    scrollWindow.set_child(treeView);
@@ -31,6 +32,7 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    InitVision();
 
    treeView.signal_row_activated().connect(sigc::mem_fun(*this, &ClrDialog::OnColorChoiceToggled));
+   cb_chSeName.signal_changed().connect(sigc::mem_fun(*this,&ClrDialog::on_SelSens_changed));
 
    signal_close_request().connect(sigc::mem_fun(*this, &ClrDialog::Wnd_close_handler),false);
 
@@ -41,6 +43,8 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
 
    SETLOCALDECORATION;
    uhiutil::set_css_style(l_chSeName.get_style_context(),lprv,"ctext_cls");
+   uhiutil::set_css_style(cb_chSeName.get_first_child()->get_style_context(),lprv,"toolbar");
+   uhiutil::set_css_style(cb_chSeName.get_child()->get_style_context(),lprv,"tb_cls");
 }
 
 bool ClrDialog::Wnd_close_handler()
@@ -52,8 +56,9 @@ bool ClrDialog::Wnd_close_handler()
 	hide();
 
 	if(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::FULL)
-		PTSMNG(mDA_ToolBar).set_visible((PTSMNG(pfDlg) ? (PTSMNG(pfDlg)->GetShowCPUfq() && PTSMNG(m_DAtemperature).HasActivities()): false) && true);
+		PTSMNG(mDA_ToolBar).set_visible((PTSMNG(pfDlg) ? (PTSMNG(pfDlg)->GetShowCPUfq() && PTSMNG(m_DAtemperature).HasActivities()) : false) && PTSMNG(mDA_ToolBar).is_visible());
 
+	cb_chSeName.remove_all();
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;
 	citl  = Gtk::TreeModel::iterator(nullptr);
@@ -92,20 +97,59 @@ void ClrDialog::on_show()
 	PTSMNG(item_temperature)->set_enabled(false);
 	treeView.get_selection()->unselect_all();
 
+	if(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::NORMAL) {
+		citl = PTSMNG(m_temperatureTreeView).get_selection()->get_selected();
+	    l_chSeName.set_text((*citl)[TCOLUMNS(tsensor_node)] + " : " + (*citl)[TCOLUMNS(tsensor_name)]);
+		if(citl) {
+			SetChangeNameClr(citl);
+	        (*citl)[TCOLUMNS(color)] = "( ● )";
+		}
+
+	}
+	else {
+		Gtk::TreeModel::Children chl = PTSMNG(ptRefTreeModel)->children();
+		for(Gtk::TreeIter<Gtk::TreeRow> rowit = chl.begin();rowit != chl.end(); rowit++)
+		{
+			if((*rowit)[TCOLUMNS(col_tcheck)]) {
+				cb_chSeName.append((*rowit)[TCOLUMNS(tsensor_node)] + ":" + (*rowit)[TCOLUMNS(tsensor_name)] + "(" + (*rowit)[TCOLUMNS(tnode_id)] + std::to_string((*rowit)[TCOLUMNS(tsensor_id)]) + ")");
+			}
+		}
+	}
+
+
+	l_chSeName.set_visible(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::NORMAL ? true : false);
+	cb_chSeName.set_visible(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::NORMAL ? false : true);
+	cb_chSeName.set_active(0);
+}
+
+void ClrDialog::SetChangeNameClr(Gtk::TreeModel::iterator& it)
+{
 	CDrArTempr::DRAWVECTORPLUS ldv{nullptr,nullptr};
-	citl = PTSMNG(m_temperatureTreeView).get_selection()->get_selected();
 
-	l_chSeName.set_text((*citl)[TCOLUMNS(tsensor_node)] + " : " + (*citl)[TCOLUMNS(tsensor_name)]);
+	if((*it)[TCOLUMNS(tsensor_node)] == sensors::nud2)
+			        	ldv = PTSMNG(pUd2Manager)->SensorStatisticToggle((*it)[TCOLUMNS(col_tcheck)],(*it)[TCOLUMNS(color_name)],
+			    			            (*it)[TCOLUMNS(tsensor_node)],(*it)[TCOLUMNS(tsensor_name)],(*it)[TCOLUMNS(tnode_id)],(*it)[TCOLUMNS(tsensor_id)]);
+			        else
+			        	ldv = PTSMNG(pSysensors)->SensorStatisticToggle((*it)[TCOLUMNS(col_tcheck)],(*it)[TCOLUMNS(color_name)],
+			    			    (*it)[TCOLUMNS(tsensor_node)],(*it)[TCOLUMNS(tsensor_name)],(*it)[TCOLUMNS(tnode_id)],(*it)[TCOLUMNS(tsensor_id)]);
 
-	if(citl) {
-        if((*citl)[TCOLUMNS(tsensor_node)] == sensors::nud2)
-        	ldv = PTSMNG(pUd2Manager)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
-    			            (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
-        else
-        	ldv = PTSMNG(pSysensors)->SensorStatisticToggle((*citl)[TCOLUMNS(col_tcheck)],(*citl)[TCOLUMNS(color_name)],
-    			    (*citl)[TCOLUMNS(tsensor_node)],(*citl)[TCOLUMNS(tsensor_name)],(*citl)[TCOLUMNS(tnode_id)],(*citl)[TCOLUMNS(tsensor_id)]);
+	cName = const_cast<std::string*>(ldv.dsn);
+}
 
-        cName = const_cast<std::string*>(ldv.dsn);
-        (*citl)[TCOLUMNS(color)] = "( ● )";
+void ClrDialog::on_SelSens_changed()
+{
+	std::string fstr = cb_chSeName.get_active_text(),cstr = "";
+
+	Gtk::TreeModel::Children chl = PTSMNG(ptRefTreeModel)->children();
+	for(Gtk::TreeIter<Gtk::TreeRow> rowit = chl.begin();rowit != chl.end(); rowit++)
+	{
+		if((*rowit)[TCOLUMNS(col_tcheck)]) {
+			cstr = ((*rowit)[TCOLUMNS(tsensor_node)] + ":" + (*rowit)[TCOLUMNS(tsensor_name)] + "(" + (*rowit)[TCOLUMNS(tnode_id)] + std::to_string((*rowit)[TCOLUMNS(tsensor_id)]) + ")");
+			if(fstr == cstr) {
+				SetChangeNameClr(rowit);
+		        citl = rowit;
+		        break;
+			}
+		}
 	}
 }

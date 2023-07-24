@@ -26,11 +26,14 @@ private:
    Gtk::ScrolledWindow scrollWindow;
    Gtk::Box allBox;
    Gtk::Label l_chSeName;
+   Gtk::ComboBoxText cb_chSeName;
    Gtk::TreeView treeView;
    std::string* cName = nullptr;
    Gtk::TreeModel::iterator citl{nullptr};
 
    virtual void InitVision() override;
+   void on_SelSens_changed();
+   void SetChangeNameClr(Gtk::TreeModel::iterator &it);
 };
 
 #endif // _CLRDIALOG_H_

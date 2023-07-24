@@ -11,7 +11,7 @@
 CDrArTempr::CDrArTempr(UIHWindow* uhiwnd,fp_lDASR ldafp)
 {
 	  msbntpress = Gtk::GestureClick::create();
-	  msbntpress->set_button(GDK_BUTTON_PRIMARY);
+	  msbntpress->set_button();
 	  msbntpress->signal_pressed().connect(sigc::mem_fun(*uhiwnd,ldafp));
 	  add_controller(msbntpress);
 
@@ -154,8 +154,8 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 		  cr->restore();
 	  }
 
-	  if(m_TmpWndCurrState != DAWndState::FULL && !HasActivities() && show_msg_attention) {
-	       DA_Text(layout, width, height, _("Empty selection"));
+	  if(m_TmpWndCurrState != DAWndState::FULL && show_msg_attention) {
+	       DA_Text(layout, width, height, (!HasActivities() ? _("Empty selection") : _("Color change in action")));
 	       DADRAWTEXT(cr,layout,(w / 2) - width / 2, h - (h / 2));
 	  }
 
