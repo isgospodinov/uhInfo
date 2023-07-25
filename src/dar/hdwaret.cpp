@@ -201,5 +201,11 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	 	   	   std::to_string((int)std::ceil((((double)uhiutil::calc::t_statistic_len - 1) / (double)2) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
+	       cr->save();
+	       cr->set_source_rgb(1.0, 1.0, 1.0);
+	       bluepoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8)};
+		   cr->arc(bluepoint.cx , bluepoint.cy, draw::bp_radius, 0, 2 * M_PI);
+	       cr->fill();
+	       cr->restore();
 	  }
 }

@@ -87,7 +87,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	else
 		if(evbntpress->get_button() == GDK_BUTTON_SECONDARY && npress == 1 &&
 				 m_DAtemperature.m_TmpWndCurrState == CDrArTempr::DAWndState::FULL && !clrDlg->is_visible()) {
-			clrDlg->show();
+			                     if(m_DAtemperature.CheckingDotMatch(x, y)) clrDlg->show();
 		}
 }
 
