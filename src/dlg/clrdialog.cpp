@@ -104,7 +104,6 @@ void ClrDialog::on_show()
 			SetChangeNameClr(citl);
 	        (*citl)[TCOLUMNS(color)] = "( ● )";
 		}
-
 	}
 	else {
 		Gtk::TreeModel::Children chl = PTSMNG(ptRefTreeModel)->children();
@@ -114,12 +113,11 @@ void ClrDialog::on_show()
 				cb_chSeName.append((*rowit)[TCOLUMNS(tsensor_node)] + ":" + (*rowit)[TCOLUMNS(tsensor_name)] + "(" + (*rowit)[TCOLUMNS(tnode_id)] + std::to_string((*rowit)[TCOLUMNS(tsensor_id)]) + ")");
 			}
 		}
+		cb_chSeName.set_active(0);
 	}
-
 
 	l_chSeName.set_visible(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::NORMAL ? true : false);
 	cb_chSeName.set_visible(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::NORMAL ? false : true);
-	cb_chSeName.set_active(0);
 }
 
 void ClrDialog::SetChangeNameClr(Gtk::TreeModel::iterator& it)
@@ -140,14 +138,12 @@ void ClrDialog::on_SelSens_changed()
 {
 	std::string fstr = cb_chSeName.get_active_text(),cstr = "";
 
-	Gtk::TreeModel::Children chl = PTSMNG(ptRefTreeModel)->children();
-	for(Gtk::TreeIter<Gtk::TreeRow> rowit = chl.begin();rowit != chl.end(); rowit++)
+	for(Gtk::TreeRow rowit : PTSMNG(ptRefTreeModel)->children())
 	{
-		if((*rowit)[TCOLUMNS(col_tcheck)]) {
-			cstr = ((*rowit)[TCOLUMNS(tsensor_node)] + ":" + (*rowit)[TCOLUMNS(tsensor_name)] + "(" + (*rowit)[TCOLUMNS(tnode_id)] + std::to_string((*rowit)[TCOLUMNS(tsensor_id)]) + ")");
+		if((rowit)[TCOLUMNS(col_tcheck)]) {
+			cstr = ((rowit)[TCOLUMNS(tsensor_node)] + ":" + (rowit)[TCOLUMNS(tsensor_name)] + "(" + (rowit)[TCOLUMNS(tnode_id)] + std::to_string((rowit)[TCOLUMNS(tsensor_id)]) + ")");
 			if(fstr == cstr) {
-				SetChangeNameClr(rowit);
-		        citl = rowit;
+				SetChangeNameClr(citl = rowit.get_iter());
 		        break;
 			}
 		}

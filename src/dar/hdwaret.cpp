@@ -203,8 +203,9 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	       }
 	       cr->save();
 	       cr->set_source_rgb(1.0, 1.0, 1.0);
-	       bluepoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8)};
-		   cr->arc(bluepoint.cx , bluepoint.cy, draw::bp_radius, 0, 2 * M_PI);
+	       bool dp = wpoint.dr;
+	       wpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), false};
+		   cr->arc(wpoint.cx , wpoint.cy, (draw::bp_radius - (!dp ? 0 : 4)), 0, 2 * M_PI);
 	       cr->fill();
 	       cr->restore();
 	  }
