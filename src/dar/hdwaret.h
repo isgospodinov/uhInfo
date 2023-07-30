@@ -22,11 +22,18 @@ public:
 	         const std::string* dsn;
   };
 
+  int offset_cx = 0;
+
   using Draw_Item = struct {
       DRAWVECTOR DItem = nullptr;
       const std::string* DItName = nullptr;
-      std::string DItSensor = "";
+      std::string DItSensor = "",DItSensorID = "";
       double *sensormax = nullptr;
+
+      struct {
+    	int cx = 0, cy = 0;
+        bool dr = false;
+      } wpoint;
   };
 
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
@@ -37,16 +44,14 @@ public:
 
   void SetAttentState(bool show) {show_msg_attention = show;}
   bool GetAttentState() const {return  show_msg_attention;}
-  void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag);
+  void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
-  bool CheckingDotMatch(double x, double y) {if ((wpoint.dr = std::pow((wpoint.cx - x),2) + std::pow((wpoint.cy - y),2) <= std::pow(draw::bp_radius,2))) return true; else return false;}
+  std::string CheckingDotMatch(double x, double y);
 private:
   bool show_msg_attention = false;
   std::chrono::system_clock::time_point start_time_point;
   std::chrono::duration<double> duration_total_time = std::chrono::duration<double>(0.0);
-
-  struct {int cx = 0, cy = 0;bool dr = false;} wpoint;
 
   virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);

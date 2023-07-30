@@ -87,7 +87,8 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	else
 		if(evbntpress->get_button() == GDK_BUTTON_SECONDARY && npress == 1 &&
 				 m_DAtemperature.m_TmpWndCurrState == CDrArTempr::DAWndState::FULL && !clrDlg->is_visible()) {
-			                     if(m_DAtemperature.CheckingDotMatch(x, y)) clrDlg->show();
+			                     std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
+			                     if(sn != "") clrDlg->show_clr_dlg(sn);
 		}
 }
 
@@ -501,7 +502,8 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
           dv = pUd2Manager->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id],&ps_max);
 
     if(dv.dvc && dv.dsn)
-        m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],(*iter)[tColumns->col_tcheck]);
+        m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],
+        		(*iter)[tColumns->tsensor_node] + ":" + (*iter)[tColumns->tsensor_name] + (*iter)[tColumns->tnode_id] + std::to_string((*iter)[tColumns->tsensor_id]), (*iter)[tColumns->col_tcheck]);
 
 }
 
@@ -529,7 +531,7 @@ void CHWindow::On_Temperature_Row_Activated(const Gtk::TreeModel::Path& path, Gt
     if(clrDlg && column->get_title() == Glib::ustring(_("Color")))
 	{
 		 m_Box_TmpControls.set_sensitive(false);
-	     clrDlg->show();
+	     clrDlg->show_clr_dlg();
 	}
 
     m_temperatureTreeView.get_selection()->unselect_all();

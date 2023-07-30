@@ -47,7 +47,7 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
   cr->restore();
 }
 
-void CDrArTempr::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, bool setflag)
+void CDrArTempr::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag)
 {
 	if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
@@ -56,6 +56,7 @@ void CDrArTempr::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, 
           di.DItem = item->dvc;
           di.DItName = item->dsn;
           di.DItSensor = SensorName;
+          di.DItSensorID = SensorID;
           di.sensormax = max;
           draw_temperatures.push_back(di);
           if(draw_temperatures.size() == 1) start_time_point = std::chrono::system_clock::now();
@@ -64,6 +65,7 @@ void CDrArTempr::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, 
         for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
               if(item->dvc == dit->DItem) {
                 draw_temperatures.erase(dit);
+                offset_cx = 0;
                 break;
             }
         }
@@ -177,9 +179,10 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 
 	  if(m_TmpWndCurrState == DAWndState::FULL) {
 	       double tcvr = 0.0;
+	       int correction_cx = 0;
 	       dtxt = 1;
 	       cr->save();
-	       for(std::list<Draw_Item>::const_iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
+	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
 	                     Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{*dit->DItName});
 	                     tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
@@ -193,20 +196,41 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	                    		 dit->DItSensor + "  MAX : "+ (dit->sensormax ? (std::to_string(*dit->sensormax).substr(0,STRCOND(tcvr,5,4)) + " °") : "N/A"));
 	                     DADRAWTEXT(cr,layout,w / 2 - width / 2,(height * dtxt) - draw::dofset); // temperature source
 
+	                     offset_cx = ((offset_cx <= 0) ? ((w / 2 - width / 2) - 11) : (std::min((w / 2 - width / 2) - 11, offset_cx)));
+	                     correction_cx = ((correction_cx <= 0) ? ((w / 2 - width / 2) - 11) : (std::min((w / 2 - width / 2) - 11, correction_cx)));
+
+			             cr->save();
+					     cr->set_source_rgb(1.0, 1.0, 1.0);
+					     bool dp = dit->wpoint.dr;
+					     dit->wpoint = {(int) offset_cx,(int)(((height * dtxt) - draw::dofset) + 6),false};
+					     cr->arc(dit->wpoint.cx, dit->wpoint.cy, draw::bp_radius - (!dp ? 0 : 2), 0, 2 * M_PI);
+					     cr->fill();
+					     cr->restore();
+
 	              }
 	       }
+
+	       offset_cx = std::max(offset_cx, correction_cx);
+
 	       cr->restore();
 	       if(FULLAPPWNDMODE(w,h)) {
 	 	       DA_Text(layout, width , height,
 	 	   	   std::to_string((int)std::ceil((((double)uhiutil::calc::t_statistic_len - 1) / (double)2) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
-	       cr->save();
-	       cr->set_source_rgb(1.0, 1.0, 1.0);
-	       bool dp = wpoint.dr;
-	       wpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), false};
-		   cr->arc(wpoint.cx , wpoint.cy, (draw::bp_radius - (!dp ? 0 : 4)), 0, 2 * M_PI);
-	       cr->fill();
-	       cr->restore();
 	  }
+}
+
+std::string CDrArTempr::CheckingDotMatch(double x, double y)
+{
+	std::string res = "";
+	for(std::list<Draw_Item>::iterator di = draw_temperatures.begin(); di != draw_temperatures.end(); di++)  {
+	    di->wpoint.dr = (std::pow((di->wpoint.cx - x),2) + std::pow((di->wpoint.cy - y),2) <= std::pow(draw::bp_radius,2));
+		if (di->wpoint.dr) {
+			 res = di->DItSensorID;
+			 break;
+		}
+	}
+
+	return res;
 }

@@ -71,7 +71,7 @@ namespace uhiutil {
        const unsigned int dwah = 50;
        const unsigned int uhi_draw_yscale = 5,uhi_draw_xscale = 15;
        const int HWmax = 510;
-       const int bp_radius = 12;
+       const int bp_radius = 5;
        extern bool more_info;
     }
 
