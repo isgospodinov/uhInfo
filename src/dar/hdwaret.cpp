@@ -182,7 +182,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	       int correction_cx = 0;
 	       dtxt = 1;
 	       cr->save();
-	       for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
+	       for(std::list<Draw_Item>::const_iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++,dtxt++)  {
 	              if(dit->DItem && ((*dit->DItem).size() >= 2)) {
 	                     Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA{*dit->DItName});
 	                     tcvr = ((*dit->DItem)[0] * (double) uhiutil::cpu::max_cpu_t);
@@ -206,11 +206,11 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 					     cr->arc(dit->wpoint.cx, dit->wpoint.cy, draw::bp_radius - (!dp ? 0 : 2), 0, 2 * M_PI);
 					     cr->fill();
 					     cr->restore();
-
 	              }
 	       }
 
-	       offset_cx = std::max(offset_cx, correction_cx);
+	       if(!(offset_cx == correction_cx))
+	                offset_cx = std::max(offset_cx, correction_cx);
 
 	       cr->restore();
 	       if(FULLAPPWNDMODE(w,h)) {
@@ -221,10 +221,10 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  }
 }
 
-std::string CDrArTempr::CheckingDotMatch(double x, double y)
+std::string CDrArTempr::CheckingDotMatch(double x, double y) const
 {
 	std::string res = "";
-	for(std::list<Draw_Item>::iterator di = draw_temperatures.begin(); di != draw_temperatures.end(); di++)  {
+	for(std::list<Draw_Item>::const_iterator di = draw_temperatures.begin(); di != draw_temperatures.end(); di++)  {
 	    di->wpoint.dr = (std::pow((di->wpoint.cx - x),2) + std::pow((di->wpoint.cy - y),2) <= std::pow(draw::bp_radius,2));
 		if (di->wpoint.dr) {
 			 res = di->DItSensorID;

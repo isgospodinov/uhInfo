@@ -30,7 +30,7 @@ public:
       std::string DItSensor = "",DItSensorID = "";
       double *sensormax = nullptr;
 
-      struct {
+      mutable struct {
     	int cx = 0, cy = 0;
         bool dr = false;
       } wpoint;
@@ -47,7 +47,7 @@ public:
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
   void EraseAll() {draw_temperatures.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
-  std::string CheckingDotMatch(double x, double y);
+  std::string CheckingDotMatch(double x, double y) const;
 private:
   bool show_msg_attention = false;
   std::chrono::system_clock::time_point start_time_point;
