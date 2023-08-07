@@ -51,9 +51,6 @@ bool ClrDialog::Wnd_close_handler()
 
 	hide();
 
-	if(PTSMNG(m_DAtemperature).m_TmpWndCurrState == CDrArTempr::DAWndState::FULL)
-		PTSMNG(mDA_ToolBar).set_visible((PTSMNG(pfDlg) ? (PTSMNG(pfDlg)->GetShowCPUfq() && PTSMNG(m_DAtemperature).HasActivities()) : false) && PTSMNG(mDA_ToolBar).is_visible());
-
 	if(citl) (*citl)[TCOLUMNS(color)] = "";
 	cName = nullptr;
 	citl  = Gtk::TreeModel::iterator(nullptr);

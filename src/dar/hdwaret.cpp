@@ -131,6 +131,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 {
 	  int width = 0,height = 0,dtxt = 0,mv = 0;
 	  const int scale = uhiutil::cpu::max_cpu_t / draw::uhi_draw_yscale;
+	  triangle.set_keypoint((FULLAPPWNDMODE(w,h) ? w : 0));
 	  Glib::RefPtr<Pango::Layout> layout = create_pango_layout(duration.c_str());
 	  layout->set_font_description(DA_DrawFont());
 	  cr->move_to(draw::dofset,draw::dofset);
@@ -218,6 +219,10 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	 	   	   std::to_string((int)std::ceil((((double)uhiutil::calc::t_statistic_len - 1) / (double)2) * (double)((double)uhiutil::timer_interval / (double)1000))) + " s");
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
+
+		   if(triangle.draw_tr_condition()) {
+			     triangle.draw_triangle(cr);
+		   }
 	  }
 }
 

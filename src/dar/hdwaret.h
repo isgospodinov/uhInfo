@@ -36,6 +36,44 @@ public:
       } wpoint;
   };
 
+  struct {
+    private:
+	   int keypoint = 0;
+	   bool visible = false;
+
+	   double calctr(int px1, int py1, int px2, int py2, int px3, int py3) const {
+	      return std::abs((px1 * (py2 - py3) + px2 * (py3 - py1) + px3 * (py1 - py2)) / 2);
+	   }
+    public:
+	   bool draw_tr_condition() const { return (keypoint && visible);}
+	   void set_keypoint(int p) {keypoint = p;}
+	   void set_visibility(bool  v) {visible = v;}
+
+	   bool CheckingDotMatch(double tx, double ty) const {
+		   if(draw_tr_condition()) {
+		        double Tr = calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)), draw::dofset, keypoint - draw::dofset, draw::dofset, keypoint - draw::dofset, (draw::xoffset / 2 + (draw::dofset)));
+		        double CheckTr = calctr(tx, ty, keypoint - draw::dofset ,draw::dofset, keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset))) +
+				    calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset, tx, ty, keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset))) +
+                   calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset, keypoint - draw::dofset ,draw::dofset, tx, ty);
+
+		        return (Tr == CheckTr);
+		    }
+		    else
+			    return false;
+
+	   }
+
+	   void draw_triangle(const Cairo::RefPtr<Cairo::Context>& cr) const {
+		   if(draw_tr_condition()) {
+		          cr->move_to(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset);
+		          cr->line_to(keypoint - draw::dofset ,draw::dofset);
+		          cr->line_to(keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset)));
+		          cr->close_path();
+                  cr->fill();
+		   }
+	   }
+  } triangle; // utility
+
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
 
   CDrArTempr() = default;

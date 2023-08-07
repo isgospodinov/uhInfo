@@ -206,8 +206,9 @@ void CpuStatDlg::stop_cpustat_timer()
 
 inline void CpuStatDlg::CtrlStatMng(const bool st) const
 {
-	if(lcWrMode == WmDlg::TEMPRTDLG)
-	       PTSMNG(mDA_ToolBar).set_visible(st);
+	if(lcWrMode == WmDlg::TEMPRTDLG) {
+	       PTSMNG(m_DAtemperature).triangle.set_visibility(st);
+	}
 	else {
 		PTSMNG(set_show_menubar(st));
 		PTSMNG(m_ButtCPUOverall).set_visible(st);

@@ -86,9 +86,16 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
     }
 	else
 		if(evbntpress->get_button() == GDK_BUTTON_SECONDARY && npress == 1 &&
-				 m_DAtemperature.m_TmpWndCurrState == CDrArTempr::DAWndState::FULL && !clrDlg->is_visible()) {
-			                     std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
-			                     if(sn != "") clrDlg->show_clr_dlg(sn);
+				              m_DAtemperature.m_TmpWndCurrState == CDrArTempr::DAWndState::FULL) {
+			if(m_DAtemperature.triangle.CheckingDotMatch(x, y)) {
+				      cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG);
+			}
+			else
+				if(!clrDlg->is_visible()) {
+					  std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
+					  if(sn != "") clrDlg->show_clr_dlg(sn);
+				}
+
 		}
 }
 

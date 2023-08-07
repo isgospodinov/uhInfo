@@ -15,6 +15,7 @@ class UIHWindow : public Gtk::ApplicationWindow
 {
 public:
   UIHWindow();
+  virtual ~UIHWindow() = default;
 
   const uhimc_unique_ptr tColumns = uhimc_unique_ptr(new CModelUhiColumns()),dColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::DISK));
   const Glib::RefPtr<Gtk::ListStore> m_refTreeModel = Gtk::ListStore::create(*dColumns),ptRefTreeModel = Gtk::ListStore::create(*tColumns);
@@ -36,7 +37,7 @@ protected:
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
   Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
   Gtk::Grid m_gridVGA_cond,m_StatusBar_Grid_condit;
-  Gtk::Box m_ButtonBox,mT_All,mDA_ToolBar,m_Box_CPUActivityAll,m_Box_GRridAndButt;
+  Gtk::Box m_ButtonBox,mT_All,m_Box_CPUActivityAll,m_Box_GRridAndButt;
   Gtk::Button m_ButtonQuit,m_ButtCPUOverall;
   Gtk::ScrolledWindow m_ScrolledWindow,m_ScrolledWindowTreeView,m_ScrolledWindowCPUActivityAll,m_ScrolledWindowTemperatures;
   Gtk::Box hbox_operation_status_cpu,hbox_operation_status_pcie,hbox_operation_status_sensors;
@@ -48,7 +49,7 @@ protected:
   Gtk::Switch m_CPUModeSwitch, m_CPUCompareSwitch, m_CPUNativeFqSwitch, m_BlinkSwitch, m_MoreInfoSwitch;
 
   Gtk::FlowBox m_Fbox_CPUActivityAll;
-  Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature,m_TbFrame,mFr_GRrid;
+  Gtk::Frame m_Frame_CPUActivityAll,m_DAFrame_Temperature,mFr_GRrid;
 
   Gtk::ProgressBar m_pbFreq,m_pbUse;
   Gtk::Separator m_separator;
@@ -67,15 +68,6 @@ protected:
   std::unique_ptr<sigc::connection> c_Timer{nullptr};
 
   CDrArTempr m_DAtemperature;
-
-  // ------------------ ToolBar functionality ------------------
-  //Gtk::Label m_ToolbarChoice{"  >  "};
-  //Gtk::PopoverMenu m_ToolBarMenuPopup;
-  //Glib::RefPtr<Gtk::GestureClick> m_refToolBarChoice = Gtk::GestureClick::create();
-  Gtk::MenuButton mb_Choice;
-  void InitToolBar();
-  virtual void on_tbt_clicked(bool param) = 0;
-  // ------------------ ToolBar functionality ------------------
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain);
@@ -97,9 +89,6 @@ protected:
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
-
-  //virtual ~UIHWindow() {m_ToolBarMenuPopup.unparent();}
-  virtual ~UIHWindow() = default;
 };
 
 #endif // _MWNDUI_H_
