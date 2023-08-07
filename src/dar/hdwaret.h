@@ -65,11 +65,13 @@ public:
 
 	   void draw_triangle(const Cairo::RefPtr<Cairo::Context>& cr) const {
 		   if(draw_tr_condition()) {
+			      cr->save();
 		          cr->move_to(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset);
 		          cr->line_to(keypoint - draw::dofset ,draw::dofset);
 		          cr->line_to(keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset)));
 		          cr->close_path();
                   cr->fill();
+                  cr->restore();
 		   }
 	   }
   } triangle; // utility

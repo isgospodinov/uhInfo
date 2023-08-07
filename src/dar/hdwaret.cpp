@@ -220,9 +220,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
 
-		   if(triangle.draw_tr_condition()) {
-			     triangle.draw_triangle(cr);
-		   }
+           triangle.draw_triangle(cr);
 	  }
 }
 
