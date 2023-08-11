@@ -13,6 +13,67 @@
 class UIHWindow;
 namespace draw = uhiutil::draw;
 
+struct Point {
+	int cx = 0, cy = 0;
+    bool dr = false;
+
+    bool CheckingDotMatch(double x, double y, const int radius = draw::bp_radius) {
+    	bool cr = (std::pow((cx - x),2) + std::pow((cy - y),2) <= std::pow(radius,2));
+
+    	if(radius == draw::bp_radius)
+    		                    dr = cr;
+
+        return cr;
+    }
+};
+
+struct ExtdPoint : Point
+{
+    bool StartStresTest(double &x, double &y) {
+    	if(CheckingDotMatch(x, y, draw::tp_radius)) {
+            if(!dr) {
+	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
+                    pIDs.push_back(std::atoi((uhiutil::execmd("while : ; do : ; done > /dev/null & echo $!")).c_str()));
+	            }
+	            dr = true;
+            }
+            else {
+            	StopStresTest(); //uhiutil::execmd("killall sh");
+            }
+
+    		return true;
+    	}
+    	else {
+    		return false;
+    	}
+    }
+
+    void StopStresTest() {
+       if(!pIDs.empty()) {
+           for(int pID : pIDs) {
+        	   std::string rs = "kill " + std::to_string(pID);
+        	   uhiutil::execmd(rs.c_str());
+           }
+           pIDs.clear();
+
+           if(dr)
+               dr = false;
+       }
+    }
+
+    void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
+	       cr->save();
+	       cr->set_source_rgb(1.0,dr ? .4 : 1.0, dr ? 0.4 : 1.0);
+		   cr->arc(cx , cy, draw::tp_radius, 0, 2 * M_PI);
+	       cr->fill();
+	       cr->restore();
+
+		   cr->arc(cx , cy, draw::tp_radius + 2, 0, 2 * M_PI);
+    }
+
+    std::list<int> pIDs;
+};
+
 class CDrArTempr : public CDrArVcore
 {
 public:
@@ -30,11 +91,10 @@ public:
       std::string DItSensor = "",DItSensorID = "";
       double *sensormax = nullptr;
 
-      mutable struct {
-    	int cx = 0, cy = 0;
-        bool dr = false;
-      } wpoint;
+      mutable Point wpoint; // changing color
   };
+
+  ExtdPoint tpoint;     // Starting stres test
 
   struct {
     private:
@@ -60,10 +120,9 @@ public:
 		    }
 		    else
 			    return false;
-
 	   }
 
-	   void draw_triangle(const Cairo::RefPtr<Cairo::Context>& cr) const {
+	   void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
 		   if(draw_tr_condition()) {
 			      cr->save();
 		          cr->move_to(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset);
@@ -80,12 +139,12 @@ public:
 
   CDrArTempr() = default;
   CDrArTempr(UIHWindow* uhiwnd,fp_lDASR ldafp);
-  virtual ~CDrArTempr() = default;
+  virtual ~CDrArTempr() {EraseAll();}
 
   void SetAttentState(bool show) {show_msg_attention = show;}
   bool GetAttentState() const {return  show_msg_attention;}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
-  void EraseAll() {draw_temperatures.clear();}
+  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
   std::string CheckingDotMatch(double x, double y) const;
 private:

@@ -25,7 +25,7 @@ public:
   CHWindow();
 
   void smWndResponse(bool fl) {smDlg_shown = fl;SMDLGMISTAT(!fl);}
-  void QuitTasks() const;
+  void QuitTasks();
 
   const std::shared_ptr<CSysens> pSysensors;
   const std::shared_ptr<Ud2mon> pUd2Manager;

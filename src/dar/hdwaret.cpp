@@ -220,7 +220,10 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	 	       DADRAWTEXT(cr, layout, ((w - draw::xoffset) / 2) + draw::dofset ,h - (height + draw::dofset)); // half time
 	       }
 
-           triangle.draw_triangle(cr);
+           triangle.drawing_request(cr);
+
+           tpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), tpoint.dr,tpoint.pIDs};
+           tpoint.drawing_request(cr);
 	  }
 }
 
@@ -228,8 +231,7 @@ std::string CDrArTempr::CheckingDotMatch(double x, double y) const
 {
 	std::string res = "";
 	for(std::list<Draw_Item>::const_iterator di = draw_temperatures.begin(); di != draw_temperatures.end(); di++)  {
-	    di->wpoint.dr = (std::pow((di->wpoint.cx - x),2) + std::pow((di->wpoint.cy - y),2) <= std::pow(draw::bp_radius,2));
-		if (di->wpoint.dr) {
+		if(di->wpoint.CheckingDotMatch(x, y)) {
 			 res = di->DItSensorID;
 			 break;
 		}

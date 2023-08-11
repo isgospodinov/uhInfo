@@ -91,11 +91,10 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 				      cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG);
 			}
 			else
-				if(!clrDlg->is_visible()) {
-					  std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
-					  if(sn != "") clrDlg->show_clr_dlg(sn);
+				if(!m_DAtemperature.tpoint.StartStresTest(x, y) && !clrDlg->is_visible()) {
+					   std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
+					   if(sn != "") clrDlg->show_clr_dlg(sn);
 				}
-
 		}
 }
 
@@ -198,7 +197,7 @@ void CHWindow::init_units_activity_vision() // init all cpu units activity visio
    }
 }
 
-void CHWindow::QuitTasks() const
+void CHWindow::QuitTasks()
 {       
       VeryFastQuitGuard(); // Async init task/thread very fast quit guard
 
@@ -229,6 +228,7 @@ void CHWindow::QuitTasks() const
                 }
           }
       }
+      m_DAtemperature.EraseAll();
 }
 
 void CHWindow::Posthreadnotify()

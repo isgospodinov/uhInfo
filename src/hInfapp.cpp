@@ -9,7 +9,7 @@
 
 void ChInfApp::on_application_quit()
 {
-	const CHWindow *const apwnd = (CHWindow*) get_run_window();
+	CHWindow *const apwnd = (CHWindow*) get_run_window();
 	if(apwnd) apwnd->QuitTasks();
 	quit();
 }
