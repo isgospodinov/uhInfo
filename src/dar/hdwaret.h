@@ -50,11 +50,10 @@ struct ExtdPoint : Point
 
     void StopStresTest() {
        if(!pIDs.empty()) {
-           for(int pID : pIDs) {
-        	   std::string rs = "kill " + std::to_string(pID);
-        	   uhiutil::execmd(rs.c_str());
-           }
-           pIDs.clear();
+    		for(std::list<int>::iterator it = pIDs.begin(); it != pIDs.end();) {
+                uhiutil::execmd(("kill " + std::to_string(*it)).c_str());
+                it = pIDs.erase(it);
+    		}
 
            if(dr)
                dr = false;
@@ -63,12 +62,16 @@ struct ExtdPoint : Point
 
     void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
 	       cr->save();
-	       cr->set_source_rgb(1.0,dr ? .4 : 1.0, dr ? 0.4 : 1.0);
+     	   cr->begin_new_sub_path();
 		   cr->arc(cx , cy, draw::tp_radius, 0, 2 * M_PI);
-	       cr->fill();
-	       cr->restore();
 
-		   cr->arc(cx , cy, draw::tp_radius + 2, 0, 2 * M_PI);
+	       if(!dr)cr->fill();
+	       else {
+	        	  cr->set_line_width(.5);
+	        	  cr->stroke();
+	       }
+	       cr->arc(cx , cy, draw::tp_radius + 2, 0, 2 * M_PI);
+	       cr->restore();
     }
 
     std::list<int> pIDs;
