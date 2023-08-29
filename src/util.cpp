@@ -13,6 +13,7 @@ namespace uhiutil::cpu {
 
 namespace uhiutil::draw {
    bool more_info = false;
+   bool marck_strses = false;
 }
 
 void uhiutil::end_intervals_remove(std::string& str)

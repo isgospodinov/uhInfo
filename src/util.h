@@ -73,7 +73,7 @@ namespace uhiutil {
        const int HWmax = 510;
        const int bp_radius = 5;
        const int tp_radius = 9;
-       extern bool more_info;
+       extern bool more_info,marck_strses;
     }
 
    namespace monitor {

@@ -39,11 +39,15 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
   cr->unset_dash();
   cr->set_line_width(1.7);
   for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
-             tmpmon = dit->DItem;
              Gdk::RGBA rgba(*dit->DItName);
              Gdk::Cairo::set_source_rgba(cr,rgba);
-             DrawActivity(cr,xc,height,width);
+             DrawActivity(cr,dit->DItem,xc,height,width);
   }
+
+  if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height)) {
+	  mark_stres_session.drawing_request(cr,xc,height);
+  }
+
   cr->restore();
 }
 
@@ -52,14 +56,10 @@ void CDrArTempr::SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, 
 	if(!draw_temperatures.size()) duration_total_time = std::chrono::duration<double>(0.0);
 
     if(setflag)  {
-          Draw_Item di;
-          di.DItem = item->dvc;
-          di.DItName = item->dsn;
-          di.DItSensor = SensorName;
-          di.DItSensorID = SensorID;
-          di.sensormax = max;
-          draw_temperatures.push_back(di);
-          if(draw_temperatures.size() == 1) start_time_point = std::chrono::system_clock::now();
+          draw_temperatures.push_back({item->dvc,item->dsn,SensorName,SensorID,max});
+
+          if(draw_temperatures.size() == 1)
+        	         start_time_point = std::chrono::system_clock::now();
     }
     else {
         for(std::list<Draw_Item>::iterator dit = draw_temperatures.begin(); dit != draw_temperatures.end(); dit++)  {
@@ -142,7 +142,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	  layout->unset_font_description();
 	  layout->set_font_description(DA_DrawFont(true,14));
 
-	  if(FULLAPPWNDMODE(w,h) && HasVFSensors() && !(duration == "0:00:00") && uhiutil::draw::more_info) {
+	  if(FULLAPPWNDMODE(w,h) && HasVFSensors() && !(duration == "0:00:00") && draw::more_info) {
 		  cr->save();
 		  for(Sensor_node *di : dwVCF)  {
 			   if(di->visible) {
@@ -222,7 +222,7 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 
            triangle.drawing_request(cr);
 
-           tpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), tpoint.dr,tpoint.pIDs}; //tpoint = {(int) (w - (draw::xoffset / 4 + (draw::dofset))), (int)((draw::xoffset / 2 + (draw::dofset)) + 19), tpoint.dr,tpoint.pIDs};
+           tpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), tpoint.dr, tpoint.pIDs}; //tpoint = {(int) (w - (draw::xoffset / 4 + (draw::dofset))), (int)((draw::xoffset / 2 + (draw::dofset)) + 19), tpoint.dr,tpoint.pIDs};
            tpoint.drawing_request(cr);
 	  }
 }

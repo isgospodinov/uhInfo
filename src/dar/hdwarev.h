@@ -31,10 +31,8 @@ protected:
 private:
 	bool draw_sensor_name = false;
 protected:
-	DRAWVECTOR tmpmon = nullptr;
-
 	virtual void DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidth,int dheight,bool X = false) const override;
-	void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth = 0) const;
+	void DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,DRAWVECTOR dv,double atvy,int dheight,int dwidth = 0) const;
 	void DA_Text(Glib::RefPtr<Pango::Layout>& ly,int& dw,int& dh, std::string dt) const {ly->set_text(dt);ly->get_pixel_size(dw,dh);}
 };
 

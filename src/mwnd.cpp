@@ -91,7 +91,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 				      cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG);
 			}
 			else
-				if(!m_DAtemperature.tpoint.StartStresTest(x, y) && !clrDlg->is_visible()) {
+				if(!m_DAtemperature.tpoint.StartStresTest(m_DAtemperature.mark_stres_session,x, y) && !clrDlg->is_visible()) {
 					   std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
 					   if(sn != "") clrDlg->show_clr_dlg(sn);
 				}
@@ -207,6 +207,7 @@ void CHWindow::QuitTasks()
           std::string wbuffer = (smDlg ? (pfDlg ? (pfDlg->GetSaveImpStat() ? smDlg->GetAllInused() : smDlg->GetInused()) : "") : "");
           wbuffer.append("uhiInTmpMon=" + (pfDlg ? std::to_string(pfDlg->GetInTmpMonStat()) : "0") + "\n");
           wbuffer.append("uhiAllInput=" + (pfDlg ? std::to_string(pfDlg->GetAllInputStat()) : "0") + "\n");
+          wbuffer.append("uhiMarckStressession=" + (pfDlg ? std::to_string(pfDlg->GetMarckStressSessionStat()) : "0") + "\n");
           wbuffer.append("uhiSaveImp=" + (pfDlg ? std::to_string(pfDlg->GetSaveImpStat()) : "0") + "\n");
           wbuffer.append("uhiShowCpuFqWrn=" + (pfDlg ? std::to_string(pfDlg->GetShowCPUfq()) : "0") + "\n");
           wbuffer.append("uhiCpuAltCalc="  + (std::to_string(m_CPUModeSwitch.get_active()) + "\n"));
@@ -339,6 +340,18 @@ bool CHWindow::uhI_Timer(int TmNo)
       ((condition == 5) ? condition = 0 : condition++);
 
       if(m_DAtemperature.GetAttentState() && (!condition || condition == 3)){ m_DAtemperature.SetAttentState(false);}
+
+      if(m_DAtemperature.Get_StresSessionState()) {
+        	  m_DAtemperature.mark_stres_session.cn_startoffset++;
+      }
+      else
+         if(m_DAtemperature.mark_stres_session.cn_startoffset) {
+                  m_DAtemperature.mark_stres_session.cn_endoffset++;
+         }
+
+      if((const unsigned int) m_DAtemperature.mark_stres_session.cn_endoffset > uhiutil::calc::t_statistic_len) {
+    	  m_DAtemperature.mark_stres_session = {0, 0};
+      }
 
       return true;
 }

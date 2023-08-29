@@ -27,15 +27,47 @@ struct Point {
     }
 };
 
+struct StresTestSession{
+	  int cn_startoffset = 0, cn_endoffset = 0;
+
+	  void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr, double xc, int h) const {
+	      cr->save();
+	      cr->begin_new_sub_path();
+	      cr->set_source_rgb(1.0, 1.0, 1.0);
+
+		  if(cn_startoffset) {
+			  cr->unset_dash();
+			  cr->set_dash(std::vector<double>{6}, 1);
+	          cr->move_to((xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset, draw::xoffset);
+	          cr->line_to((xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset, h - draw::xoffset);
+	          cr->stroke();
+		  }
+
+		  if(cn_endoffset) {
+			  cr->unset_dash();
+			  cr->set_dash(std::vector<double>{18}, 1);
+	          cr->move_to((xc * cn_endoffset) + draw::xoffset, draw::xoffset);
+	          cr->line_to((xc * cn_endoffset) + draw::xoffset, h - draw::xoffset);
+	          cr->stroke();
+		  }
+
+		  cr->restore();
+	  }
+};
+
 struct ExtdPoint : Point
 {
-    bool StartStresTest(double &x, double &y) {
+    bool StartStresTest(StresTestSession &sts,double &x, double &y) {
     	if(CheckingDotMatch(x, y, draw::tp_radius)) {
             if(!dr) {
 	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
                     pIDs.push_back(std::atoi((uhiutil::execmd("while : ; do : ; done > /dev/null & echo $!")).c_str()));
 	            }
+
 	            dr = true;
+
+	            sts.cn_startoffset  = 0;
+	            sts.cn_endoffset = 0;
             }
             else {
             	StopStresTest(); //uhiutil::execmd("killall sh");
@@ -74,6 +106,8 @@ struct ExtdPoint : Point
 	       cr->restore();
     }
 
+    const bool Get_StresSessionState() const {return dr;}
+
     std::list<int> pIDs;
 };
 
@@ -98,6 +132,7 @@ public:
   };
 
   ExtdPoint tpoint;     // Starting stres test
+  StresTestSession mark_stres_session; // Stres test session data
 
   struct {
     private:
@@ -147,9 +182,10 @@ public:
   void SetAttentState(bool show) {show_msg_attention = show;}
   bool GetAttentState() const {return  show_msg_attention;}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
-  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();}
+  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();mark_stres_session = {0, 0};}
   const bool HasActivities() const {return !draw_temperatures.empty();}
   std::string CheckingDotMatch(double x, double y) const;
+  const bool Get_StresSessionState() const {return tpoint.Get_StresSessionState();}
 private:
   bool show_msg_attention = false;
   std::chrono::system_clock::time_point start_time_point;

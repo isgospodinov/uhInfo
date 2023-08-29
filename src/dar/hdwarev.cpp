@@ -38,14 +38,14 @@ void CDrArVcore::DrawAxis_XY(const Cairo::RefPtr<Cairo::Context>& crtx,int dwidt
     crtx->stroke();
 }
 
-void CDrArVcore::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,double atvy,int dheight,int dwidth) const
+void CDrArVcore::DrawActivity(const Cairo::RefPtr<Cairo::Context>& crtx,DRAWVECTOR dv,double atvy,int dheight,int dwidth) const
 {
-  if((tmpmon ? (*tmpmon).size() : 0) < 2) return;
+  if((dv ? (*dv).size() : 0) < 2) return;
 
-  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, ((tmpmon ? (*tmpmon)[0] : 0)) * dheight);
-  for(long unsigned int br = 1; br < (tmpmon ? (((*tmpmon).size() < uhiutil::calc::t_statistic_len) ? (*tmpmon).size() : uhiutil::calc::t_statistic_len) : 0);br++) {
+  crtx->move_to(FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0, ((dv ? (*dv)[0] : 0)) * dheight);
+  for(long unsigned int br = 1; br < (dv ? (((*dv).size() < uhiutil::calc::t_statistic_len) ? (*dv).size() : uhiutil::calc::t_statistic_len) : 0);br++) {
     	   crtx->line_to(atvy * br + (FULLAPPWNDMODE(dwidth,dheight) ? draw::xoffset : 0),
-    	               		               ((tmpmon ? (*tmpmon)[br] : 0)) * ((*tmpmon)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
+    	               		               ((dv ? (*dv)[br] : 0)) * ((*dv)[br] * dheight >= uhiutil::cpu::max_cpu_t ? dheight - 1 : dheight));
   }
   crtx->stroke();
 }
@@ -72,9 +72,8 @@ void CDrArVcore::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
 	   layout->set_font_description(DA_DrawFont(false));
 
 	   for(Sensor_node* snc : dwVCF) {
-		          tmpmon = &snc->t_statistic;
 		          Gdk::Cairo::set_source_rgba(cr,Gdk::RGBA(snc->statistic_color));
-	              DrawActivity(cr,(double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0),height,width);
+	              DrawActivity(cr,&snc->t_statistic,(double)width / ((double)uhiutil::calc::draw_cpu_statistic - 1.0),height,width);
 
 	              if(draw_sensor_name && snc->t_statistic.size() > 1) {
 	                  cr->save();
