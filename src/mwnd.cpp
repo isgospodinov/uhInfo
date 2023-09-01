@@ -341,16 +341,25 @@ bool CHWindow::uhI_Timer(int TmNo)
 
       if(m_DAtemperature.GetAttentState() && (!condition || condition == 3)){ m_DAtemperature.SetAttentState(false);}
 
-      if(m_DAtemperature.Get_StresSessionState()) {
-        	  m_DAtemperature.mark_stres_session.cn_startoffset++;
-      }
-      else
-         if(m_DAtemperature.mark_stres_session.cn_startoffset) {
-                  m_DAtemperature.mark_stres_session.cn_endoffset++;
-         }
+      if(uhiutil::draw::marck_strses && !m_DAtemperature.mark_stres_session.empty()) {
 
-      if((const unsigned int) m_DAtemperature.mark_stres_session.cn_endoffset > uhiutil::calc::t_statistic_len) {
-    	  m_DAtemperature.mark_stres_session = {0, 0};
+          for(std::list<StresTestSession>::iterator si = m_DAtemperature.mark_stres_session.begin(); si != m_DAtemperature.mark_stres_session.end(); si++)  {
+                    if((*si) == (m_DAtemperature.mark_stres_session.back())) {
+                        	if(m_DAtemperature.Get_StresSessionState()) {
+                        		(*si).cn_startoffset++;
+                        	}
+                        	else
+                        		if((*si).cn_startoffset) {
+                        			    (*si).cn_endoffset++;
+                        		}
+                    }
+                    else
+                       (*si).cn_endoffset++;
+          }
+
+
+    	  if((const unsigned int) m_DAtemperature.mark_stres_session.front().cn_endoffset > uhiutil::calc::t_statistic_len)
+    		    m_DAtemperature.mark_stres_session.pop_front();
       }
 
       return true;

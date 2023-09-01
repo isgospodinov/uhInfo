@@ -44,8 +44,10 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
              DrawActivity(cr,dit->DItem,xc,height,width);
   }
 
-  if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height)) {
-	  mark_stres_session.drawing_request(cr,xc,height);
+  if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height) && !mark_stres_session.empty()) {
+	  for(StresTestSession s : mark_stres_session) {
+		  s.drawing_request(cr,xc,height);
+	  }
   }
 
   cr->restore();

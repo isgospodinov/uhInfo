@@ -29,35 +29,53 @@ struct Point {
 
 struct StresTestSession{
 	  int cn_startoffset = 0, cn_endoffset = 0;
+	  unsigned int sID = 0;
+
+	  bool operator == (const StresTestSession s) const {return (cn_startoffset == s.cn_startoffset &&  cn_endoffset == s.cn_endoffset && sID == s.sID);}
 
 	  void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr, double xc, int h) const {
 	      cr->save();
 	      cr->begin_new_sub_path();
 	      cr->set_source_rgb(1.0, 1.0, 1.0);
+	      double xx = (xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset;
 
 		  if(cn_startoffset) {
 			  cr->unset_dash();
 			  cr->set_dash(std::vector<double>{6}, 1);
-	          cr->move_to((xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset, draw::xoffset);
-	          cr->line_to((xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset, h - draw::xoffset);
-	          cr->stroke();
+			  drawline(cr, xx, h,true);
 		  }
 
 		  if(cn_endoffset) {
 			  cr->unset_dash();
-			  cr->set_dash(std::vector<double>{18}, 1);
-	          cr->move_to((xc * cn_endoffset) + draw::xoffset, draw::xoffset);
-	          cr->line_to((xc * cn_endoffset) + draw::xoffset, h - draw::xoffset);
-	          cr->stroke();
+			  cr->set_dash(std::vector<double>{18,4}, 1);
+			  xx = (xc * cn_endoffset) + draw::xoffset;
+			  drawline(cr, xx, h,false);
 		  }
 
 		  cr->restore();
+	  }
+private:
+	  static constexpr unsigned int in{draw::xoffset / 5};
+
+	  void drawcap(const Cairo::RefPtr<Cairo::Context>& cr, double x, bool f) const {
+          cr->move_to(x, draw::xoffset  + (f ? in : 0));
+          cr->line_to(x - in, draw::xoffset + (f ? 0 : in));
+          cr->line_to(x + in, draw::xoffset + (f ? 0 : in));
+          cr->close_path();
+          cr->fill();
+	  }
+
+	  void drawline(const Cairo::RefPtr<Cairo::Context>& cr, double x, int h, bool f) const {
+          cr->move_to(x, draw::xoffset);
+          cr->line_to(x, h - draw::xoffset);
+          cr->stroke();
+          drawcap(cr, x, f);
 	  }
 };
 
 struct ExtdPoint : Point
 {
-    bool StartStresTest(StresTestSession &sts,double &x, double &y) {
+    bool StartStresTest(std::list<StresTestSession> &sts, double &x, double &y) {
     	if(CheckingDotMatch(x, y, draw::tp_radius)) {
             if(!dr) {
 	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
@@ -66,8 +84,7 @@ struct ExtdPoint : Point
 
 	            dr = true;
 
-	            sts.cn_startoffset  = 0;
-	            sts.cn_endoffset = 0;
+	            sts.push_back({0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
             }
             else {
             	StopStresTest(); //uhiutil::execmd("killall sh");
@@ -132,7 +149,7 @@ public:
   };
 
   ExtdPoint tpoint;     // Starting stres test
-  StresTestSession mark_stres_session; // Stres test session data
+  std::list<StresTestSession> mark_stres_session; // Stres test session data
 
   struct {
     private:
@@ -182,7 +199,7 @@ public:
   void SetAttentState(bool show) {show_msg_attention = show;}
   bool GetAttentState() const {return  show_msg_attention;}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
-  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();mark_stres_session = {0, 0};}
+  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();mark_stres_session.clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
   std::string CheckingDotMatch(double x, double y) const;
   const bool Get_StresSessionState() const {return tpoint.Get_StresSessionState();}
