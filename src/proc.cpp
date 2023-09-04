@@ -4,7 +4,7 @@
  */
 
 #include "proc.h"
-#include "uhirc.h"
+#include "util/uhirc.h"
 #include <glibmm/i18n.h>
 
 bool CProc::m_CpuAltCalc = true;

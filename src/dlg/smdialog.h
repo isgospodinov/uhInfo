@@ -6,7 +6,7 @@
 #ifndef _SMDIALOG_H_
 #define _SMDIALOG_H_
 
-#include "../uhirc.h"
+#include "../util/uhirc.h"
 
 class CSysens;
 class Ud2mon;

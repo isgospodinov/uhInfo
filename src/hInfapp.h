@@ -6,7 +6,7 @@
 #ifndef HINFAPP_H
 #define HINFAPP_H
 
-#include "util.h"
+#include "util/util.h"
 
 class ChInfApp : public Gtk::Application
 {

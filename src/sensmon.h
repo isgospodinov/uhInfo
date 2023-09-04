@@ -6,7 +6,7 @@
 #ifndef _SENSMON_H_
 #define _SENSMON_H_
 
-#include "uhirc.h"
+#include "util/uhirc.h"
 
 class CHWindow;
 

@@ -6,7 +6,7 @@
 #ifndef _ABOUTDLG_H_
 #define _ABOUTDLG_H_
 
-#include "../uhirc.h"
+#include "../util/uhirc.h"
 #include <glibmm/i18n.h>
 
 class CAboutDlg : public Gtk::Window

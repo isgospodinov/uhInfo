@@ -8,7 +8,7 @@
 #include <cairomm/context.h>
 #include "hdwaret.h"
 
-CDrArTempr::CDrArTempr(UIHWindow* uhiwnd,fp_lDASR ldafp)
+CDrArTempr::CDrArTempr(UIHWindow* uhiwnd, std::list<StresTestSession> *const mrkss, fp_lDASR ldafp) : mss(mrkss)
 {
 	  msbntpress = Gtk::GestureClick::create();
 	  msbntpress->set_button();
@@ -44,8 +44,8 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
              DrawActivity(cr,dit->DItem,xc,height,width);
   }
 
-  if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height) && !mark_stres_session.empty()) {
-	  for(StresTestSession s : mark_stres_session) {
+  if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height) && !mss->empty()) {
+	  for(StresTestSession s : *mss) {
 		  s.drawing_request(cr,xc,height);
 	  }
   }

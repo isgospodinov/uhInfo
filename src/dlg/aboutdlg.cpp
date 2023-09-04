@@ -4,7 +4,7 @@
  */
 
 #include "aboutdlg.h"
-#include "../uhirc2.h"
+#include "../util/uhirc2.h"
 #include <glibmm/i18n.h>
 
 CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),lB("http://www.uhinfo.free.bg/",_("Go to uhInfo website")),

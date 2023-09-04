@@ -6,7 +6,7 @@
 #ifndef _CLRDIALOG_H_
 #define _CLRDIALOG_H_
 
-#include "../uhirc.h"
+#include "../util/uhirc.h"
 
 class ClrDialog : public UhiDlgWnd
 {

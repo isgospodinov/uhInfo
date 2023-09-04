@@ -4,7 +4,7 @@
  */
 
 #include "hmonit.h"
-#include "uhirc.h"
+#include "util/uhirc.h"
 #include <bitset>
 #include <cstring>
 

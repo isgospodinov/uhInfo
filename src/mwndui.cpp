@@ -11,7 +11,7 @@ post_init_sig UIHWindow::sig_postinit_param;
 
 UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
                          m_status_bar(_("  Everything at a glance...")), m_TextView(), m_TreeView(m_refTreeModel),
-						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this,&UIHWindow::on_DA_button_press_event)
+						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this, &mark_stres_session, &UIHWindow::on_DA_button_press_event)
 {
    m_CPUModeGrid.attach(m_CPUModeLabel, 0, 1, 1, 1);
    m_CPUModeGrid.attach(m_CPUModeSwitch, 1, 1, 1, 1);

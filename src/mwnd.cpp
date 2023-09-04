@@ -91,7 +91,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 				      cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG);
 			}
 			else
-				if(!m_DAtemperature.tpoint.StartStresTest(m_DAtemperature.mark_stres_session,x, y) && !clrDlg->is_visible()) {
+				if(!m_DAtemperature.tpoint.StartStresTest(mark_stres_session,x, y) && !clrDlg->is_visible()) {
 					   std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
 					   if(sn != "") clrDlg->show_clr_dlg(sn);
 				}
@@ -341,10 +341,10 @@ bool CHWindow::uhI_Timer(int TmNo)
 
       if(m_DAtemperature.GetAttentState() && (!condition || condition == 3)){ m_DAtemperature.SetAttentState(false);}
 
-      if(uhiutil::draw::marck_strses && !m_DAtemperature.mark_stres_session.empty()) {
+      if(uhiutil::draw::marck_strses && !mark_stres_session.empty()) {
 
-          for(std::list<StresTestSession>::iterator si = m_DAtemperature.mark_stres_session.begin(); si != m_DAtemperature.mark_stres_session.end(); si++)  {
-                    if((*si) == (m_DAtemperature.mark_stres_session.back())) {
+          for(std::list<StresTestSession>::iterator si = mark_stres_session.begin(); si != mark_stres_session.end(); si++)  {
+                    if((*si) == (mark_stres_session.back())) {
                         	if(m_DAtemperature.Get_StresSessionState()) {
                         		(*si).cn_startoffset++;
                         	}
@@ -358,8 +358,8 @@ bool CHWindow::uhI_Timer(int TmNo)
           }
 
 
-    	  if((const unsigned int) m_DAtemperature.mark_stres_session.front().cn_endoffset > uhiutil::calc::t_statistic_len)
-    		    m_DAtemperature.mark_stres_session.pop_front();
+    	  if((const unsigned int) mark_stres_session.front().cn_endoffset > uhiutil::calc::t_statistic_len)
+    		    mark_stres_session.pop_front();
       }
 
       return true;

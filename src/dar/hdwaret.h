@@ -9,124 +9,12 @@
 #include <iomanip>
 #include <chrono>
 #include "hdwarev.h"
+#include "../util/circle.h"
+#include "../util/extdcircle.h"
+#include "../util/triangle.h"
 
 class UIHWindow;
 namespace draw = uhiutil::draw;
-
-struct Point {
-	int cx = 0, cy = 0;
-    bool dr = false;
-
-    bool CheckingDotMatch(double x, double y, const int radius = draw::bp_radius) {
-    	bool cr = (std::pow((cx - x),2) + std::pow((cy - y),2) <= std::pow(radius,2));
-
-    	if(radius == draw::bp_radius)
-    		                    dr = cr;
-
-        return cr;
-    }
-};
-
-struct StresTestSession{
-	  int cn_startoffset = 0, cn_endoffset = 0;
-	  unsigned int sID = 0;
-
-	  bool operator == (const StresTestSession s) const {return (cn_startoffset == s.cn_startoffset &&  cn_endoffset == s.cn_endoffset && sID == s.sID);}
-
-	  void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr, double xc, int h) const {
-	      cr->save();
-	      cr->begin_new_sub_path();
-	      cr->set_source_rgb(1.0, 1.0, 1.0);
-	      double xx = (xc * (cn_startoffset + (cn_endoffset ? cn_endoffset : 0))) + draw::xoffset;
-
-		  if(cn_startoffset) {
-			  cr->unset_dash();
-			  cr->set_dash(std::vector<double>{6}, 1);
-			  drawline(cr, xx, h,true);
-		  }
-
-		  if(cn_endoffset) {
-			  cr->unset_dash();
-			  cr->set_dash(std::vector<double>{18,4}, 1);
-			  xx = (xc * cn_endoffset) + draw::xoffset;
-			  drawline(cr, xx, h,false);
-		  }
-
-		  cr->restore();
-	  }
-private:
-	  static constexpr unsigned int in{draw::xoffset / 5};
-
-	  void drawcap(const Cairo::RefPtr<Cairo::Context>& cr, double x, bool f) const {
-          cr->move_to(x, draw::xoffset  + (f ? in : 0));
-          cr->line_to(x - in, draw::xoffset + (f ? 0 : in));
-          cr->line_to(x + in, draw::xoffset + (f ? 0 : in));
-          cr->close_path();
-          cr->fill();
-	  }
-
-	  void drawline(const Cairo::RefPtr<Cairo::Context>& cr, double x, int h, bool f) const {
-          cr->move_to(x, draw::xoffset);
-          cr->line_to(x, h - draw::xoffset);
-          cr->stroke();
-          drawcap(cr, x, f);
-	  }
-};
-
-struct ExtdPoint : Point
-{
-    bool StartStresTest(std::list<StresTestSession> &sts, double &x, double &y) {
-    	if(CheckingDotMatch(x, y, draw::tp_radius)) {
-            if(!dr) {
-	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
-                    pIDs.push_back(std::atoi((uhiutil::execmd("while : ; do : ; done > /dev/null & echo $!")).c_str()));
-	            }
-
-	            dr = true;
-
-	            sts.push_back({0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
-            }
-            else {
-            	StopStresTest(); //uhiutil::execmd("killall sh");
-            }
-
-    		return true;
-    	}
-    	else {
-    		return false;
-    	}
-    }
-
-    void StopStresTest() {
-       if(!pIDs.empty()) {
-    		for(std::list<int>::iterator it = pIDs.begin(); it != pIDs.end();) {
-                uhiutil::execmd(("kill " + std::to_string(*it)).c_str());
-                it = pIDs.erase(it);
-    		}
-
-           if(dr)
-               dr = false;
-       }
-    }
-
-    void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
-	       cr->save();
-     	   cr->begin_new_sub_path();
-		   cr->arc(cx , cy, draw::tp_radius, 0, 2 * M_PI);
-
-	       if(!dr)cr->fill();
-	       else {
-	        	  cr->set_line_width(.5);
-	        	  cr->stroke();
-	       }
-	       cr->arc(cx , cy, draw::tp_radius + 2, 0, 2 * M_PI);
-	       cr->restore();
-    }
-
-    const bool Get_StresSessionState() const {return dr;}
-
-    std::list<int> pIDs;
-};
 
 class CDrArTempr : public CDrArVcore
 {
@@ -149,57 +37,20 @@ public:
   };
 
   ExtdPoint tpoint;     // Starting stres test
-  std::list<StresTestSession> mark_stres_session; // Stres test session data
+  std::list<StresTestSession> *const mss; // Stres test session data
 
-  struct {
-    private:
-	   int keypoint = 0;
-	   bool visible = false;
-
-	   double calctr(int px1, int py1, int px2, int py2, int px3, int py3) const {
-	      return std::abs((px1 * (py2 - py3) + px2 * (py3 - py1) + px3 * (py1 - py2)) / 2);
-	   }
-    public:
-	   bool draw_tr_condition() const { return (keypoint && visible);}
-	   void set_keypoint(int p) {keypoint = p;}
-	   void set_visibility(bool  v) {visible = v;}
-
-	   bool CheckingDotMatch(double tx, double ty) const {
-		   if(draw_tr_condition()) {
-		        double Tr = calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)), draw::dofset, keypoint - draw::dofset, draw::dofset, keypoint - draw::dofset, (draw::xoffset / 2 + (draw::dofset)));
-		        double CheckTr = calctr(tx, ty, keypoint - draw::dofset ,draw::dofset, keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset))) +
-				    calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset, tx, ty, keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset))) +
-                   calctr(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset, keypoint - draw::dofset ,draw::dofset, tx, ty);
-
-		        return (Tr == CheckTr);
-		    }
-		    else
-			    return false;
-	   }
-
-	   void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
-		   if(draw_tr_condition()) {
-			      cr->save();
-		          cr->move_to(keypoint - (draw::xoffset / 2 + (draw::dofset)) ,draw::dofset);
-		          cr->line_to(keypoint - draw::dofset ,draw::dofset);
-		          cr->line_to(keypoint - draw::dofset ,(draw::xoffset / 2 + (draw::dofset)));
-		          cr->close_path();
-                  cr->fill();
-                  cr->restore();
-		   }
-	   }
-  } triangle; // utility
+  Triangle triangle; // Utility button
 
   Glib::RefPtr<Gtk::GestureClick> msbntpress;
 
   CDrArTempr() = default;
-  CDrArTempr(UIHWindow* uhiwnd,fp_lDASR ldafp);
+  CDrArTempr(UIHWindow* uhiwnd, std::list<StresTestSession> *const mrkss, fp_lDASR ldafp);
   virtual ~CDrArTempr() {EraseAll();}
 
   void SetAttentState(bool show) {show_msg_attention = show;}
   bool GetAttentState() const {return  show_msg_attention;}
   void SetUnsetDrawItem(const DRAWVECTORPLUS*const item, double *max, Glib::ustring SensorName, Glib::ustring SensorID, bool setflag);
-  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();mark_stres_session.clear();}
+  void EraseAll() {draw_temperatures.clear();tpoint.StopStresTest();mss->clear();}
   const bool HasActivities() const {return !draw_temperatures.empty();}
   std::string CheckingDotMatch(double x, double y) const;
   const bool Get_StresSessionState() const {return tpoint.Get_StresSessionState();}

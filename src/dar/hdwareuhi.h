@@ -6,8 +6,8 @@
 #ifndef _DWERAUHI_H_
 #define _DWERAUHI_H_
 
-#include "../util.h"
 #include <cairomm/context.h>
+#include "../util/streses.h"
 
 class CDrArUhi : public Gtk::DrawingArea
 {

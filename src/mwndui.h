@@ -7,7 +7,7 @@
 #define _MWNDUI_H_
 
 #include <mutex>
-#include "uhirc.h"
+#include "util/uhirc.h"
 
 using unit_calc_el = struct _unit_calc_el;
 
@@ -23,6 +23,8 @@ public:
   bool temperature_monitoring_enabled = false;
   Gtk::Label m_Label_MOBO,m_Label_Memory,m_Label_CPU,m_Label_Monitors,m_Label_Audio,m_Label_Network,m_Label_OS;
   static post_init_sig signal_set_param() {return sig_postinit_param;}
+
+  std::list<StresTestSession> mark_stres_session;
 protected:
   static post_init_sig sig_postinit_param;
 
