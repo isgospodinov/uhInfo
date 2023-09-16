@@ -5,6 +5,7 @@
 
 #include "mwnd.h"
 #include <glibmm/i18n.h>
+
 using uhiutil::cpu::UhiDownCast;
 
 CHWindow::CHWindow() : css_prov(Gtk::CssProvider::create()),pSysensors(new CSysens()),pUd2Manager(new Ud2mon(this)),
@@ -91,7 +92,7 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 				      cpuStatDlg->OnShowDlg(CpuStatDlg::WrcMode::TEMPRTDLG);
 			}
 			else
-				if(!m_DAtemperature.tpoint.StartStresTest(mark_stres_session,x, y) && !clrDlg->is_visible()) {
+				if(!m_DAtemperature.tpoint.StartStresTest(mark_stres_session, m_DAtemperature.GetDurationString(), x, y) && !clrDlg->is_visible()) {
 					   std::string sn = m_DAtemperature.CheckingDotMatch(x, y);
 					   if(sn != "") clrDlg->show_clr_dlg(sn);
 				}
@@ -206,10 +207,8 @@ void CHWindow::QuitTasks()
           int width = get_width(), height = get_height(),posit = m_HPaned.get_position();
           std::string wbuffer = (smDlg ? (pfDlg ? (pfDlg->GetSaveImpStat() ? smDlg->GetAllInused() : smDlg->GetInused()) : "") : "");
           wbuffer.append("uhiInTmpMon=" + (pfDlg ? std::to_string(pfDlg->GetInTmpMonStat()) : "0") + "\n");
-          wbuffer.append("uhiAllInput=" + (pfDlg ? std::to_string(pfDlg->GetAllInputStat()) : "0") + "\n");
           wbuffer.append("uhiMarckStressession=" + (pfDlg ? std::to_string(pfDlg->GetMarckStressSessionStat()) : "0") + "\n");
           wbuffer.append("uhiSaveImp=" + (pfDlg ? std::to_string(pfDlg->GetSaveImpStat()) : "0") + "\n");
-          wbuffer.append("uhiShowCpuFqWrn=" + (pfDlg ? std::to_string(pfDlg->GetShowCPUfq()) : "0") + "\n");
           wbuffer.append("uhiCpuAltCalc="  + (std::to_string(m_CPUModeSwitch.get_active()) + "\n"));
           wbuffer.append("uhiCpuBase="  + (std::to_string(uhiutil::cpu::cpu_fq_base) + "\n"));
           wbuffer.append("uhiNativeFqState="  + (std::to_string(uhiutil::cpu::native_fq_state) + "\n"));             
@@ -376,7 +375,7 @@ void CHWindow::sensors_print(bool Ud2print,bool extension)
        
        buff->insert(buff->get_iter_at_line(buff->get_line_count()),"  Detected sensors :    \n");
 
-       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,pfDlg->GetAllInputStat(),pSysensors->visible_tmp_sens_count + (pfDlg->GetInTmpMonStat() ? pUd2Manager->visible_tmp_sens_count : 0));
+       pSysensors->PrintDetectedSensors(buff,temperature_mode_status,blink_global_stat,pSysensors->visible_tmp_sens_count + (pfDlg->GetInTmpMonStat() ? pUd2Manager->visible_tmp_sens_count : 0));
        if(temperature_mode_status)
                           m_DAtemperature.Redraw();
 

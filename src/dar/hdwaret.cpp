@@ -45,8 +45,29 @@ void CDrArTempr::on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width
   }
 
   if(uhiutil::draw::marck_strses && FULLAPPWNDMODE(width,height) && !mss->empty()) {
+	  Glib::RefPtr<Pango::Layout> lt = create_pango_layout("");
+	  lt->set_font_description(DA_DrawFont(false));
+	  cr->set_source_rgb(1.0, 1.0, 1.0);
+	  int dw = 0,dh = 0,ex;
+
 	  for(StresTestSession s : *mss) {
 		  s.drawing_request(cr,xc,height);
+
+		  cr->save();
+		  matrix.invert();
+		  cr->transform(matrix);
+		  ex = 0;
+
+		  do {
+			  if(!(s.stoptime != "" || ex)) continue;
+		      lt->set_text((s.stoptime != "" && ex)? s.stoptime: s.startime);
+		      lt->get_pixel_size(dw,dh);
+		      cr->move_to(width - ((s.stoptime != "" && ex) ? ((xc * s.cn_endoffset) + uhiutil::draw::xoffset + (dw / 2)) :
+				           ((xc * (s.cn_startoffset + (s.cn_endoffset ? s.cn_endoffset : 0))) + uhiutil::draw::xoffset + (dw / 2))),
+				                                                                              height - dh - (uhiutil::draw::xoffset * 2 / 3));
+		      lt->show_in_cairo_context(cr);
+		  }while(ex++ < 1);
+		  cr->restore();
 	  }
   }
 

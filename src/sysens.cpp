@@ -149,7 +149,7 @@ void CSysens::SensorsDetect(bool *flag)
   } //LibSensorsOpen 
 }
 
-void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,const bool advanced,unsigned int tmp_in_sens_count)
+void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status,unsigned int tmp_in_sens_count)
 {
    static bool blink = true;
 
@@ -168,8 +168,8 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
 	                cn.addr = n->chip_name.cnip_addr;
 	                cn.path = (char*) n->chip_name.cnip_path.data();
                     for(std::list<Sensor_node>::iterator sn =  n->sensors.begin(); sn != n->sensors.end(); sn++) {//sensors
-                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !(SNTP(SENSORS_FEATURE_FAN)) && !sn->is_Vcore) || (printmode && (sn->is_Vcore || (SNTP(SENSORS_FEATURE_FAN))) && !uhiutil::draw::more_info)
-                        		    || (printmode && tmp_in_sens_count == 0) || (!printmode && !advanced && (SNTP(SENSORS_FEATURE_IN) || SNTP(SENSORS_FEATURE_POWER) || SNTP(SENSORS_FEATURE_CURR)) && !sn->is_Vcore)) {
+                           if(!sn->visible || (printmode && !(SNTP(SENSORS_FEATURE_TEMP)) && !(SNTP(SENSORS_FEATURE_FAN)) && !sn->is_Vcore) ||
+                        		   (printmode && (sn->is_Vcore || (SNTP(SENSORS_FEATURE_FAN))) && !uhiutil::draw::more_info) || (printmode && tmp_in_sens_count == 0) ) {
                         	   if(sn->is_Vcore) sn->max = .0;
                         	   continue;
                            }

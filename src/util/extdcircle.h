@@ -10,7 +10,7 @@
 
 struct ExtdPoint : Point
 {
-    bool StartStresTest(std::list<StresTestSession> &sts, double &x, double &y) {
+    bool StartStresTest(std::list<StresTestSession> &sts, std::string st, double &x, double &y) {
     	if(CheckingDotMatch(x, y, uhiutil::draw::tp_radius)) {
             if(!dr) {
 	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
@@ -19,10 +19,11 @@ struct ExtdPoint : Point
 
 	            dr = true;
 
-	            sts.push_back({0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
+	            sts.push_back({st, "", 0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
             }
             else {
-            	StopStresTest(); //uhiutil::execmd("killall sh");
+            	sts.back().stoptime = st;
+            	StopStresTest();
             }
 
     		return true;

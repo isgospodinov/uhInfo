@@ -1,6 +1,6 @@
 uhInfo
 ******
-A small GNOME desktop application for displaying configuration information & observation of system activity.
+GNOME desktop application for displaying configuration information & observation of system activity.
 It focuses on monitoring & displaying CPU frequencies,voltages & temperature statistics.
 You also may observe PCIE link status,Monitor info,fan speeds,power,current & other important
 system parameters readings under Linux.

@@ -3,7 +3,7 @@ BUILD = build
 PRGNAME = uhInfo
 PROGRAM = $(BUILD)/$(PRGNAME)
 POTEMPLDIR = pot
-FLS = src/*.cpp src/*.h src/*/*.*
+FLS = src/*.* src/*/*.*
 OBJS = $(patsubst src/%.cpp,$(BUILD)/%.o,$(wildcard */*.cpp)) \
                $(patsubst src/dar/%.cpp,$(BUILD)/%.o,$(wildcard */dar/*.cpp)) \
                             $(patsubst src/dlg/%.cpp,$(BUILD)/%.o,$(wildcard */dlg/*.cpp)) \

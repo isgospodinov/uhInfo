@@ -57,10 +57,8 @@ void CSmDialog::InitVision()
 {
 	pRefTreeModel->clear();
    if(pSensors) {
-       bool stat = PTSMNG(pfDlg)->GetAllInputStat();
        for(Chip_node n : pSensors->monitoring)  {
            for(Sensor_node sn : n.sensors) {
-                if(!stat && sn.sntype == SENSORS_FEATURE_IN && !sn.is_Vcore) continue;
                 Gtk::TreeModel::Row row = *(pRefTreeModel->append());
                 row[vColumns->col_tcheck] = sn.visible;
                 row[vColumns->tsensor_node] = n.chip_name.cnip_prefix;
@@ -107,8 +105,8 @@ const std::string CSmDialog::GetAllInused() const
                                 break;
                           }
                     }
-              if(!found) allinused.append(line + "\n");
-              found = false;      
+                    if(!found) allinused.append(line + "\n");
+                    found = false;
               }
           }
    }

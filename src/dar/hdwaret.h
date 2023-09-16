@@ -9,7 +9,6 @@
 #include <iomanip>
 #include <chrono>
 #include "hdwarev.h"
-#include "../util/circle.h"
 #include "../util/extdcircle.h"
 #include "../util/triangle.h"
 
@@ -54,6 +53,7 @@ public:
   const bool HasActivities() const {return !draw_temperatures.empty();}
   std::string CheckingDotMatch(double x, double y) const;
   const bool Get_StresSessionState() const {return tpoint.Get_StresSessionState();}
+  std::string GetDurationString();
 private:
   bool show_msg_attention = false;
   std::chrono::system_clock::time_point start_time_point;
@@ -62,8 +62,7 @@ private:
   virtual void on_draw_area(const Cairo::RefPtr<Cairo::Context>& cr, int width, int height) override;
   void DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string duration,int w,int h);
   std::string DurationTimeString(std::chrono::seconds sec) const;
-  std::string GetDurationString();
-
+  
   std::list<Draw_Item> draw_temperatures;
 };
 

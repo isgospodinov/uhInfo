@@ -7,9 +7,9 @@
 #include "../proc.h"
 #include <glibmm/i18n.h>
 
-CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon(_("HDD/SSD in ") + std::string("t°") + _(" monitor")),ch_AllInput(_("All input sensors")),
-                     ch_SaveImp(_("Improve sensors behavior")),ch_NativeFq(_("Native CPU frequency")),ch_ShowCPUfq(_("When ") + std::string("t°") + _("show CPU Fq.")),ch_lscpu_cpuinfo(_("lscpu instead cuinfo")),
-					 ch_Marck_Stress_Session(_("Marck a stress session")),l_MaxTemp(_("Set max. ") + std::string("t°    "))
+CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon(_("HDD/SSD in ") + std::string("t°") + _(" monitor")),
+                     ch_SaveImp(_("Improve sensors behavior")),ch_NativeFq(_("Native CPU frequency")),ch_lscpu_cpuinfo(_("lscpu instead cuinfo")),
+					                           ch_Marck_Stress_Session(_("Marck a stress session")),l_MaxTemp(_("Set max. ") + std::string("t°    "))
 {
 	set_transient_for(*mWnd);
 	set_title(_("Preferences"));
@@ -40,28 +40,22 @@ void CPrefsDlg::InitVision()
    box_all.set_orientation(Gtk::Orientation::VERTICAL);
    box_MaxTmp.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_InTmpMon.set_orientation(Gtk::Orientation::HORIZONTAL);
-   box_AllInput.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_SaveImp.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_NativeFq.set_orientation(Gtk::Orientation::HORIZONTAL);
-   box_ShowCPUfq.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_cpu_lsorinfo.set_orientation(Gtk::Orientation::HORIZONTAL);
    box_Marck_Stress_Session.set_orientation(Gtk::Orientation::HORIZONTAL);
 
    box_InTmpMon.append(ch_InTmpMon);
-   box_AllInput.append(ch_AllInput);
    box_SaveImp.append(ch_SaveImp);
    box_NativeFq.append(ch_NativeFq);
-   box_ShowCPUfq.append(ch_ShowCPUfq);
    box_MaxTmp.append(l_MaxTemp);
    box_MaxTmp.append(cb_MaxTmp);
    box_cpu_lsorinfo.append(ch_lscpu_cpuinfo);
    box_Marck_Stress_Session.append(ch_Marck_Stress_Session);
 
    box_all.append(box_InTmpMon);
-   box_all.append(box_AllInput);
    box_all.append(box_SaveImp);
    box_all.append(box_NativeFq);
-   box_all.append(box_ShowCPUfq);
    box_all.append(box_cpu_lsorinfo);
    box_all.append(box_Marck_Stress_Session);
    box_all.append(box_MaxTmp);
@@ -95,24 +89,12 @@ void CPrefsDlg::InitData()
            if(cmd != "")
                uhiutil::newline(cmd,"uhiInTmpMon=",Direction::RIGHTSKIP);
            ch_InTmpMon.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
-
-           cmd = "cat " + config + " | grep uhiAllInput=";
-           cmd = uhiutil::execmd(cmd.c_str());
-           if(cmd != "")
-               uhiutil::newline(cmd,"uhiAllInput=",Direction::RIGHTSKIP);
-           ch_AllInput.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
            
            cmd = "cat " + config + " | grep uhiSaveImp=";
            cmd = uhiutil::execmd(cmd.c_str());
            if(cmd != "")
                uhiutil::newline(cmd,"uhiSaveImp=",Direction::RIGHTSKIP);
            ch_SaveImp.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
-
-           cmd = "cat " + config + " | grep uhiShowCpuFqWrn=";
-           cmd = uhiutil::execmd(cmd.c_str());
-           if(cmd != "")
-               uhiutil::newline(cmd,"uhiShowCpuFqWrn=",Direction::RIGHTSKIP);
-           ch_ShowCPUfq.set_active((cmd != "" ? std::stoi(cmd) == 1 : false));
 
            cmd = "cat " + config + " | grep uhiNativeFqState=";
            cmd = uhiutil::execmd(cmd.c_str());
@@ -129,9 +111,7 @@ void CPrefsDlg::InitData()
     }
     else {
           ch_InTmpMon.set_active(false);
-          ch_AllInput.set_active(false);
           ch_SaveImp.set_active(false);
-          ch_ShowCPUfq.set_active(false);
           ch_Marck_Stress_Session.set_active(false);
           uhiutil::draw::marck_strses = false;
           SetFqState(false);

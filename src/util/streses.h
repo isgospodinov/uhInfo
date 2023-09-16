@@ -9,6 +9,7 @@
 #include "util.h"
 
 struct StresTestSession{
+	  std::string startime = "", stoptime = "";
 	  int cn_startoffset = 0, cn_endoffset = 0;
 	  unsigned int sID = 0;
 
