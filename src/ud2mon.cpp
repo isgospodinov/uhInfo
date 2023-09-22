@@ -92,6 +92,9 @@ void Ud2mon::SensorsDetect()
       UDisksBlock *blok_dev = nullptr;
       UDisksDrive *drive = nullptr;
       UDisksDriveAta *ata_drive = nullptr;
+#if UDISKS2_CHECK_VERSION(2,10,0)
+      UDisksNVMeController *nvme_ctrl;
+#endif      
       GList *objects = nullptr, *obj_list= nullptr;
       const gchar *obj_path = nullptr,*ud2drvmodel = nullptr;
       GDBusObject *pobj = nullptr;
@@ -111,9 +114,17 @@ void Ud2mon::SensorsDetect()
           if(blok_dev)
                 pobj = g_dbus_object_manager_get_object(Ud2Manager,udisks_block_get_drive(blok_dev));
           if(pobj) {
-                g_object_get(pobj, "drive", &drive, "drive-ata", &ata_drive, nullptr);
+                g_object_get(pobj, "drive", &drive, "drive-ata", &ata_drive,
+#if UDISKS2_CHECK_VERSION(2,10,0)
+                		                                   "nvme-controller",&nvme_ctrl,
+#endif
+						                                                                 nullptr);
+
                 if(!drive) {
                     if(ata_drive) g_clear_object(&ata_drive);
+#if UDISKS2_CHECK_VERSION(2,10,0)
+                    if(nvme_ctrl) g_clear_object(&nvme_ctrl);
+#endif                     
                     if(partition) g_clear_object(&partition);
                     g_object_unref(pobj);
                     g_clear_object(&blok_dev);
@@ -129,11 +140,22 @@ void Ud2mon::SensorsDetect()
                     row[m_wnd->dColumns->device_name] = (ud2drvmodel = udisks_drive_get_model(drive));
                     row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (partition ? "Disk" : "Unknown"))));
                     row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (partition ? "coldplug fixed" : "Unknown"))));
-                    if(ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive)) {
+
+                    if((ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive))
+#if UDISKS2_CHECK_VERSION(2,10,0)
+                    		|| nvme_ctrl
+#endif
+                                               ) {
                           const char *drid = udisks_drive_get_serial(drive);
                           bool visnode = SetVisiblity(std::string(ud2drvmodel),std::string(drid));
-                          monitoring.push_back(std::move(Ud2_sens_node(ata_drive,ud2drvmodel,drid,visnode)));
-                          if(!visnode) ++inactive_dev_number;
+#if UDISKS2_CHECK_VERSION(2,10,0)
+                    	  monitoring.push_back(Ud2_sens_node({(nvme_ctrl ? new uhiUDisksDriveNvme{nvme_ctrl,false} : new uhiUDisksDriveAta{ata_drive}),
+                    		                                                       [](uhiUDisksDriveAta *const drv){if(drv){delete drv;}}}, ud2drvmodel, drid, visnode));
+
+#else
+                    	  monitoring.push_back(std::move(Ud2_sens_node(ata_drive,ud2drvmodel,drid,visnode)));
+#endif
+                    	  if(!visnode) ++inactive_dev_number;
                     }
                     if(ud2drvmodel) ud2drvmodel = nullptr;
                 }
@@ -161,7 +183,7 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
 
    if(!blink && !printmode) blink = true;   
 
-   int KelvTemp = 0.0;
+   double KelvTemp = 0.0;
    double ctemp = 0.0;
    std::string bufer("");
    Gtk::TextBuffer::iterator itxbf = txtbuff->get_iter_at_line(txtbuff->get_line_count());
@@ -170,8 +192,21 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
         	itxbf = txtbuff->insert_with_tag(itxbf,"  " + std::string{sensors::nud2} + '\n',uhiutil::ui::max_tag);
         for(std::list<Ud2_sens_node>::iterator it =  monitoring.begin(); it != monitoring.end(); it++) {
               if(!it->visible) continue;
-              if(Ud2Cl && it->ata_drive) {
-                    KelvTemp = udisks_drive_ata_get_smart_temperature(*it->ata_drive) - 273.15;
+              if(Ud2Cl &&
+#if UDISKS2_CHECK_VERSION(2,10,0)
+            		      it->uhiDrive
+#else
+					                 it->ata_drive
+#endif
+					                                 ) {
+#if UDISKS2_CHECK_VERSION(2,10,0)
+            	    if((*it->uhiDrive).is_ata)
+                        KelvTemp = udisks_drive_ata_get_smart_temperature((*it->uhiDrive).atadrv) - 273.15;
+            	    else
+            	    	KelvTemp = udisks_nvme_controller_get_smart_temperature(((uhiUDisksDriveNvme*)(it->uhiDrive.get()))->nvmectrl) - 273.15;
+#else
+                     KelvTemp = udisks_drive_ata_get_smart_temperature(*it->ata_drive) - 273.15;
+#endif
                     if(KelvTemp > 0) {
                           if(it->t_statistic_active) {
                                ctemp = (KelvTemp / (double) uhiutil::cpu::max_cpu_t);
@@ -185,15 +220,15 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
                                          itxbf = txtbuff->insert(itxbf,"        ");
                                      
                                      itxbf = txtbuff->insert_with_tag(itxbf,std::string(it->ud2_model_name),uhiutil::ui::active_tag);                                     
-                                     itxbf = txtbuff->insert(itxbf," : " + std::to_string(KelvTemp) + "°C");                                                                                                               
+                                     itxbf = txtbuff->insert(itxbf," : " + std::to_string(KelvTemp).substr(0,5) + "°C");
                                      itxbf = txtbuff->insert_with_tag(itxbf,("   max: " + Print_Value((float)it->max) + "°C\n"),uhiutil::ui::max_tag);                                     
                                }
                           }
                           else {
                                if(it->max != 0.0) it->max = 0.0;
-                               bufer.append("        " + std::string(it->ud2_model_name) + " : " + std::to_string(KelvTemp) + "°C\n");
+                               bufer.append("        " + std::string(it->ud2_model_name) + " : " + std::to_string(KelvTemp).substr(0,5) + "°C\n");
                                if(printmode)
-                                     itxbf = txtbuff->insert(itxbf,("        " + std::string(it->ud2_model_name) + " : " + std::to_string(KelvTemp) + "°C\n"));
+                                     itxbf = txtbuff->insert(itxbf,("        " + std::string(it->ud2_model_name) + " : " + std::to_string(KelvTemp).substr(0,5) + "°C\n"));
                           }
                     }
               }

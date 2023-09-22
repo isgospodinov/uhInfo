@@ -136,11 +136,11 @@
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))
 
-// true if Gtkmm is new enough
-/*#define GTKMM_CHECK_VERSION(major,minor,micro)                             \
-     (GTKMM_MAJOR_VERSION > (major)  ||                                    \
-     (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION > (minor)) ||  \
-     (GTKMM_MAJOR_VERSION == (major) && GTKMM_MINOR_VERSION == (minor) && GTKMM_MICRO_VERSION >= (micro)))*/                                
+// if udisks2 is new enough then true
+#define UDISKS2_CHECK_VERSION(major,minor,micro)                             \
+     (UDISKS_MAJOR_VERSION > (major)  ||                                    \
+     (UDISKS_MAJOR_VERSION == (major) && UDISKS_MINOR_VERSION > (minor)) ||  \
+     (UDISKS_MAJOR_VERSION == (major) && UDISKS_MINOR_VERSION == (minor) && UDISKS_MICRO_VERSION >= (micro)))
 
 using  post_init_sig = sigc::signal<void(const int,const int)>;
 

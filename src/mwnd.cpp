@@ -322,7 +322,7 @@ bool CHWindow::uhI_Timer(int TmNo)
       if(sensors_printing_enable) {
     	        const bool Ud2printFrStat = pUd2Manager->GetPrintForceStatus();
 
-                sensors_print(((condition == 5 || Ud2printFrStat) ? true : false),pfDlg->GetInTmpMonStat());
+                sensors_print(/*true*/((condition == 5 || Ud2printFrStat) ? true : false),pfDlg->GetInTmpMonStat());
                 if(Ud2printFrStat)  {
                        pUd2Manager->PrintForceExternal(false);
                        if(condition != 5) condition = 5;

@@ -11,6 +11,35 @@
 #include <list>
 #include "sensmon.h"
 
+#if UDISKS2_CHECK_VERSION(2,10,0)
+
+struct uhiUDisksDriveAta {
+	uhiUDisksDriveAta(bool f) : is_ata(f) {}
+	uhiUDisksDriveAta(UDisksDriveAta *const&a) : atadrv(a) {}
+	virtual ~uhiUDisksDriveAta(){if(atadrv) g_clear_object(const_cast<UDisksDriveAta **>(&atadrv));}
+
+	UDisksDriveAta *const atadrv = nullptr;
+	bool is_ata = true;
+};
+
+struct uhiUDisksDriveNvme : public uhiUDisksDriveAta {
+	uhiUDisksDriveNvme(UDisksNVMeController *const&n, bool f) : uhiUDisksDriveAta(f),nvmectrl(n) {}
+	virtual ~uhiUDisksDriveNvme(){if(nvmectrl) g_clear_object(const_cast<UDisksNVMeController**>(&nvmectrl));}
+
+	UDisksNVMeController *const nvmectrl = nullptr;
+};
+
+using Ud2_sens_node = struct _Ud2_sens_node : public Sensor_statistic{
+	_Ud2_sens_node(std::shared_ptr<uhiUDisksDriveAta> drive,const char *mn,const char *dnm,bool vz) : Sensor_statistic(vz,false), ud2_model_name(mn), ud2_drv_id(dnm),
+	    		  uhiDrive(drive) {}
+
+      int index = -1;
+      const char *ud2_model_name,*ud2_drv_id;
+      const std::shared_ptr<const uhiUDisksDriveAta> uhiDrive; // generalized device
+};
+
+#else
+
 using Ud2_sens_node = struct _Ud2_sens_node : public Sensor_statistic{
       _Ud2_sens_node(UDisksDriveAta *const atadrv,const char *mn,const char *dnm,bool vz) : Sensor_statistic(vz,false), ud2_model_name(mn), ud2_drv_id(dnm),
                 ata_drive(new (UDisksDriveAta *const){atadrv},[](UDisksDriveAta *const *drv){if(drv){g_clear_object(const_cast<UDisksDriveAta **>(drv));delete drv;}}){}
@@ -18,6 +47,8 @@ using Ud2_sens_node = struct _Ud2_sens_node : public Sensor_statistic{
       const char *ud2_model_name,*ud2_drv_id;
       std::shared_ptr<UDisksDriveAta *const> ata_drive;
 };
+
+#endif
 
 class Ud2mon : public CSensMon
 {
