@@ -13,21 +13,17 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
    if(!g_str_has_prefix(obj_path, sensors::idd_path)) 
                                        return;
    GDBusObject *pobj = nullptr;
-   UDisksPartitionTable *partition = nullptr;
    UDisksBlock *blok_dev = nullptr;
    UDisksDrive *drive = nullptr;
-   UDisksDriveAta *ata_drive = nullptr;
    bool dt[] = {false, false, false}; //dt[0]- optical, dt[1] - usb, dt[2] - dev_present
    unsigned int dcnt = 1;
 
-   g_object_get(G_DBUS_OBJECT(pObject), "block", &blok_dev, "partition-table", &partition, nullptr);
+   g_object_get(G_DBUS_OBJECT(pObject), "block", &blok_dev, nullptr);
    if(blok_dev)
         pobj = g_dbus_object_manager_get_object(objManager,udisks_block_get_drive(blok_dev));
    if(pobj) {
-        g_object_get(pobj, "drive", &drive, "drive-ata", &ata_drive, nullptr);
+        g_object_get(pobj, "drive", &drive, nullptr);
         if(!drive) {
-             if(ata_drive) g_clear_object(&ata_drive);
-             if(partition) g_clear_object(&partition);
              g_object_unref(pobj);
              g_clear_object(&blok_dev);
              return;
@@ -36,7 +32,8 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
         media_detect(drive,dt);
 
         linkname = udisks_block_get_device(blok_dev);
-        if(partition || (mode == CallbackMode::REMOVE)) {
+
+        if(((dt[1]) && !std::isdigit(std::string(linkname).back())) || (mode == CallbackMode::REMOVE)) {
              Gtk::TreeModel::Children children = m_wnd->m_refTreeModel->children();
              for(Gtk::TreeModel::Children::iterator iter = children.begin();iter != children.end(); dcnt++,iter++)
              {
@@ -57,21 +54,19 @@ void Ud2mon::CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject,Ca
                     row[m_wnd->dColumns->No] = dcnt;
                     row[m_wnd->dColumns->sys_link] = linkname;
                     row[m_wnd->dColumns->device_name] = udisks_drive_get_model(drive);
-                    row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (partition ? "Disk" : "Unknown"))));
-                    row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (partition ? "coldplug fixed" : "Unknown"))));
+                    row[m_wnd->dColumns->type] = (dt[1]/*usb*/ ? "Drive" : "Unknown");
+                    row[m_wnd->dColumns->specificity] = (dt[1]/*usb*/ ? "hotplug removable" : "Unknown");
              }
 
              //if(CallbackMode::ADD && ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive)) {
              //TODO:Add detected device to monitoring chain appropriate way
              //}
         }
-        if(ata_drive) g_clear_object(&ata_drive);
         g_clear_object(&drive);
         g_object_unref(pobj);
    }
 
    if(blok_dev) g_clear_object(&blok_dev);
-   if(partition) g_clear_object(&partition);
 }
 
 unsigned int Ud2mon::GetSensorsDetectedNumb() const
@@ -86,13 +81,12 @@ void Ud2mon::SensorsDetect()
 {
       Gtk::TreeRow row;
       unsigned int cnounter = 1;
-      bool dt[] = {false,false}; //dt[0]- optical, dt[1] - usb
+      bool basis_dev = false,dt[] = {false,false}; //dt[0]- optical, dt[1] - usb
       GDBusObjectManager *Ud2Manager = nullptr;
-      UDisksPartitionTable *partition = nullptr;
       UDisksBlock *blok_dev = nullptr;
       UDisksDrive *drive = nullptr;
       UDisksDriveAta *ata_drive = nullptr;
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
       UDisksNVMeController *nvme_ctrl;
 #endif      
       GList *objects = nullptr, *obj_list= nullptr;
@@ -110,48 +104,56 @@ void Ud2mon::SensorsDetect()
                   g_object_unref(obj_list->data);
                   continue;
           }
-          g_object_get(G_DBUS_OBJECT(obj_list->data), "block", &blok_dev, "partition-table", &partition, nullptr);
+          g_object_get(G_DBUS_OBJECT(obj_list->data), "block", &blok_dev, nullptr);
           if(blok_dev)
                 pobj = g_dbus_object_manager_get_object(Ud2Manager,udisks_block_get_drive(blok_dev));
           if(pobj) {
                 g_object_get(pobj, "drive", &drive, "drive-ata", &ata_drive,
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
                 		                                   "nvme-controller",&nvme_ctrl,
 #endif
 						                                                                 nullptr);
 
                 if(!drive) {
                     if(ata_drive) g_clear_object(&ata_drive);
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
                     if(nvme_ctrl) g_clear_object(&nvme_ctrl);
 #endif                     
-                    if(partition) g_clear_object(&partition);
                     g_object_unref(pobj);
                     g_clear_object(&blok_dev);
                     continue;
                 }
                 
         	    media_detect(drive,dt);
-                
-                if(partition || dt[0]/*optical*/) {
+
+                const std::string blk_dev = udisks_block_get_device(blok_dev);
+
+                if(((ata_drive || dt[1]) && !std::isdigit(blk_dev.back())) || dt[0] || (
+#if UDISKS_CHECK_VERSION(2,10,0)
+                                      nvme_ctrl &&
+#endif
+                                    		  g_str_has_suffix(blk_dev.c_str(),sensors::ud2_nvme_suffix))) {
+                	basis_dev = true;
+                }
+
+                if(basis_dev) {
                     row = *(m_wnd->m_refTreeModel->append());
                     row[m_wnd->dColumns->No] = cnounter++;
-                    row[m_wnd->dColumns->sys_link] = udisks_block_get_device(blok_dev);
+                    row[m_wnd->dColumns->sys_link] = blk_dev;
                     row[m_wnd->dColumns->device_name] = (ud2drvmodel = udisks_drive_get_model(drive));
-                    row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (partition ? "Disk" : "Unknown"))));
-                    row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (partition ? "coldplug fixed" : "Unknown"))));
+                    row[m_wnd->dColumns->type] = ((dt[0]/*optical*/ ? "CD/DVD" :  (dt[1]/*usb*/ ? "Drive" : (basis_dev ? "Disk" : "Unknown"))));
+                    row[m_wnd->dColumns->specificity] = ((dt[0]/*optical*/ ? "coldplug removable" :  (dt[1]/*usb*/ ? "hotplug removable" : (basis_dev ? "coldplug fixed" : "Unknown"))));
 
                     if((ata_drive && udisks_drive_ata_get_smart_supported(ata_drive) && udisks_drive_ata_get_smart_enabled(ata_drive))
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
                     		|| nvme_ctrl
 #endif
                                                ) {
                           const char *drid = udisks_drive_get_serial(drive);
                           bool visnode = SetVisiblity(std::string(ud2drvmodel),std::string(drid));
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
                     	  monitoring.push_back(Ud2_sens_node({(nvme_ctrl ? new uhiUDisksDriveNvme{nvme_ctrl,false} : new uhiUDisksDriveAta{ata_drive}),
                     		                                                       [](uhiUDisksDriveAta *const drv){if(drv){delete drv;}}}, ud2drvmodel, drid, visnode));
-
 #else
                     	  monitoring.push_back(std::move(Ud2_sens_node(ata_drive,ud2drvmodel,drid,visnode)));
 #endif
@@ -161,20 +163,18 @@ void Ud2mon::SensorsDetect()
                 }
                 g_clear_object(&drive);
                 g_object_unref(pobj);
-                dt[0] = dt[1] = false;
+                dt[0] = dt[1] = basis_dev =false;
           }
           if(obj_path) obj_path = nullptr;
           if(blok_dev) g_clear_object(&blok_dev);
-          if(partition) g_clear_object(&partition);
           g_object_unref(obj_list->data);
       }
       g_list_free(objects);
 
       if(Ud2Manager) {
-          g_signal_connect(Ud2Manager, "object-added", G_CALLBACK(Ud2mon::addobj_callback), this);
-          g_signal_connect(Ud2Manager, "object-removed", G_CALLBACK(Ud2mon::rmvobj_callback), this);
+          g_signal_connect(Ud2Manager, "object-added", G_CALLBACK(Ud2mon::callback_AddORemove),&clbkADD);
+          g_signal_connect(Ud2Manager, "object-removed", G_CALLBACK(Ud2mon::callback_AddORemove), &clbkREMOVE);
       }
-
 }
 
 std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const bool printmode,const bool blink_global_status)
@@ -193,19 +193,29 @@ std::string Ud2mon::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,c
         for(std::list<Ud2_sens_node>::iterator it =  monitoring.begin(); it != monitoring.end(); it++) {
               if(!it->visible) continue;
               if(Ud2Cl &&
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
             		      it->uhiDrive
 #else
 					                 it->ata_drive
 #endif
 					                                 ) {
-#if UDISKS2_CHECK_VERSION(2,10,0)
-            	    if((*it->uhiDrive).is_ata)
-                        KelvTemp = udisks_drive_ata_get_smart_temperature((*it->uhiDrive).atadrv) - 273.15;
+            	    if(
+#if UDISKS_CHECK_VERSION(2,10,0)
+            	    		(*it->uhiDrive).is_ata
+#else
+							*it->ata_drive
+#endif
+            	    )
+                        KelvTemp = udisks_drive_ata_get_smart_temperature(
+#if UDISKS_CHECK_VERSION(2,10,0)
+            	    		(*it->uhiDrive).atadrv
+#else
+							*it->ata_drive
+#endif
+								) - 273.15;
+#if UDISKS_CHECK_VERSION(2,10,0)
             	    else
             	    	KelvTemp = udisks_nvme_controller_get_smart_temperature(((uhiUDisksDriveNvme*)(it->uhiDrive.get()))->nvmectrl) - 273.15;
-#else
-                     KelvTemp = udisks_drive_ata_get_smart_temperature(*it->ata_drive) - 273.15;
 #endif
                     if(KelvTemp > 0) {
                           if(it->t_statistic_active) {

@@ -136,12 +136,6 @@
                        std::to_string(GTKMM_MINOR_VERSION) + "." + \
                        std::to_string(GTKMM_MICRO_VERSION))
 
-// if udisks2 is new enough then true
-#define UDISKS2_CHECK_VERSION(major,minor,micro)                             \
-     (UDISKS_MAJOR_VERSION > (major)  ||                                    \
-     (UDISKS_MAJOR_VERSION == (major) && UDISKS_MINOR_VERSION > (minor)) ||  \
-     (UDISKS_MAJOR_VERSION == (major) && UDISKS_MINOR_VERSION == (minor) && UDISKS_MICRO_VERSION >= (micro)))
-
 using  post_init_sig = sigc::signal<void(const int,const int)>;
 
 using cpu_chain_el = struct _cpu_chain {

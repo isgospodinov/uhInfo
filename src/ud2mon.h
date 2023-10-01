@@ -11,7 +11,7 @@
 #include <list>
 #include "sensmon.h"
 
-#if UDISKS2_CHECK_VERSION(2,10,0)
+#if UDISKS_CHECK_VERSION(2,10,0)
 
 struct uhiUDisksDriveAta {
 	uhiUDisksDriveAta(bool f) : is_ata(f) {}
@@ -55,8 +55,12 @@ class Ud2mon : public CSensMon
      using ud2mon_unique_ptr = std::unique_ptr<UDisksClient, std::function<void(UDisksClient*)>>;
      using CallbackMode = enum class CallbackMsgMode {ADD,REMOVE};
 
-     static void addobj_callback(GDBusObjectManager *objManager, GDBusObject *pObject, gpointer cbData){((Ud2mon*)cbData)->CallbackJob(objManager,pObject,CallbackMode::ADD);}
-     static void rmvobj_callback(GDBusObjectManager *objManager, GDBusObject *pObject, gpointer cbData){((Ud2mon*)cbData)->CallbackJob(objManager,pObject,CallbackMode::REMOVE);}
+ 	struct SCData {
+ 		 Ud2mon *pThis;
+ 		 Ud2mon::CallbackMode md;
+ 	 } clbkADD{this,CallbackMode::ADD},clbkREMOVE{this,CallbackMode::REMOVE};
+
+     static void callback_AddORemove(GDBusObjectManager *objManager, GDBusObject *pObject, gpointer cbD){(((SCData*)cbD)->pThis)->CallbackJob(objManager,pObject,((SCData*)cbD)->md);}
      void CallbackJob(GDBusObjectManager *objManager, GDBusObject *pObject, Ud2mon::CallbackMode mode);
 public :
      friend class CSmDialog;

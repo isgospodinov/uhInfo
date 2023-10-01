@@ -84,6 +84,7 @@ namespace uhiutil {
        namespace sysensors {
            const char *const nud2 = "UDisks2";
            const char *const idd_path = "/org/freedesktop/UDisks2/block_devices/";
+           const char *const ud2_nvme_suffix = "n1";
        
            using fp_sInit      = int (*) (FILE *);
            using fp_sClean     = void (*) ();
