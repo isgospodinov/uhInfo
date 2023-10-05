@@ -52,6 +52,8 @@ bool CSysens::LibSensorsOpen(const char * filename)
         if(!(sysens_get_subfeature = (sensors::fp_subFeature) dlsym(libsensh, "sensors_get_subfeature"))) {RETURN_FALSE;}
 
         if(!(sysens_get_value = (sensors::fp_sValue) dlsym(libsensh, "sensors_get_value"))) {RETURN_FALSE;}
+
+        if(!(sysens_get_adapter_name = (sensors::fp_sAdpName) dlsym(libsensh, "sensors_get_adapter_name"))) {RETURN_FALSE;}
           
         return true;
     }
@@ -87,6 +89,17 @@ void CSysens::SensorsDetect(bool *flag)
              bool pass_true = false;
              Chip_node chnd;
              chnd.chip_id = std::string(chpname->prefix) + std::to_string(chpname->bus.type) + std::to_string(chpname->bus.nr) + std::to_string(chpname->addr);
+             if(std::string(chpname->prefix) == "nvme") {
+            	 chnd.model = std::string(chpname->path) + "/device/model";
+            	 if(uhiutil::ExistenceVerification(chnd.model.c_str())) {
+            		   chnd.model = "cat " + chnd.model;
+            		   chnd.model = uhiutil::execmd(chnd.model.c_str());
+            		   uhiutil::end_intervals_remove(chnd.model);
+            		   std::for_each(chnd.model.begin(), chnd.model.end(), [](char &ch) {ch = std::tolower(ch);});
+            	 }
+            	 else
+            		 chnd.model = "";
+             }
 
              while((feature = (sysens_get_features)(chpname, &feature_count)) != 0) {
                  std::string lbl((sysens_get_label)(chpname, feature));
@@ -140,6 +153,8 @@ void CSysens::SensorsDetect(bool *flag)
                  chnd.chip_name.cnip_path = std::string(chpname->path);
                  chnd.chip_name.cnip_bus = chpname->bus;
                  chnd.chip_name.cnip_addr = chpname->addr;
+                 chnd.adapter_name = (sysens_get_adapter_name)(&chpname->bus);
+
                  monitoring.push_back(std::move(chnd));
              }
              pass_true = false;
@@ -175,7 +190,7 @@ void CSysens::PrintDetectedSensors(Glib::RefPtr<Gtk::TextBuffer> txtbuff,const b
                            }
                            (sysens_get_value)(&cn, sn->feature_number, &value);
                            if(!chipisset) {
-                        	        itxbf = txtbuff->insert_with_tag(itxbf,"  " + n->chip_name.cnip_prefix + "\n",uhiutil::ui::max_tag);
+                        	        itxbf = txtbuff->insert_with_tag(itxbf,"  " + n->chip_name.cnip_prefix + (n->model.empty() ? "" : (" - " + n->model)) + "\n",uhiutil::ui::max_tag);
                                     chipisset = true;
                            }
 
@@ -255,6 +270,7 @@ void CSysens::PopulateTemperatureSelection(CHWindow *m_wnd)
                         row[m_wnd->tColumns->tsensor_node] = n.chip_name.cnip_prefix;
                         row[m_wnd->tColumns->tsensor_name] = sn.label;
                         row[m_wnd->tColumns->tnode_id] = n.chip_id;
+                        row[m_wnd->tColumns->tsensor_model] = (n.model.empty() ? "" : (" - " + n.model));
                         row[m_wnd->tColumns->tsensor_id] = sn.feature_number;
                         row[m_wnd->tColumns->color_name] = clrID[index++];
                         if(index == indexlimit) index = 0;

@@ -530,7 +530,7 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
           dv = pUd2Manager->SensorStatisticToggle((*iter)[tColumns->col_tcheck],(*iter)[tColumns->color_name],(*iter)[tColumns->tsensor_node],(*iter)[tColumns->tsensor_name],(*iter)[tColumns->tnode_id],(*iter)[tColumns->tsensor_id],&ps_max);
 
     if(dv.dvc && dv.dsn)
-        m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + " : " + (*iter)[tColumns->tsensor_name],
+        m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + (*iter)[tColumns->tsensor_model] + " : " + (*iter)[tColumns->tsensor_name],
         		(*iter)[tColumns->tsensor_node] + ":" + (*iter)[tColumns->tsensor_name] + (*iter)[tColumns->tnode_id] + std::to_string((*iter)[tColumns->tsensor_id]), (*iter)[tColumns->col_tcheck]);
 
 }

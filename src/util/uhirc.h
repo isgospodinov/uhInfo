@@ -152,7 +152,7 @@ using CModelBaseUhiColumns = struct ModelBaseUhiColumns : public Gtk::TreeModel:
       ModelBaseUhiColumns(UhiModelType setcolumns = UhiModelType::DISK) {if(setcolumns == UhiModelType::DISK)add_uhi_columns();}
 
       Gtk::TreeModelColumn<unsigned int> No;
-      Gtk::TreeModelColumn<Glib::ustring> sys_link,device_name,type,color,color_name,tsensor_node,tsensor_name,tnode_id,specificity,description;
+      Gtk::TreeModelColumn<Glib::ustring> sys_link,device_name,type,color,color_name,tsensor_node,tsensor_name,tsensor_model,tnode_id,specificity,description;
       Gtk::TreeModelColumn<bool> col_tcheck;
       Gtk::TreeModelColumn<int> tsensor_id;
 protected:
@@ -164,7 +164,7 @@ using CModelUhiColumns = struct ModelUhiColumns : public CModelBaseUhiColumns {
     	  if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::SENSORS || setcolumns == UhiModelType::COLOR)add_uhi_columns(setcolumns);}
 private:
       void add_uhi_columns(UhiModelType setcolumns) {if(setcolumns != UhiModelType::COLOR) add(col_tcheck); if(setcolumns == UhiModelType::TEMPERATURE || setcolumns == UhiModelType::COLOR) {add(color); add(color_name);}
-                                                                                                       if(setcolumns != UhiModelType::COLOR) {add(tsensor_node); add(tsensor_name); add(description); add(tnode_id); add(tsensor_id);}}
+                                                              if(setcolumns != UhiModelType::COLOR) {add(tsensor_node); add(tsensor_name); add(description); add(tnode_id); add(tsensor_id);add(tsensor_model);}}
 };
 
 using uhimc_unique_ptr = std::unique_ptr<CModelBaseUhiColumns>;

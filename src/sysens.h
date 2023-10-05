@@ -34,7 +34,7 @@ using Sensor_node = struct _Sensor_node : public Sensor_statistic{
 using Chip_node = struct _Chip_node {
       long unsigned int inactive_sensors_number = 0;
       sensors_chip_name_mod chip_name;
-      std::string chip_id = "";
+      std::string chip_id = "",model = "",adapter_name = "";
       std::list<Sensor_node> sensors;
       bool get_node_print_status() const {return (inactive_sensors_number == sensors.size());}
       bool operator < (const _Chip_node cpnd) {return (chip_name.cnip_prefix < cpnd.chip_name.cnip_prefix);}
@@ -64,6 +64,7 @@ private:
     sensors::fp_sLabel     sysens_get_label;
     sensors::fp_subFeature sysens_get_subfeature;
     sensors::fp_sValue     sysens_get_value;
+    sensors::fp_sAdpName   sysens_get_adapter_name;
     // ------------- Skipping libsensors runtime dependency -------------
 
     void *libsensh = nullptr;

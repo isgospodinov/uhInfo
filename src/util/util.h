@@ -93,6 +93,7 @@ namespace uhiutil {
            using fp_sLabel     = char* (*) (const sensors_chip_name*, const sensors_feature*);
            using fp_subFeature = const sensors_subfeature* (*) (const sensors_chip_name *, const sensors_feature *, sensors_subfeature_type);
            using fp_sValue     = int (*) (const sensors_chip_name*, int,double *);
+           using fp_sAdpName   = const char * (*) (const sensors_bus_id *bus);
        }
    }
 }
