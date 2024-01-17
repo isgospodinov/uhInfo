@@ -93,6 +93,25 @@ std::string CInitThread::GetDevices(DeviceType dType) const
    return ret;
 }
 
+const std::string CInitThread::MemfDefs(std::string mfsp,int *const banks) const
+{
+	std::string retres(""),res = uhiutil::execmd(std::string(std::string("udevadm info -e | grep -e ") + mfsp + std::string("=")).c_str());
+	   if(res.length() > 0) {
+	       std::string tb("");
+	       std::istringstream input(res);
+	       for(;std::getline(input, tb);) {
+	           uhiutil::newline(tb,mfsp.c_str(),Direction::RIGHT);
+	           if(tb != "Unknown" && tb != "Not Specified" && ((int)retres.find(tb)) == -1) {
+	        	   retres.append((((retres.length() > 0) ? "," : "") + tb));
+	           }
+
+        	   if(banks && tb != "Unknown" && tb != "Not Specified") (*banks)++;
+	       }
+	   }
+
+	   return retres;
+}
+
 std::string CInitThread::Mem_Info() const
 {
    std::string mem_path("/sys/devices/system/memory"),mem_size("");
@@ -138,8 +157,21 @@ std::string CInitThread::Mem_Info() const
    mem_path = uhiutil::execmd("cat /proc/meminfo | grep MemTotal:");
    uhiutil::newline(mem_path,"MemTotal:",Direction::RIGHT);
    uhiutil::end_intervals_remove(mem_path = uhiutil::start_intervals_remove(mem_path));
+
+   int bk = 0;
+   std::string csmts(""),pn(""),rk("");
+   std::istringstream tsin(uhiutil::execmd("printenv PATH"));
+   for(std::string line; std::getline(tsin, line,':'); ) {
+      if(uhiutil::ExistenceVerification(std::string(line + "/udevadm").c_str())) {
+    	   csmts = MemfDefs("CONFIGURED_SPEED_MTS",&bk);
+    	   pn =  MemfDefs("PART_NUMBER");
+    	   rk =  MemfDefs("RANK");
+    	   break;
+      }
+   }
     
-   return ((!mem_size.empty() ? _("Memory : ") + mem_size + "\n" : "" ) + _("Available : ") + mem_path);
+   return ((!mem_size.empty() ? _("Memory : ") + mem_size + "\n" : "" ) + _("Available : ") + mem_path + (!pn.empty() ? (std::string("\n") + _("Part No : ") + pn) : "") +
+		                 (!csmts.empty() ? (std::string("\n") + _("Speed : ") + csmts + " MT/s") : "") + (bk ? (std::string("\n") + _("Populated banks : ") + std::to_string(bk)) : "") + (!rk.empty() ? (std::string("\n") + _("Ranks : ") + rk) : ""));
 }
 
 std::string CInitThread::OS_Info() const
@@ -192,16 +224,15 @@ std::string CInitThread::OS_Info() const
        }
 
        if(workbuffer == "x11" || pid) {
-           workbuffer = "Xorg ";
-           sesid = "/usr/libexec/Xorg";
-           if(!uhiutil::ExistenceVerification(sesid.c_str()))
-                    if(!uhiutil::ExistenceVerification((sesid = "/usr/lib/xorg/Xorg").c_str()))
-                                if(!uhiutil::ExistenceVerification((sesid = "/usr/lib/Xorg").c_str()))
-                                                                              sesid = "/usr/bin/Xorg";
+    	   std::istringstream Xin("/usr/libexec/Xorg:/usr/lib/xorg/Xorg:/usr/lib/Xorg:/usr/bin/Xorg:/usr/sbin/Xorg");
+    	   while(std::getline(Xin, sesid,':')) {
+    	   	   if(uhiutil::ExistenceVerification(sesid.c_str()))
+    	   		                                               break;
+    	   }
            sesid += " -version 2>&1 | grep \"X Server\"";
            uhiutil::newline((osver = uhiutil::execmd(sesid.c_str())),"X Server",Direction::RIGHT);
            uhiutil::end_intervals_remove(osver);
-           workbuffer += osver;
+           workbuffer = "Xorg " + osver;
        }
        else workbuffer = "Wayland";
   }

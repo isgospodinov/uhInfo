@@ -38,7 +38,7 @@ bldaf: bldst cmsg
 	@bash install.sh -ia
 
 potf: 
-	@xgettext --keyword=_ --language=c++ --add-comments --sort-output -o $(POTEMPLDIR)/$(PRGNAME).pot $(FLS)
+	@xgettext --c++ -c -F -k_ -o $(POTEMPLDIR)/$(PRGNAME).pot $(FLS)
 	#@mv -f $(POTEMPLDIR)/$(PRGNAME).pot $(POTEMPLDIR)/$(PRGNAME).po
 
 clean:

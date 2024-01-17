@@ -30,6 +30,8 @@ protected :
     void VeryFastQuitGuard() const; 
     virtual void PrepAndMakeThread(CHWindow *m_wnd,fp_DispNtf func);
     virtual void CreateThread(CHWindow *m_wnd);
+
+    const std::string MemfDefs(std::string mfsp,int *const banks = nullptr) const;
 };
 
 #endif // _HTH_H_

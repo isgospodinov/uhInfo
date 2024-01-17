@@ -27,10 +27,10 @@ int main (int argc, char* argv[])
 #endif
 
        std::string command = "ps -p " + std::to_string(getpid()) + " -o comm=";
-       int res{std::string{"uhInfo\n"}.compare(uhiutil::execmd(command.data()))};
+       int res{std::string{"uhInfo\n"}.compare(uhiutil::execmd(command.c_str()))};
        if(res) return 0;
        else
-          if(std::atoi((std::string(uhiutil::execmd("pgrep -c uhInfo"))).data()) != 1)  return 0;
+          if(std::atoi((std::string(uhiutil::execmd("pgrep -c uhInfo"))).c_str()) != 1)  return 0;
           else {	
                Glib::RefPtr<ChInfApp> app = ChInfApp::create("org.gtkmm.uhInfo");
                return app->make_window_and_run<CHWindow>(argc, argv);
