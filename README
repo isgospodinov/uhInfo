@@ -17,9 +17,9 @@ To BUILD it :
           lm_sensors-devel  >= 3.4.0
 
 Examples on these OSs :
- - Fedora Linux 37/38 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
+ - Fedora Linux 38/39 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
  - openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel gettext-tools
- - Ubuntu 22.10 : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev gettext         
+ - Ubuntu 23.10 : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev gettext         
 
  2) Finaly jast run 'make' in 'uhInfo' directory.
 

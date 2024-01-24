@@ -53,6 +53,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
    m_VBoxVRight.append(m_VPanedTrmpetature);
    m_VBoxVRight.append(m_Frame_Disks);
 
+   m_VBoxVLeft.append(m_Frame_User);
    m_VBoxVLeft.append(m_Frame_OS);
    m_VBoxVLeft.append(m_BlinkGrid);
    m_VBoxVLeft.append(m_Frame_Sensors);
@@ -135,6 +136,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_ButtonBox.set_halign(Gtk::Align::END);
 
   m_Frame_OS.set_child(m_Label_OS);
+  m_Frame_User.set_child(m_Label_User);
 
   m_HPaned.set_start_child(m_VBoxVRight);
   m_HPaned.set_end_child(m_VBoxVLeft);
@@ -192,6 +194,7 @@ void UIHWindow::InitUI()
   m_Frame_Audio.set_margin(4);
   m_Frame_Network.set_margin(4);
   m_Frame_Disks.set_margin(4);
+  m_Frame_User.set_margin(4);
   m_Frame_OS.set_margin(4);
   m_Frame_Sensors.set_margin(4);
   m_Frame_VGA_pcie.set_margin_start(14);
@@ -217,6 +220,7 @@ void UIHWindow::InitUI()
   m_Label_VGA_cond_status.set_text("- / -");
   m_Label_Audio.set_text(_("Audio device:"));
   m_Label_Network.set_text(_("Ethernet controller:"));
+  m_Label_User.set_text(_("User: ") + std::string("********"));
   m_Label_OS.set_text(_("OS :") + std::string("\n") + _("Kernel :") + std::string("\n") + _("Display Server :") + std::string("\n") + _("Compiler :"));
 
   m_CPUCompareLabel.set_text(_("Compare "));
@@ -301,6 +305,10 @@ void UIHWindow::InitUI()
   m_BlinkSwitch.set_halign(Gtk::Align::END);
   m_MoreInfoSwitch.set_halign(Gtk::Align::END);
   
+  m_refShowUser->set_button(GDK_BUTTON_PRIMARY);
+  m_refShowUser->signal_pressed().connect([&](int , double x, double y){m_Label_User.set_text(_("User: ") + uhiutil::GetUserName());show_username = true;});
+  m_Label_User.add_controller(m_refShowUser);
+
   STATUSIMAGES_SET_INACTIVE;
   SET_CUSTOM_LABELS;
 }

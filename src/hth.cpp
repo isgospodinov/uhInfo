@@ -240,7 +240,7 @@ std::string CInitThread::OS_Info() const
 
   uhiutil::newline((gccver = uhiutil::execmd( "gcc --version" )),"\n",Direction::LEFTSKIP);
 
-  return (_("OS: ") + os + "\n" + _("Kernel: ") + kern + "\n" + _("User: ") + uhiutil::GetUserName() + "\n" + _("Display Server: ") + workbuffer + "\n" + \
+  return (_("OS: ") + os + "\n" + _("Kernel: ") + kern + "\n" + _("Display Server: ") + workbuffer + "\n" + \
 		                                              _("Desktop environment : ") + deskenv + (gccver.size() ? (std::string("\n") + std::string(_("Compiler: ")) + gccver) : ""));
 }
 

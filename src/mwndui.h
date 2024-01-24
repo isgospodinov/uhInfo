@@ -20,8 +20,8 @@ public:
   const uhimc_unique_ptr tColumns = uhimc_unique_ptr(new CModelUhiColumns()),dColumns = uhimc_unique_ptr(new CModelUhiColumns(ModelBaseUhiColumns::UhiModelType::DISK));
   const Glib::RefPtr<Gtk::ListStore> m_refTreeModel = Gtk::ListStore::create(*dColumns),ptRefTreeModel = Gtk::ListStore::create(*tColumns);
     
-  bool temperature_monitoring_enabled = false;
-  Gtk::Label m_Label_MOBO,m_Label_Memory,m_Label_CPU,m_Label_Monitors,m_Label_Audio,m_Label_Network,m_Label_OS;
+  bool temperature_monitoring_enabled = false,show_username = false;
+  Gtk::Label m_Label_MOBO,m_Label_Memory,m_Label_CPU,m_Label_Monitors,m_Label_Audio,m_Label_Network,m_Label_OS,m_Label_User;
   static post_init_sig signal_set_param() {return sig_postinit_param;}
 
   std::list<StresTestSession> mark_stres_session;
@@ -35,7 +35,7 @@ protected:
                                        item_options{add_action("prefs",sigc::mem_fun(*this,&UIHWindow::get_preferences))};
 
 
-  Gtk::Frame m_Frame_MOBO,m_Frame_Memory,m_Frame_CPU,m_Frame_VGA,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network,m_Frame_Disks,m_Frame_CPUFrecq,m_Frame_VGA_pcie,m_Frame_OS,m_Frame_Sensors; // Data.
+  Gtk::Frame m_Frame_MOBO,m_Frame_Memory,m_Frame_CPU,m_Frame_VGA,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network,m_Frame_Disks,m_Frame_CPUFrecq,m_Frame_VGA_pcie,m_Frame_OS,m_Frame_User,m_Frame_Sensors; // Data.
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
   Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
   Gtk::Grid m_gridVGA_cond,m_StatusBar_Grid_condit;
@@ -70,6 +70,8 @@ protected:
   std::unique_ptr<sigc::connection> c_Timer{nullptr};
 
   CDrArTempr m_DAtemperature;
+
+  Glib::RefPtr<Gtk::GestureClick> m_refShowUser = Gtk::GestureClick::create();
 
   void InitUI();
   void InitUI_activity_vision(const std::list<unit_calc_el> *unclel,std::list<cpu_chain_el> &cpu_units_monit_chain);

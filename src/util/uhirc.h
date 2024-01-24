@@ -78,6 +78,7 @@
           m_Frame_Network.set_visible(flag); \
           m_Frame_Disks.set_visible(flag); \
           m_Frame_OS.set_visible(flag); \
+          m_Frame_User.set_visible(flag); \
           m_BlinkGrid.set_visible(!flag); \
           item_cpu->set_enabled(flag); \
           item_infomode->set_enabled(flag); \

@@ -336,6 +336,11 @@ bool CHWindow::uhI_Timer(int TmNo)
       if(pGpus && sensors_printing_enable && !temperature_mode_status) 
              m_Label_VGA_cond_status.set_text(pGpus->CurrentPcieLinkStatus(m_Gpus.get_active_row_number()));
 
+      if(condition == 3 && show_username) {
+    	  show_username = false;
+    	  m_Label_User.set_text(_("User: ") + std::string("********"));
+      }
+
       ((condition == 5) ? condition = 0 : condition++);
 
       if(m_DAtemperature.GetAttentState() && (!condition || condition == 3)){ m_DAtemperature.SetAttentState(false);}

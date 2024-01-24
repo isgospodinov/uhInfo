@@ -20,7 +20,7 @@ void uhiutil::end_intervals_remove(std::string& str)
 {
        if(!str.length()) return; // empty return 1
 
-       if(str[(str.length() - 1)] == '\x0A')  {
+       while(str.back() == '\x0A')  {
                 str.pop_back();   
                 if(!str.length()) return; // empty return 2   
        }
