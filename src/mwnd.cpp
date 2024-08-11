@@ -66,24 +66,26 @@ void CHWindow::on_DA_button_press_event(int npress, double x, double y)
 	if(!evbntpress) return;
 
 	if(evbntpress->get_button() == GDK_BUTTON_PRIMARY && npress == 2) {
-		if(!m_DAtemperature.HasActivities() || clrDlg->is_visible()) {m_DAtemperature.SetAttentState(true); return;}
-		else {
-	             CDrArTempr::TmpWndState state = CDrArTempr::DAWndState::NORMAL;
-	             bool visiblity = true;
+		if( m_DAtemperature.Get_StresSessionState()) return;
+		else
+		    if(!m_DAtemperature.HasActivities() || clrDlg->is_visible()) {m_DAtemperature.SetAttentState(true); return;}
+		    else {
+	                 CDrArTempr::TmpWndState state = CDrArTempr::DAWndState::NORMAL;
+	                 bool visiblity = true;
 
-	             if(m_DAtemperature.m_TmpWndCurrState == state) {
-		              state = CDrArTempr::DAWndState::FULL;
-		              visiblity = false;
-	             }
-	             else
-		             if(cpuStatDlg->is_visible()) {
-			              cpuStatDlg->stop_cpustat_timer();
-		             }
+	                 if(m_DAtemperature.m_TmpWndCurrState == state) {
+		                  state = CDrArTempr::DAWndState::FULL;
+		                  visiblity = false;
+	                 }
+	                 else
+		                 if(cpuStatDlg->is_visible()) {
+			                  cpuStatDlg->stop_cpustat_timer();
+		                 }
 
-	             TEMPERATUREWNDVIEW(visiblity);
-	             m_DAtemperature.m_TmpWndCurrState = state;
-	             set_title((visiblity ? _("uhInfo - Temperature monitor") : _("uhInfo - Selected temperatures")));
-		}
+	                 TEMPERATUREWNDVIEW(visiblity);
+	                 m_DAtemperature.m_TmpWndCurrState = state;
+	                 set_title((visiblity ? _("uhInfo - Temperature monitor") : _("uhInfo - Selected temperatures")));
+		    }
     }
 	else
 		if(evbntpress->get_button() == GDK_BUTTON_SECONDARY && npress == 1 &&

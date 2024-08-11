@@ -87,7 +87,7 @@ void Ud2mon::SensorsDetect()
       UDisksDrive *drive = nullptr;
       UDisksDriveAta *ata_drive = nullptr;
 #if UDISKS_CHECK_VERSION(2,10,0)
-      UDisksNVMeController *nvme_ctrl;
+      UDisksNVMeController *nvme_ctrl = nullptr;
 #endif      
       GList *objects = nullptr, *obj_list= nullptr;
       const gchar *obj_path = nullptr,*ud2drvmodel = nullptr;
@@ -128,7 +128,7 @@ void Ud2mon::SensorsDetect()
 
                 const std::string blk_dev = udisks_block_get_device(blok_dev);
 
-                if(((ata_drive || dt[1]) && !std::isdigit(blk_dev.back())) || dt[0] || (
+                if((!std::isdigit(blk_dev.back())) || dt[0] || (
 #if UDISKS_CHECK_VERSION(2,10,0)
                                       nvme_ctrl &&
 #endif

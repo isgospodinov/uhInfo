@@ -154,23 +154,19 @@ std::string CInitThread::Mem_Info() const
            mem_size =  "";
    } 
 
-   mem_path = uhiutil::execmd("cat /proc/meminfo | grep MemTotal:");
-   uhiutil::newline(mem_path,"MemTotal:",Direction::RIGHT);
-   uhiutil::end_intervals_remove(mem_path = uhiutil::start_intervals_remove(mem_path));
-
    int bk = 0;
-   std::string csmts(""),pn(""),rk("");
+   std::string csmts(""),rk("");
    std::istringstream tsin(uhiutil::execmd("printenv PATH"));
    for(std::string line; std::getline(tsin, line,':'); ) {
       if(uhiutil::ExistenceVerification(std::string(line + "/udevadm").c_str())) {
     	   csmts = MemfDefs("CONFIGURED_SPEED_MTS",&bk);
-    	   pn =  MemfDefs("PART_NUMBER");
+    	   mem_path =  MemfDefs("PART_NUMBER");
     	   rk =  MemfDefs("RANK");
     	   break;
       }
    }
     
-   return ((!mem_size.empty() ? _("Memory : ") + mem_size + "\n" : "" ) + _("Available : ") + mem_path + (!pn.empty() ? (std::string("\n") + _("Part No : ") + pn) : "") +
+   return ((!mem_size.empty() ? _("Memory : ") + mem_size : "" ) + (!mem_path.empty() ? (std::string("\n") + _("Part No : ") + mem_path) : "") +
 		                 (!csmts.empty() ? (std::string("\n") + _("Speed : ") + csmts + " MT/s") : "") + (bk ? (std::string("\n") + _("Populated banks : ") + std::to_string(bk)) : "") + (!rk.empty() ? (std::string("\n") + _("Ranks : ") + rk) : ""));
 }
 
