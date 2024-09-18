@@ -8,9 +8,33 @@
 #include <glibmm/i18n.h>
 
 CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),lB("http://www.uhinfo.free.bg/",_("Go to uhInfo website")),
-                                   lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),
-						           m_label("     "),uhi_img{Gdk::Pixbuf::create_from_xpm_data(uhilogo)},m_Image(uhi_img)
+                       lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),m_label("     ")
 {
+	Glib::RefPtr<Gdk::Pixbuf> uhi_img = Gdk::Pixbuf::create_from_xpm_data(uhilogo);
+	Gtk::Image *m_Image = Gtk::make_managed<Gtk::Image>();
+
+    if(!uhi_img) {
+    	std::string line("");
+    	std::istringstream lstrm{"/usr/local/share/icons/uhI.png\ndata/uhI.png\n../data/uhI.png\nuhI.png"};
+    	while(std::getline(lstrm, line)) {
+    		if(uhiutil::ExistenceVerification(line.c_str())) {
+    			uhi_img = Gdk::Pixbuf::create_from_file(line);
+    			break;
+    		}
+    	}
+    }
+
+    if(uhi_img) {
+        m_Image->set(uhi_img);
+    	m_Image->set_size_request(uhi_img->get_height(),uhi_img->get_width());
+    }
+	else {
+        m_Image->set_from_icon_name("dialog-information");
+        m_Image->set_icon_size(Gtk::IconSize::LARGE);
+	}
+
+    m_CGrid.attach(*m_Image,0, 2, 1, 1);
+
 	uhiutil::set_css_style(get_style_context(),*cp);
 	set_transient_for(*p_mWnd);
 	InitVision();
@@ -43,7 +67,6 @@ void CAboutDlg::InitVision()
      m_AGrid.set_halign(Gtk::Align::CENTER);
      m_CGrid.set_halign(Gtk::Align::CENTER);
 
-     m_Image.set_size_request(uhi_img->get_height(),uhi_img->get_width());
      nB.set_image_from_icon_name("window-close");
 
      m_BoxAll->append(m_Title);
@@ -51,7 +74,6 @@ void CAboutDlg::InitVision()
      m_BoxAll->append(m_CGrid);
      m_BoxAll->append(m_AGrid);
 
-     m_CGrid.attach(m_Image,0, 2, 1, 1);
      m_CGrid.attach(m_label, 1, 2, 1, 1);
      m_CGrid.attach(m_copyright, 1, 1, 1, 1);
      m_CGrid.attach(lbGH, 1, 2, 1, 1);
