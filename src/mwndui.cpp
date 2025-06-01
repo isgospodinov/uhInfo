@@ -58,8 +58,8 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
    m_VBoxVLeft.append(m_BlinkGrid);
    m_VBoxVLeft.append(m_Frame_Sensors);
 
-  m_Frame_MOBO.set_child(m_Label_MOBO);
-  m_Frame_Memory.set_child(m_Label_Memory);
+  m_Frame_MOBO.set_child(m_VBox_Mobo);
+  m_Frame_Memory.set_child(m_VBox_Mem);
   m_Frame_CPU.set_child(m_VBoxCPU);
   m_Frame_VGA.set_child(m_VBoxVGA);
   m_Frame_VGA_pcie.set_child(m_gridVGA_cond);
@@ -92,6 +92,10 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_gridVGA_cond.attach_next_to(m_Label_VGA_cond_status,m_Label_VGA_cond,Gtk::PositionType::RIGHT,1,1);
 
   m_VBox_Audio.append(m_Label_Audio);
+  m_VBox_Mobo.append(m_Label_MOBO);
+  m_VBox_Mem.append(m_Label_Memory);
+  m_VBox_Os.append(m_Label_OS);
+
 
   m_VBox_Network.append(m_Label_Network);
 
@@ -135,7 +139,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_ButtonBox.set_orientation(Gtk::Orientation::HORIZONTAL);
   m_ButtonBox.set_halign(Gtk::Align::END);
 
-  m_Frame_OS.set_child(m_Label_OS);
+  m_Frame_OS.set_child(m_VBox_Os);
   m_Frame_User.set_child(m_Label_User);
 
   m_HPaned.set_start_child(m_VBoxVRight);
@@ -245,6 +249,9 @@ void UIHWindow::InitUI()
   m_VBoxCPU_Freq_Use.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBoxVGA.set_orientation(Gtk::Orientation::VERTICAL);
   m_Box_CPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
+  m_VBox_Mobo.set_orientation(Gtk::Orientation::VERTICAL);
+  m_VBox_Os.set_orientation(Gtk::Orientation::VERTICAL);
+  m_VBox_Mem.set_orientation(Gtk::Orientation::VERTICAL);
   m_separator.set_orientation(Gtk::Orientation::HORIZONTAL);
   hbox_operation_status_cpu.set_orientation(Gtk::Orientation::HORIZONTAL);
   hbox_operation_status_pcie.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -271,6 +278,9 @@ void UIHWindow::InitUI()
 
   m_Label_VGA_cond.set_halign(Gtk::Align::END);
   m_Label_VGA_cond_status.set_halign(Gtk::Align::START);
+  m_Label_MOBO.set_halign(Gtk::Align::CENTER);
+  m_Label_Memory.set_halign(Gtk::Align::CENTER);
+  m_Label_OS.set_halign(Gtk::Align::CENTER);
 
   m_BlinkGrid.set_halign(Gtk::Align::CENTER);
 

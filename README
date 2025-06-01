@@ -11,15 +11,15 @@ To use this application,you only need to have GTKMM 4.0(with dependencies) insta
 To BUILD it :
  1) GNOME 41 desktop environment or higher with gtkmm-4.0 >= 4.4.0
  - We assume bash is set as the default shell,make & g++(c++ 17 compliant compiler) are already installed
- - Installing the development files.Taking Fedora(37) as an example you will need to install :
+ - Installing the development files.Taking Fedora as an example you will need to install :
           gtkmm4.0-devel    >= 4.4.0
           libudisks2-devel  >= 2.7.6
           lm_sensors-devel  >= 3.4.0
 
 Examples on these OSs :
- - Fedora Linux 39/40 : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
+ - Fedora Linux : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
  - openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel gettext-tools
- - Ubuntu 24.4 : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev gettext         
+ - Ubuntu : sudo apt-get install libgtkmm-4.0-dev libsensors4-dev libudisks2-dev gettext         
 
  2) Finaly jast run 'make' in 'uhInfo' directory.
 

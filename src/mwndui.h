@@ -37,7 +37,7 @@ protected:
 
   Gtk::Frame m_Frame_MOBO,m_Frame_Memory,m_Frame_CPU,m_Frame_VGA,m_Frame_Monitors,m_Frame_Audio,m_Frame_Network,m_Frame_Disks,m_Frame_CPUFrecq,m_Frame_VGA_pcie,m_Frame_OS,m_Frame_User,m_Frame_Sensors; // Data.
   Gtk::Paned m_HPaned, m_VPanedTrmpetature;
-  Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
+  Gtk::Box m_VBoxAll,m_Revealer,m_VBoxVLeft,m_VBoxVRight,m_VBoxCPU,m_VBoxCPU_Freq_Use,m_VBoxVGA,m_VBox_Audio,m_VBox_Mobo,m_VBox_Mem,m_VBox_Os,m_VBox_Network,m_VBoxCPUActivityAll,m_Box_TmpControls;
   Gtk::Grid m_gridVGA_cond,m_StatusBar_Grid_condit;
   Gtk::Box m_ButtonBox,mT_All,m_Box_CPUActivityAll,m_Box_GRridAndButt;
   Gtk::Button m_ButtonQuit,m_ButtCPUOverall;
