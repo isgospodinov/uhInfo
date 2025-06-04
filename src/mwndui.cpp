@@ -250,6 +250,8 @@ void UIHWindow::InitUI()
   m_VBoxVGA.set_orientation(Gtk::Orientation::VERTICAL);
   m_Box_CPUActivityAll.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBox_Mobo.set_orientation(Gtk::Orientation::VERTICAL);
+  m_VBox_Audio.set_orientation(Gtk::Orientation::VERTICAL);
+  m_VBox_Network.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBox_Os.set_orientation(Gtk::Orientation::VERTICAL);
   m_VBox_Mem.set_orientation(Gtk::Orientation::VERTICAL);
   m_separator.set_orientation(Gtk::Orientation::HORIZONTAL);
@@ -281,6 +283,8 @@ void UIHWindow::InitUI()
   m_Label_MOBO.set_halign(Gtk::Align::CENTER);
   m_Label_Memory.set_halign(Gtk::Align::CENTER);
   m_Label_OS.set_halign(Gtk::Align::CENTER);
+  m_Label_Audio.set_halign(Gtk::Align::CENTER);
+  m_Label_Network.set_halign(Gtk::Align::CENTER);
 
   m_BlinkGrid.set_halign(Gtk::Align::CENTER);
 

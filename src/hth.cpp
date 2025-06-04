@@ -156,11 +156,12 @@ std::string CInitThread::Mem_Info() const
 
    int bk = 0;
    std::string csmts(""),rk("");
+   mem_path = uhiutil::execmd("printenv PATH");
+   uhiutil::end_intervals_remove(mem_path);
+   std::istringstream tsin(mem_path);
    mem_path.clear();
 
-   std::istringstream tsin(uhiutil::execmd("printenv PATH"));
    for(std::string line; std::getline(tsin, line,':'); ) {
-	   uhiutil::end_intervals_remove(line);
       if(uhiutil::ExistenceVerification(std::string(line + "/udevadm").c_str())) {
     	   csmts = MemfDefs("CONFIGURED_SPEED_MTS",&bk);
     	   mem_path =  MemfDefs("PART_NUMBER");
