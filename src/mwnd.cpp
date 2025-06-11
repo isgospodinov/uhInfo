@@ -304,6 +304,13 @@ bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
 
+      bool bf = mb_expr.get_expanded() & os_expr.get_expanded() & mm_expr.get_expanded() & mn_expr.get_expanded() & au_expr.get_expanded() & nt_expr.get_expanded();
+      if(bf & !v_expr.get_expanded()) {
+    	  v_expr.set_expanded();
+    	  v_expr.set_label(_(" Detailed - summary - view"));
+    	  if(!m_Frame_User.get_visible()) m_Frame_User.set_visible();
+      }
+
       bool state{false};
       item_cpu->get_state(state);
 
@@ -540,6 +547,15 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
         m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + (*iter)[tColumns->tsensor_model] + " : " + (*iter)[tColumns->tsensor_name],
         		(*iter)[tColumns->tsensor_node] + ":" + (*iter)[tColumns->tsensor_name] + (*iter)[tColumns->tnode_id] + std::to_string((*iter)[tColumns->tsensor_id]), (*iter)[tColumns->col_tcheck]);
 
+}
+
+void CHWindow::on_expr_sig_changed()
+{
+    bool stat = v_expr.get_expanded();
+    v_expr.set_label((stat ? _(" Detailed - summary - view") : _(" Simplified - summary - view")) );
+
+    INIT_EXPANDERS(stat);
+    m_Frame_User.set_visible(stat);
 }
 
 void CHWindow::On_CPUActivityAll_switch_changed()

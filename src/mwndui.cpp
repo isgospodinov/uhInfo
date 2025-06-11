@@ -9,7 +9,8 @@
 
 post_init_sig UIHWindow::sig_postinit_param;
 
-UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
+UIHWindow::UIHWindow() : mb_expr(_("Mainboard :")),os_expr(_("OS :")),mm_expr(_("Memory :")),mn_expr(_("Monitor(s) :")),au_expr(_("Audio :")),nt_expr(_("Network :")),
+		                 v_expr(_(" Detailed - summary - view")),m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
                          m_status_bar(_("  Everything at a glance...")), m_TextView(), m_TreeView(m_refTreeModel),
 						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this, &mark_stres_session, &UIHWindow::on_DA_button_press_event)
 {
@@ -43,6 +44,7 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_TreeView.append_column(_("Type"), dColumns->type);
   m_TreeView.append_column(_("Specificity"), dColumns->specificity);
 
+   m_VBoxVRight.append(v_expr);
    m_VBoxVRight.append(m_Frame_MOBO);
    m_VBoxVRight.append(m_Frame_Memory);
    m_VBoxVRight.append(m_Frame_CPU);
@@ -63,7 +65,8 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_Frame_CPU.set_child(m_VBoxCPU);
   m_Frame_VGA.set_child(m_VBoxVGA);
   m_Frame_VGA_pcie.set_child(m_gridVGA_cond);
-  m_Frame_Monitors.set_child(m_Label_Monitors);
+  m_Frame_Monitors.set_child(mn_expr);
+  mn_expr.set_child(m_Label_Monitors);
   m_Frame_Audio.set_child(m_VBox_Audio);
   m_Frame_Network.set_child(m_VBox_Network);
   m_Frame_Disks.set_child(m_ScrolledWindowTreeView);
@@ -91,13 +94,16 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_gridVGA_cond.attach(m_Label_VGA_cond ,0 ,0 ,1 ,1);
   m_gridVGA_cond.attach_next_to(m_Label_VGA_cond_status,m_Label_VGA_cond,Gtk::PositionType::RIGHT,1,1);
 
-  m_VBox_Audio.append(m_Label_Audio);
-  m_VBox_Mobo.append(m_Label_MOBO);
-  m_VBox_Mem.append(m_Label_Memory);
-  m_VBox_Os.append(m_Label_OS);
-
-
-  m_VBox_Network.append(m_Label_Network);
+  m_VBox_Audio.append(au_expr);
+  au_expr.set_child(m_Label_Audio);
+  m_VBox_Mobo.append(mb_expr);
+  mb_expr.set_child(m_Label_MOBO);
+  m_VBox_Mem.append(mm_expr);
+  mm_expr.set_child(m_Label_Memory);
+  m_VBox_Os.append(os_expr);
+  os_expr.set_child(m_Label_OS);
+  m_VBox_Network.append(nt_expr);
+  nt_expr.set_child(m_Label_Network );
 
   m_ScrolledWindowTreeView.set_child(m_TreeView);
   m_ScrolledWindowTreeView.set_policy(Gtk::PolicyType::AUTOMATIC, Gtk::PolicyType::AUTOMATIC);
@@ -164,6 +170,9 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   hbox_operation_status_cpu.append(operation_status_image_cpu);
   hbox_operation_status_pcie.append(operation_status_image_pcie);
   
+  INIT_EXPANDERS(true);
+  v_expr.set_expanded(true);
+
   signal_show().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_show_handler));
   signal_close_request().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_close_handler),false);
   m_ButtonQuit.signal_clicked().connect(sigc::mem_fun(*this, &UIHWindow::on_quit_button_clicked));
@@ -176,19 +185,15 @@ UIHWindow::UIHWindow() : m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_S
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
+
+   v_expr.property_expanded().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::on_expr_sig_changed));
 }
  
 void UIHWindow::InitUI()
 {
-  m_Frame_MOBO.set_label(_("Mainboard :"));
-  m_Frame_Memory.set_label(_("Memory :"));
   m_Frame_CPU.set_label(_("CPU :"));
   m_Frame_VGA.set_label(_("GPU :"));
-  m_Frame_Monitors.set_label(_("Monitor(s) :"));
-  m_Frame_Audio.set_label(_("Audio :"));
-  m_Frame_Network.set_label(_("Network :"));
   m_Frame_Disks.set_label(_("Disks :"));
-  m_Frame_OS.set_label(_("OS :"));
 
   m_Frame_MOBO.set_margin(4);
   m_Frame_Memory.set_margin(4);

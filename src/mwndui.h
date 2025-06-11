@@ -28,6 +28,8 @@ public:
 protected:
   static post_init_sig sig_postinit_param;
 
+  Gtk::Expander mb_expr,os_expr,mm_expr,mn_expr,au_expr,nt_expr,v_expr;
+
   const Glib::RefPtr<Gio::SimpleAction> item_infomode{add_action_bool("extinfo",sigc::mem_fun(*this,&UIHWindow::enhanced_system_info))},
                                        item_cpu{add_action_bool("cpuactivity",sigc::mem_fun(*this,&UIHWindow::show_cpu_activity_all))},
                                        item_temperature{add_action_bool("tmpmonit",sigc::mem_fun(*this,&UIHWindow::monitor_temperature), false)},
@@ -93,6 +95,7 @@ protected:
   virtual void On_Compare_mode_switch_changed() = 0;
   virtual void On_NativeFq_changed() = 0;
   virtual void on_DA_button_press_event(int npress, double x, double y) = 0;
+  virtual void on_expr_sig_changed() = 0;
 };
 
 #endif // _MWNDUI_H_

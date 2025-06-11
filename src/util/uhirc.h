@@ -40,6 +40,13 @@
 #define LIBCLOSE(lib) if(lib) {dlclose(lib);lib = nullptr;}
 #define RETURN_FALSE LIBCLOSE(libsensh) return false                       
 
+#define INIT_EXPANDERS(flag) mb_expr.set_expanded(flag); \
+                       os_expr.set_expanded(flag); \
+                       mm_expr.set_expanded(flag); \
+                       mn_expr.set_expanded(flag); \
+                       au_expr.set_expanded(flag); \
+                       nt_expr.set_expanded(flag)
+
 #define SET_CUSTOM_LABELS m_Frame_CPUFrecq.set_label_widget(hbox_operation_status_cpu); \
                                 m_Frame_VGA_pcie.set_label_widget(hbox_operation_status_pcie); \
                                       m_Frame_Sensors.set_label_widget(hbox_operation_status_sensors)
@@ -78,7 +85,8 @@
           m_Frame_Network.set_visible(flag); \
           m_Frame_Disks.set_visible(flag); \
           m_Frame_OS.set_visible(flag); \
-          m_Frame_User.set_visible(flag); \
+          m_Frame_User.set_visible(flag & v_expr.get_expanded()); \
+          v_expr.set_visible(flag);      \
           m_BlinkGrid.set_visible(!flag); \
           item_cpu->set_enabled(flag); \
           item_infomode->set_enabled(flag); \
