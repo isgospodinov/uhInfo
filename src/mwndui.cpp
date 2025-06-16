@@ -172,6 +172,8 @@ UIHWindow::UIHWindow() : mb_expr(_("Mainboard :")),os_expr(_("OS :")),mm_expr(_(
   
   INIT_EXPANDERS(true);
   v_expr.set_expanded(true);
+  LOCALCSSPROVWITHSTYLE;
+  uhiutil::set_css_style(v_expr.get_style_context(),lprv,"ep_cls");
 
   signal_show().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_show_handler));
   signal_close_request().connect(sigc::mem_fun(*this, &UIHWindow::Wnd_close_handler),false);
