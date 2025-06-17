@@ -304,12 +304,7 @@ bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
 
-      bool bf = mb_expr.get_expanded() & os_expr.get_expanded() & mm_expr.get_expanded() & mn_expr.get_expanded() & au_expr.get_expanded() & nt_expr.get_expanded();
-      if(bf & !v_expr.get_expanded()) {
-    	  v_expr.set_expanded();
-    	  v_expr.set_label(_(" Detailed - summary - view"));
-    	  if(!m_Frame_User.get_visible()) m_Frame_User.set_visible();
-      }
+      expander_auto_adjust();
 
       bool state{false};
       item_cpu->get_state(state);
@@ -556,6 +551,21 @@ void CHWindow::on_expr_sig_changed()
 
     INIT_EXPANDERS(stat);
     m_Frame_User.set_visible(stat);
+
+    set_default_size(get_width(),get_height()/2); // height autoadjust
+}
+
+inline void CHWindow::expander_auto_adjust()
+{
+	bool mbe = mb_expr.get_expanded(), ose = os_expr.get_expanded(), mme = mm_expr.get_expanded(), mne = mn_expr.get_expanded(),
+			                                                   aue = au_expr.get_expanded(), nte = nt_expr.get_expanded(),ve = v_expr.get_expanded();
+	 if(mbe & ose & mme & mne & aue & nte & !ve) {
+	      v_expr.set_expanded(); // on_expr_sig_changed() catch
+     }
+	 else
+         if(!mbe & !ose & !mme & !mne & !aue & !nte & ve) {
+	    	 v_expr.set_expanded(false); // on_expr_sig_changed() catch
+         }
 }
 
 void CHWindow::On_CPUActivityAll_switch_changed()

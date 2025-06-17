@@ -80,6 +80,7 @@ private:
   virtual void about_dialog_info() override {abtDlg->set_message(get_title());abtDlg->show();}
   virtual void on_DA_button_press_event(int npress, double x, double y) override;
   virtual void on_expr_sig_changed() override;
+  void expander_auto_adjust();
 
   std::list<cpu_chain_el> cpu_units_monit_chain; // cpu units activity vision elements 
 };
