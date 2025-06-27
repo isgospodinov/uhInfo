@@ -9,8 +9,9 @@
 
 post_init_sig UIHWindow::sig_postinit_param;
 
-UIHWindow::UIHWindow() : mb_expr(_("Mainboard :")),os_expr(_("OS :")),mm_expr(_("Memory :")),mn_expr(_("Monitor(s) :")),au_expr(_("Audio :")),nt_expr(_("Network :")),
-		                 v_expr(_(" Detailed - summary - view")),m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
+UIHWindow::UIHWindow() : mb_expr(_("Mainboard :"),uhiExpand::Expanders::MOBO),os_expr(_("OS :"),uhiExpand::Expanders::OS),mm_expr(_("Memory :"),uhiExpand::Expanders::MEM),
+		                   mn_expr(_("Monitor(s) :"),uhiExpand::Expanders::MONIT),au_expr(_("Audio :"),uhiExpand::Expanders::AUDIO),nt_expr(_("Network :"),uhiExpand::Expanders::NETW),
+		                 v_expr(_(" Detailed - summary - view"),uhiExpand::Expanders::MAIN,this),m_ButtCPUOverall(_("Summary")), m_ScrolledWindow(), m_ScrolledWindowTreeView(), m_ScrolledWindowCPUActivityAll(),
                          m_status_bar(_("  Everything at a glance...")), m_TextView(), m_TreeView(m_refTreeModel),
 						 m_temperatureTreeView(ptRefTreeModel), m_Gpus(), m_DAtemperature(this, &mark_stres_session, &UIHWindow::on_DA_button_press_event)
 {
@@ -170,7 +171,7 @@ UIHWindow::UIHWindow() : mb_expr(_("Mainboard :")),os_expr(_("OS :")),mm_expr(_(
   hbox_operation_status_cpu.append(operation_status_image_cpu);
   hbox_operation_status_pcie.append(operation_status_image_pcie);
   
-  INIT_EXPANDERS(true);
+  INIT_EXPANDERS(this,true);
   v_expr.set_expanded(true);
   LOCALCSSPROVWITHSTYLE;
   uhiutil::set_css_style(v_expr.get_style_context(),lprv,"ep_cls");
@@ -187,8 +188,6 @@ UIHWindow::UIHWindow() : mb_expr(_("Mainboard :")),os_expr(_("OS :")),mm_expr(_(
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
-
-   v_expr.property_expanded().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::on_expr_sig_changed));
 }
  
 void UIHWindow::InitUI()

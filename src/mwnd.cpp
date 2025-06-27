@@ -304,8 +304,6 @@ bool CHWindow::uhI_Timer(int TmNo)
 {
       static unsigned int condition = 0;
 
-      expander_auto_adjust();
-
       bool state{false};
       item_cpu->get_state(state);
 
@@ -542,30 +540,6 @@ void CHWindow::OnTempToggled(const Glib::ustring &path_string)
         m_DAtemperature.SetUnsetDrawItem(&dv,ps_max,(*iter)[tColumns->tsensor_node] + (*iter)[tColumns->tsensor_model] + " : " + (*iter)[tColumns->tsensor_name],
         		(*iter)[tColumns->tsensor_node] + ":" + (*iter)[tColumns->tsensor_name] + (*iter)[tColumns->tnode_id] + std::to_string((*iter)[tColumns->tsensor_id]), (*iter)[tColumns->col_tcheck]);
 
-}
-
-void CHWindow::on_expr_sig_changed()
-{
-    bool stat = v_expr.get_expanded();
-    v_expr.set_label((stat ? _(" Detailed - summary - view") : _(" Simplified - summary - view")) );
-
-    INIT_EXPANDERS(stat);
-    m_Frame_User.set_visible(stat);
-
-    set_default_size(get_width(),get_height()/2); // height autoadjust
-}
-
-inline void CHWindow::expander_auto_adjust()
-{
-	bool mbe = mb_expr.get_expanded(), ose = os_expr.get_expanded(), mme = mm_expr.get_expanded(), mne = mn_expr.get_expanded(),
-			                                                   aue = au_expr.get_expanded(), nte = nt_expr.get_expanded(),ve = v_expr.get_expanded();
-	 if(mbe & ose & mme & mne & aue & nte & !ve) {
-	      v_expr.set_expanded(); // on_expr_sig_changed() catch
-     }
-	 else
-         if(!mbe & !ose & !mme & !mne & !aue & !nte & ve) {
-	    	 v_expr.set_expanded(false); // on_expr_sig_changed() catch
-         }
 }
 
 void CHWindow::On_CPUActivityAll_switch_changed()
