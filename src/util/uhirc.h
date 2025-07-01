@@ -40,12 +40,12 @@
 #define LIBCLOSE(lib) if(lib) {dlclose(lib);lib = nullptr;}
 #define RETURN_FALSE LIBCLOSE(libsensh) return false                       
 
-#define INIT_EXPANDERS(w,flag) w->mb_expr.set_expanded(flag); \
-                       w->os_expr.set_expanded(flag); \
-                       w->mm_expr.set_expanded(flag); \
-                       w->mn_expr.set_expanded(flag); \
-                       w->au_expr.set_expanded(flag); \
-                       w->nt_expr.set_expanded(flag)
+#define INIT_EXPANDERS(w,flag) if(w->mb_expr.get_expanded() != flag) w->mb_expr.set_expanded(flag); \
+						       if(w->os_expr.get_expanded() != flag) w->os_expr.set_expanded(flag); \
+                               if(w->mm_expr.get_expanded() != flag) w->mm_expr.set_expanded(flag); \
+                               if(w->mn_expr.get_expanded() != flag) w->mn_expr.set_expanded(flag); \
+                               if(w->au_expr.get_expanded() != flag) w->au_expr.set_expanded(flag); \
+                               if(w->nt_expr.get_expanded() != flag) w->nt_expr.set_expanded(flag)
 
 #define SET_CUSTOM_LABELS m_Frame_CPUFrecq.set_label_widget(hbox_operation_status_cpu); \
                                 m_Frame_VGA_pcie.set_label_widget(hbox_operation_status_pcie); \

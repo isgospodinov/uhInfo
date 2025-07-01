@@ -14,7 +14,7 @@ using unit_calc_el = struct _unit_calc_el;
 
 class UIHWindow : public Gtk::ApplicationWindow
 {
-	friend void uhiExpand::on_expr_state_changed(bool state, Expanders& ind);
+	friend void uhiExpand::on_expr_state_changed(bool state, const Expanders ind);
 public:
   UIHWindow();
   virtual ~UIHWindow() = default;
