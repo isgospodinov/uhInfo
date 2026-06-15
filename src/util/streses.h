@@ -13,7 +13,7 @@ struct StresTestSession{
 	  int cn_startoffset = 0, cn_endoffset = 0;
 	  unsigned int sID = 0;
 
-	  const bool operator == (const StresTestSession s) const {return (cn_startoffset == s.cn_startoffset &&  cn_endoffset == s.cn_endoffset && sID == s.sID);}
+	  const bool operator == (const StresTestSession& s) const {return (cn_startoffset == s.cn_startoffset &&  cn_endoffset == s.cn_endoffset && sID == s.sID);}
 
 	  void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr, double xc, int h) const {
 	      cr->save();

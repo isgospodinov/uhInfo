@@ -9,7 +9,7 @@ OBJS = $(patsubst src/%.cpp,$(BUILD)/%.o,$(wildcard */*.cpp)) \
                             $(patsubst src/dlg/%.cpp,$(BUILD)/%.o,$(wildcard */dlg/*.cpp)) \
 										$(patsubst src/util/%.cpp,$(BUILD)/%.o,$(wildcard */util/*.cpp))
 CMPGO = $(CPP) -c -o $@ $(BFLAGS) $< 
-BFLAGS = `pkg-config --cflags udisks2 gtkmm-4.0` -std=c++17 -Os -Wall# -g
+BFLAGS = `pkg-config --cflags udisks2 gtkmm-4.0` -std=c++20 -Os -Wall# -g
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 ELIBS = -lpthread -ludisks2 -ldl
 DT := $(shell date +%s)

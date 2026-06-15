@@ -23,9 +23,9 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
 
    signal_close_request().connect(sigc::mem_fun(*this, &CPrefsDlg::Wnd_close_handler),false);
    cb_MaxTmp.signal_changed().connect(sigc::mem_fun(*this,&CPrefsDlg::on_MaxTmp_changed));
-   ch_NativeFq.signal_toggled().connect([=](){uhiutil::cpu::native_fq_state = ch_NativeFq.get_active();});
-   ch_lscpu_cpuinfo.signal_toggled().connect([=](){uhiutil::cpu::cpu_fq_base = ch_lscpu_cpuinfo.get_active();});
-   ch_Marck_Stress_Session.signal_toggled().connect([=](){uhiutil::draw::marck_strses = ch_Marck_Stress_Session.get_active();});
+   ch_NativeFq.signal_toggled().connect([=, this](){uhiutil::cpu::native_fq_state = ch_NativeFq.get_active();});
+   ch_lscpu_cpuinfo.signal_toggled().connect([=, this](){uhiutil::cpu::cpu_fq_base = ch_lscpu_cpuinfo.get_active();});
+   ch_Marck_Stress_Session.signal_toggled().connect([=, this](){uhiutil::draw::marck_strses = ch_Marck_Stress_Session.get_active();});
    uhiutil::set_css_style(get_style_context(),*cp);
 
    SETLOCALDECORATION;

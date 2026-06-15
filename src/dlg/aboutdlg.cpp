@@ -10,7 +10,15 @@
 CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),lB("http://www.uhinfo.free.bg/",_("Go to uhInfo website")),
                        lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),m_label("     ")
 {
-	Glib::RefPtr<Gdk::Pixbuf> uhi_img = Gdk::Pixbuf::create_from_xpm_data(uhilogo);
+	Glib::RefPtr<Gdk::Pixbuf> uhi_img = nullptr;
+
+	try {
+		uhi_img = Gdk::Pixbuf::create_from_xpm_data(uhilogo);
+	}
+    catch (...) {
+        uhi_img = nullptr;
+    }
+
 	Gtk::Image *m_Image = Gtk::make_managed<Gtk::Image>();
 
     if(!uhi_img) {
@@ -25,19 +33,19 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
     }
 
     if(uhi_img) {
-        m_Image->set(uhi_img);
-    	m_Image->set_size_request(uhi_img->get_height(),uhi_img->get_width());
+        m_Image->set( uhi_img->scale_simple(uhi_img->get_width(), uhi_img->get_height(), Gdk::InterpType::BILINEAR));
+        m_Image->set_size_request(uhi_img->get_width(), uhi_img->get_height());
+        m_Image->set_pixel_size(uhi_img->get_height());
     }
 	else {
         m_Image->set_from_icon_name("dialog-information");
         m_Image->set_icon_size(Gtk::IconSize::LARGE);
 	}
 
-    m_CGrid.attach(*m_Image,0, 2, 1, 1);
-
 	uhiutil::set_css_style(get_style_context(),*cp);
 	set_transient_for(*p_mWnd);
 	InitVision();
+	m_CGrid.attach(*m_Image,0, 2, 1, 1);
 }
 
 void CAboutDlg::InitVision()

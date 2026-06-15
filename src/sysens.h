@@ -37,7 +37,7 @@ using Chip_node = struct _Chip_node {
       std::string chip_id = "",model = "",adapter_name = "";
       std::list<Sensor_node> sensors;
       bool get_node_print_status() const {return (inactive_sensors_number == sensors.size());}
-      bool operator < (const _Chip_node cpnd) {return (chip_name.cnip_prefix < cpnd.chip_name.cnip_prefix);}
+      std::strong_ordering operator <=> (const _Chip_node& cpnd) const { return chip_name.cnip_prefix <=> cpnd.chip_name.cnip_prefix; }
       void EraseStatistics(){for(std::list<Sensor_node>::iterator sn =  sensors.begin(); sn != sensors.end(); sn++) {sn->EraseStatistic();}}
 };
 

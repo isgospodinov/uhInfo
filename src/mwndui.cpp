@@ -184,7 +184,7 @@ UIHWindow::UIHWindow() : mb_expr(_("Mainboard :"),uhiExpand::Expanders::MOBO),os
   m_Gpus.signal_changed().connect(sigc::mem_fun(*this,&UIHWindow::on_gpus_selection_changed));
   m_CPUModeSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_CPUActivityAll_switch_changed));
   m_CPUCompareSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_Compare_mode_switch_changed));
-  m_MoreInfoSwitch.property_active().signal_changed().connect([=](){uhiutil::draw::more_info = m_MoreInfoSwitch.get_active();});
+  m_MoreInfoSwitch.property_active().signal_changed().connect([=, this](){uhiutil::draw::more_info = m_MoreInfoSwitch.get_active();});
   m_CPUNativeFqSwitch.property_active().signal_changed().connect(sigc::mem_fun(*this, &UIHWindow::On_NativeFq_changed));
 
    add_action("about", sigc::mem_fun(*this,&UIHWindow::about_dialog_info));
