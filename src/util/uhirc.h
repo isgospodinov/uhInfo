@@ -14,6 +14,13 @@
 #define MB1 1048576
 #define GB1 1073741824
 
+#define HTTPS_PORT  443
+#define GH_R_BUFF_SZ 4096
+
+#define GITHUB_HOST "api.github.com"
+#define APP_VER "Application version : 0.27"
+#define LAST_VER "Latest version"
+
 #define CPUMNGBTNSTATE(btn,...) if(std::string(#__VA_ARGS__).empty())  btn.set_sensitive(false); else \
                                      if(pntProcessor->m_CpuAltCalc && !btn.get_sensitive() \
                                                      && !pntProcessor->m_ClearCalcData) btn.set_sensitive(true)
