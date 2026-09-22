@@ -1,5 +1,6 @@
 /*
  *    uhInfo
+ *    Changes in GUI dynamic layout resizing for Detailed/Simplified summary views - 21-09-2026
  *    Copyright (C) 2025
  */
 

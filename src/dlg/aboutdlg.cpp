@@ -9,39 +9,47 @@
 #include <thread>
 //#include <iostream>
 
-CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),vB(_(LAST_VER " check")),lB("http://www.uhinfo.free.bg/",_("Go to uhInfo website")),
+constexpr int UHILOGO_WIDTH = 70, UHILOGO_HEIGHT = 70;
+
+CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),vB(_(LAST_VER " check")),lB("https://uhinfo.free.bg",_("Go to uhInfo website")),
                        lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),m_label("     ")
 {
-	Glib::RefPtr<Gdk::Pixbuf> uhi_img = nullptr;
+	Gtk::Picture *m_Image = Gtk::make_managed<Gtk::Picture>();
+	Glib::RefPtr<Gdk::Texture> uhi_texture = nullptr;
 
 	try {
-		uhi_img = Gdk::Pixbuf::create_from_xpm_data(uhilogo);
+		Glib::RefPtr<Glib::Bytes> image_bytes = Glib::Bytes::create(uhilogo_png, sizeof(uhilogo_png));
+		uhi_texture = Gdk::Texture::create_from_bytes(image_bytes);
 	}
-    catch (...) {
-        uhi_img = nullptr;
-    }
+	catch (...) {
+		uhi_texture = nullptr;
+	}
 
-	Gtk::Image *m_Image = Gtk::make_managed<Gtk::Image>();
-
-    if(!uhi_img) {
-    	std::string line("");
-    	std::istringstream lstrm{"/usr/local/share/icons/uhI.png\ndata/uhI.png\n../data/uhI.png\nuhI.png"};
-    	while(std::getline(lstrm, line)) {
-    		if(uhiutil::ExistenceVerification(line.c_str())) {
-    			uhi_img = Gdk::Pixbuf::create_from_file(line);
-    			break;
-    		}
-    	}
-    }
-
-    if(uhi_img) {
-        m_Image->set( uhi_img->scale_simple(uhi_img->get_width(), uhi_img->get_height(), Gdk::InterpType::BILINEAR));
-        m_Image->set_size_request(uhi_img->get_width(), uhi_img->get_height());
-        m_Image->set_pixel_size(uhi_img->get_height());
-    }
+	if(uhi_texture) {
+		m_Image->set_paintable(uhi_texture);
+		m_Image->set_keep_aspect_ratio(true);
+		m_Image->set_size_request(uhi_texture->get_width(), uhi_texture->get_height());
+		m_Image->set_halign(Gtk::Align::CENTER);
+		m_Image->set_valign(Gtk::Align::CENTER);
+	}
 	else {
-        m_Image->set_from_icon_name("dialog-information");
-        m_Image->set_icon_size(Gtk::IconSize::LARGE);
+			try {
+				Glib::RefPtr<Gtk::IconTheme> icon_theme = Gtk::IconTheme::get_for_display(Gdk::Display::get_default());
+
+				Glib::RefPtr<Gdk::Paintable> icon_paintable = icon_theme->lookup_icon("dialog-information", {}, 64, 1, Gtk::TextDirection::NONE, {});
+
+				if (icon_paintable) {
+					m_Image->set_paintable(icon_paintable);
+				}
+			}
+			catch (...) {
+				// Final protective layer in case the system theme is missing
+			}
+
+			m_Image->set_keep_aspect_ratio(true);
+			m_Image->set_size_request(UHILOGO_WIDTH, UHILOGO_HEIGHT);
+			m_Image->set_halign(Gtk::Align::CENTER);
+			m_Image->set_valign(Gtk::Align::CENTER);
 	}
 
 	uhiutil::set_css_style(get_style_context(),*cp);

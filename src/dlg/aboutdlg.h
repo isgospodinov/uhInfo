@@ -2,6 +2,7 @@
  *    uhInfo
  *    Copyright (C) 2021
  *    Implement latest version check in the About dialog - 17-9-2026
+ *    Eliminate external runtime dependencies by embedding the logo resource 21-09-2026
  */
 
 #ifndef _ABOUTDLG_H_

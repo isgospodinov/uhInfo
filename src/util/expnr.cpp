@@ -7,25 +7,40 @@
 #include "../mwnd.h"
 
 UIHWindow *uhiExpand::p_mWnd = nullptr;
+constexpr int TM_DELAY = 250;
 
 void uhiExpand::on_expr_state_changed(const bool state, const Expanders ind)
 {
+    if(!p_mWnd) return;
 
     switch(ind)
     {
-          case Expanders::MOBO ... Expanders::NETW  : {
-    	                     if(p_mWnd && !state) p_mWnd->set_default_size(p_mWnd->get_width(),p_mWnd->get_height()/2); // height autoadjust
+          case Expanders::MOBO ... Expanders::NETW  :
+          case Expanders::MAIN : {
+							 int curr_disks_h = p_mWnd->m_Frame_Disks.get_allocated_height();
+							 p_mWnd->m_Frame_Disks.set_size_request(-1, curr_disks_h);
+
+							 if(ind == Expanders::MAIN) {
+								  set_label((state ? _(" Detailed - summary - view") : _(" Simplified - summary - view")) );
+								  INIT_EXPANDERS(p_mWnd,state);
+							 }
+							 else
+								 if(!state) p_mWnd->set_default_size(p_mWnd->get_width(), p_mWnd->get_height()/2);
+
+							 p_mWnd->m_Frame_Disks.queue_resize();
+
+							 /* Glib::signal_idle().connect_once([w = p_mWnd]() {
+							                                      if (w) w->m_Frame_Disks.set_size_request(-1, -1);
+							                                  }); */
+
+							 Glib::signal_timeout().connect_once([w = p_mWnd]() {
+										if (w) w->m_Frame_Disks.set_size_request(-1, -1); }, TM_DELAY);
+
                              break;
           }
           case Expanders::OS  : {
-        		             if(p_mWnd) p_mWnd->m_Frame_User.set_visible(state);
-        	                 break;
-
-          }
-          case Expanders::MAIN : {
-        	                 set_label((state ? _(" Detailed - summary - view") : _(" Simplified - summary - view")) );
-        	                 INIT_EXPANDERS(p_mWnd,state);
-        	                 break;
+                             if(p_mWnd) p_mWnd->m_Frame_User.set_visible(state);
+                             break;
           }
           default: break;
     }
