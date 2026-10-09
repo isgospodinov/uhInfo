@@ -8,9 +8,10 @@
 #include "../ud2mon.h"
 #include "../mwnd.h"
 #include <glibmm/i18n.h>
+
 using uhiutil::cpu::UhiDownCast;
 
-CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp) : UhiDlgWnd(p_wnd),
+CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, fp_DlgResp fp) : UhiDlgWnd(p_wnd),
                      pSensors(&pS),pUd2mon(&pUd2)
 {
 	set_transient_for(*p_wnd);
@@ -35,7 +36,6 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
    treeView.append_column(_("Node"), vColumns->tsensor_node);
    treeView.append_column(_("Sensor"), vColumns->tsensor_name);
 
-
    Gtk::CellRendererToggle* pRenderer = nullptr;
    Gtk::TreeViewColumn* pColumn = treeView.get_column(0);
 
@@ -47,8 +47,6 @@ CSmDialog::CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const G
 
    signal_hide().connect(sigc::bind(sigc::mem_fun((CHWindow&)*p_wnd, fp),false));
    signal_close_request().connect([&]()->bool{hide();return true;},false);
-
-   uhiutil::set_css_style(get_style_context(),*cp);
 
    SETLOCALDECORATION;
 }

@@ -16,7 +16,7 @@ class CSmDialog : public UhiDlgWnd
 {
    using fp_DlgResp = void (CHWindow::*)(bool);
 public:
-   CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, const Glib::RefPtr<Gtk::CssProvider> *const cp,fp_DlgResp fp);
+   CSmDialog(Gtk::Window *const p_wnd,CSysens &pS, Ud2mon &pUd2, fp_DlgResp fp);
    virtual ~CSmDialog() = default;
    
    int dh = 0, dw = 0;

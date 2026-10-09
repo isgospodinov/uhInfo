@@ -13,7 +13,7 @@
 class CpuStatDlg : public UhiDlgWnd
 {
 public:
-	CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,const std::unique_ptr<CProcUnits> *const pCpu);
+	CpuStatDlg(Gtk::Window *const pMWnd, const std::unique_ptr<CProcUnits> *const pCpu);
 	virtual ~CpuStatDlg() = default;
 
 	using WrcMode = enum class WmDlg{CPUOVLDLG,TEMPRTDLG};

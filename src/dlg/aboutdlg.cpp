@@ -7,11 +7,11 @@
 #include "../util/uhirc2.h"
 #include <glibmm/i18n.h>
 #include <thread>
-//#include <iostream>
+// #include <iostream>
 
 constexpr int UHILOGO_WIDTH = 70, UHILOGO_HEIGHT = 70;
 
-CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : nB(_("Close")),vB(_(LAST_VER " check")),lB("https://uhinfo.free.bg",_("Go to uhInfo website")),
+CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd) : nB(_("Close")),vB(_(LAST_VER " check")),lB("https://uhinfo.free.bg",_("Go to uhInfo website")),
                        lbGH("https://github.com/isgospodinov/uhInfo",_("uhInfo on GitHub")),m_copyright(_("Copyright") + std::string("©") + _("Ivailo Gospodinov")),m_label("     ")
 {
 	Gtk::Picture *m_Image = Gtk::make_managed<Gtk::Picture>();
@@ -35,15 +35,13 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
 	else {
 			try {
 				Glib::RefPtr<Gtk::IconTheme> icon_theme = Gtk::IconTheme::get_for_display(Gdk::Display::get_default());
-
 				Glib::RefPtr<Gdk::Paintable> icon_paintable = icon_theme->lookup_icon("dialog-information", {}, 64, 1, Gtk::TextDirection::NONE, {});
-
 				if (icon_paintable) {
 					m_Image->set_paintable(icon_paintable);
 				}
 			}
 			catch (...) {
-				// Final protective layer in case the system theme is missing
+				// Final protective layer(in case the system theme is missing)
 			}
 
 			m_Image->set_keep_aspect_ratio(true);
@@ -52,9 +50,7 @@ CAboutDlg::CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvid
 			m_Image->set_valign(Gtk::Align::CENTER);
 	}
 
-	uhiutil::set_css_style(get_style_context(),*cp);
 	set_transient_for(*p_mWnd);
-
 	vB.signal_clicked().connect(sigc::mem_fun(*this, &CAboutDlg::on_nv_check));
 
 	InitVision();
@@ -74,7 +70,7 @@ void CAboutDlg::InitVision()
      set_child(*m_FrAll);
      m_FrAll->set_child(*m_BoxAll);
 
-     LOCALCSSPROVWITHSTYLE;
+     SETLOCALDECORATION;
 
      vB.set_margin_start(4);
 	 vB.set_margin_end(4);
@@ -106,8 +102,8 @@ void CAboutDlg::InitVision()
      m_AGrid.attach(lB, 0, 1, 1, 1);
      m_AGrid.attach(nB, 1, 1, 1, 1);
 
-     uhiutil::set_css_style(m_Title.get_style_context(),lprv,"als_cls");
-     uhiutil::set_css_style(lBver.get_style_context(),lprv,"afu_cls");
+     m_Title.add_css_class("als_cls");
+     lBver.add_css_class("afu_cls");
 
      nB.signal_clicked().connect([&](){hide();});
 }
@@ -212,7 +208,7 @@ void CAboutDlg::on_nv_check()
 	    }
 	    catch (const Glib::Error& ex) {
 	    	  if (!cancellable->is_cancelled()) {
-	    	    //std::cerr << "Net error across HTTPS: " << ex.what() << std::endl;
+	    	    // std::cerr << "Net error across HTTPS: " << ex.what() << std::endl;
 	    	    Glib::signal_idle().connect([this, cancellable]() {
 	    	      if (!cancellable->is_cancelled()) {
 	    	    	this->lBver.set_text(_(APP_VER "\nNo internet connection!") + std::string("\n         Gtkmm : v.") + GTKMM_VERSION);

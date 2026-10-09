@@ -3,9 +3,10 @@
  *    Copyright (C) 2023
  */
 
+#include "tcpustat.h"
 #include "../mwnd.h"
 
-CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv,const std::unique_ptr<CProcUnits> *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
+CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd, const std::unique_ptr<CProcUnits> *const pCpu) : UhiDlgWnd(pMWnd),lc_TextView(),
                         lpCPU(pCpu),fqmax((*lpCPU)->Get_PtrCpu_fqmax()),
 						local_CpuInTempr((*lpCPU)->GetCpuFqAvg(),fqmax,pMWnd)
 {
@@ -26,7 +27,7 @@ CpuStatDlg::CpuStatDlg(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvi
     box_allWnd.append(lfr_Tb);
     box_allWnd.append(lcpuDrAr);
     box_allWnd.append(scrollWindow);
-    uhiutil::set_css_style(get_style_context(),*cProv);
+
     lc_TextView.get_buffer()->create_tag(tag_attention)->property_foreground() = "red";
 
     mCPU_Stat_ToolBar.append(l_InfoLabel);
@@ -53,11 +54,10 @@ void CpuStatDlg::InitVision()
 {
 	for(const char *const el : {_("weak"),_("average"),_("strong"),_("heavy")}) cb_WrnLevel.append(el);
 
-	LOCALCSSPROVWITHSTYLE;
-	uhiutil::set_css_style(lc_TextView.get_style_context(),lprv,"toolbar");
-	uhiutil::set_css_style(lfr_Tb.get_style_context(),lprv,"toolbar");
-	uhiutil::set_css_style(cb_WrnLevel.get_child()->get_style_context(),lprv,"tb_cls");
-	uhiutil::set_css_style(lcpuDrAr.get_style_context(),lprv,"toolbar");
+	lc_TextView.add_css_class("toolbar");
+	lfr_Tb.add_css_class("toolbar");
+	cb_WrnLevel.get_child()->add_css_class("tb_cls");
+	lcpuDrAr.add_css_class("toolbar");
 
 	box_allWnd.set_orientation(Gtk::Orientation::VERTICAL);
 	l_CPULoad.set_orientation(Gtk::Orientation::VERTICAL);
@@ -75,7 +75,7 @@ void CpuStatDlg::InitVision()
 	lcpuDrAr.set_margin_end(4);
 	lfr_VCativ.set_margin_top(4);
 
-    lc_TextView.property_justification() = Gtk::Justification::CENTER;
+    lc_TextView.set_justification(Gtk::Justification::CENTER);
     scrollWindow.set_margin(4);
     scrollWindow.set_expand();
     lc_TextView.set_can_target(false);

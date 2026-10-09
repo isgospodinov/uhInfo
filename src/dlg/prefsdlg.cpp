@@ -7,7 +7,7 @@
 #include "../proc.h"
 #include <glibmm/i18n.h>
 
-CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp) : ch_InTmpMon(_("HDD/SSD in ") + std::string("t°") + _(" monitor")),
+CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd) : ch_InTmpMon(_("HDD/SSD in ") + std::string("t°") + _(" monitor")),
                      ch_SaveImp(_("Improve sensors behavior")),ch_NativeFq(_("Native CPU frequency")),ch_lscpu_cpuinfo(_("lscpu instead cuinfo")),
 					                           ch_Marck_Stress_Session(_("Marck a stress session")),l_MaxTemp(_("Set max. ") + std::string("t°    "))
 {
@@ -26,7 +26,6 @@ CPrefsDlg::CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider
    ch_NativeFq.signal_toggled().connect([=, this](){uhiutil::cpu::native_fq_state = ch_NativeFq.get_active();});
    ch_lscpu_cpuinfo.signal_toggled().connect([=, this](){uhiutil::cpu::cpu_fq_base = ch_lscpu_cpuinfo.get_active();});
    ch_Marck_Stress_Session.signal_toggled().connect([=, this](){uhiutil::draw::marck_strses = ch_Marck_Stress_Session.get_active();});
-   uhiutil::set_css_style(get_style_context(),*cp);
 
    SETLOCALDECORATION;
 }

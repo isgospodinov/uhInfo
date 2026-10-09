@@ -9,27 +9,29 @@ To get a general visual idea,see the repository's wiki page.
 To use this application,you only need to have GTKMM 4.0(with dependencies) installed.
 ---------------------------------------------------------------------------------
 To BUILD it :
- 1) GNOME 41 desktop environment or higher with gtkmm-4.0 >= 4.4.0
- - We assume bash is set as the default shell,make & g++(c++ 20 compliant compiler) are already installed
- - Installing the development files.Taking Fedora as an example you will need to install :
-          gtkmm4.0-devel    >= 4.4.0
-          libudisks2-devel  >= 2.7.6
-          lm_sensors-devel  >= 3.4.0
-
+ 1) GNOME 41 desktop environment or higher
+ - We assume bash is set as the default shell, and make, g++ (c++ 20 compliant compiler) are already installed,
+   as well as standard core utilities (awk, grep, cut, etc.)
+ - To compile the project on different distributions, you need to install the development files for :
+          gtkmm4.0     >= 4.4.0
+          libudisks2   >= 2.7.6
+          lm_sensors   >= 3.4.0
+          as well as gettext and pkgconf
+          
 Examples on these OSs :
  - Fedora Linux : sudo dnf install gtkmm4.0-devel lm_sensors-devel libudisks2-devel
  - Ubuntu : sudo apt-get install libgtkmm-4.0-dev libsensors-dev libudisks2-dev gettext libglib2.0-dev pkgconf
  - openSUSE (Tumbleweed) : sudo zypper install gtkmm4-devel libudisks2-0-devel libsensors4-devel gettext-tools
 
- 2) Finaly jast run 'make' in 'uhInfo' directory.
+ 2) Finally just run 'make' in 'uhInfo' directory.
 
  3) To SET UP,DELETE,Get HELP
    - To clean up type 'make clean'
    - To install run "sudo make install"
-   - or to unininstal jast run "sudo make uninstall"
+   - or to uninstall just run "sudo make uninstall"
    - For help type 'make help'
 ---------------------------------------------------------------------------------
-Installation on lm_sensors(lm-sensors) package is Strongly Recommended!
+Installation of lm_sensors(lm-sensors) package is Strongly Recommended!
 ---------------------------------------------------------------------------------
 
 
@@ -57,6 +59,6 @@ So if necessary :
 - openSUSE (Tumbleweed) : sudo zypper install gtkmm3-devel libudisks2-0-devel libsensors4-devel
 
  - To install run "sudo make install" (Mageia (7 beta 2) : su -c 'make install')
- - or to unininstal jast run "sudo make uninstall" (Mageia (7 beta 2) : su -c 'make uninstall')
+ - or to unininstal just run "sudo make uninstall" (Mageia (7 beta 2) : su -c 'make uninstall')
  - For help type 'make help'
  - To cleaning up 'make clean'

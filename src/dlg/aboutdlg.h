@@ -14,7 +14,7 @@
 class CAboutDlg : public Gtk::Window
 {
 public:
-   CAboutDlg(Gtk::Window *const p_mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp);
+   CAboutDlg(Gtk::Window *const p_mWnd);
    void set_message (std::string msg){m_Title.set_text(_("About...") + std::string("\n") + msg);}
 
 private:

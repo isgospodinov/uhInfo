@@ -3,10 +3,11 @@
  *    Copyright (C) 2022
  */
 
+#include "clrdialog.h"
 #include "../mwnd.h"
 #include <glibmm/i18n.h>
 
-ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv) : UhiDlgWnd(pMWnd)
+ClrDialog::ClrDialog(Gtk::Window *const pMWnd) : UhiDlgWnd(pMWnd)
 {
    set_transient_for(*pMWnd);
    set_title(_("Color choice"));
@@ -31,16 +32,13 @@ ClrDialog::ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvide
    InitVision();
 
    treeView.signal_row_activated().connect(sigc::mem_fun(*this, &ClrDialog::OnColorChoiceToggled));
-
    signal_close_request().connect(sigc::mem_fun(*this, &ClrDialog::Wnd_close_handler),false);
-
-   uhiutil::set_css_style(get_style_context(),*cProv);
 
    treeView.set_activate_on_single_click();
    treeView.property_enable_grid_lines() = true;
 
    SETLOCALDECORATION;
-   uhiutil::set_css_style(l_chSeName.get_style_context(),lprv,"ctext_cls");
+   l_chSeName.add_css_class("ctext_cls"); // The modern GTK4 way
 }
 
 bool ClrDialog::Wnd_close_handler()

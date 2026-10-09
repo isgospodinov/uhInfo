@@ -244,8 +244,10 @@ void CDrArTempr::DrawStrings(const Cairo::RefPtr<Cairo::Context>& cr,std::string
 	       }
 
            triangle.drawing_request(cr);
-
-           tpoint = {(int)(w / 2), (int)(((height * dtxt) + draw::dofset) + 8), tpoint.dr, tpoint.pIDs}; //tpoint = {(int) (w - (draw::xoffset / 4 + (draw::dofset))), (int)((draw::xoffset / 2 + (draw::dofset)) + 19), tpoint.dr,tpoint.pIDs};
+           
+           tpoint.cx = (int)(w / 2);
+           tpoint.cy = (int)(((height * dtxt) + draw::dofset) + 8);
+           
            tpoint.drawing_request(cr);
 	  }
 }

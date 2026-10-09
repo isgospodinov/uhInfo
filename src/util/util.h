@@ -1,5 +1,6 @@
 /*
  *    uhInfo
+ *    Modern CSS architecture – GTK3 to GTK4 GUI refactoring - 24-09-2026
  *    Copyright (C) 2018
  */
 
@@ -21,20 +22,6 @@ namespace uhiutil {
    bool ExistenceVerification(const char *path);
    bool newline(std::string &in_line,const char* in_find,Direction drct);
    std::string GetUserName();
-
-   inline void set_css_style(const Glib::RefPtr<Gtk::StyleContext> &dsc,const Glib::RefPtr<Gtk::CssProvider> &dsp,const char* const style = nullptr,const Glib::RefPtr< Pango::Context> dpc = nullptr) {
-	   dsc->add_provider(dsp, GTK_STYLE_PROVIDER_PRIORITY_USER);
-	   if(style) dsc->add_class(style);
-       if(dpc) {
-	      Pango::FontDescription font_desc = dpc->get_font_description();
-	      Glib::ustring font_family = font_desc.get_family();
-	      font_desc.set_size(10 * PANGO_SCALE);
-	      int font_size = font_desc.get_size();
-	      const std::string css = "* {\n" +     (font_family.empty() ? "" : "    font-family: " + font_desc.get_family() + ";\n") +
-	        (font_size == 0 ? "" : "    font-size: " + std::to_string(font_size / PANGO_SCALE) + "pt;\n") + "}";
-	      dsp->load_from_data(css);
-       }
-   }
 
    const unsigned int timer_interval = 1500;
    const unsigned int timer_id = 0;
@@ -107,63 +94,28 @@ const char *const Libs[] = {
 };
 
 const char *const clrID[] = { 
-//Alice Blue",
-  "Aqua",
-  "Yellow",
-  "Blue",
-  "Green",
-  "Red",
-  "Cadet Blue",
-  "Dark Sea Green",
-  "Gold",
-  "Indigo",
-  "Dodger Blue",
-  "Purple",
-  "Cyan",
-  "Black",
-  "Light Blue",
-//  "White",
-  "Light Goldenrod Yellow",
-  "Lawn Green",
-  "Dark Blue",
-  "Light Sky Blue",
-  "Dark Goldenrod",
-  "Red4",
-  "Dark Gray",
-  "Aquamarine",
-  "Dark Green",
-  "Dark Khaki",
-  "Dark Magenta",
-  "Dark Olive Green",
-  "Azure",
-  "Beige",
-  "Bisque",
-  "Blanched Almond",
-  "Blue Violet",
-  "Hot Pink",
-  "Brown",
-  "Burlywood",
-  "Coral",
-  "Plum",
-  "Blue4",
-  "Dark Orange",
-  "Dark Orchid",
-  "Dark Salmon",
-  "Blue1",
-  "Yellow Green"
+  "Aqua", "Yellow", "Blue", "Green", "Red", "Cadet Blue", "Dark Sea Green",
+  "Gold", "Indigo", "Dodger Blue", "Purple", "Cyan", "Black", "Light Blue",
+  "Light Goldenrod Yellow", "Lawn Green", "Dark Blue", "Light Sky Blue",
+  "Dark Goldenrod", "Red4", "Dark Gray", "Aquamarine", "Dark Green",
+  "Dark Khaki", "Dark Magenta", "Dark Olive Green", "Azure", "Beige",
+  "Bisque", "Blanched Almond", "Blue Violet", "Hot Pink", "Brown",
+  "Burlywood", "Coral", "Plum", "Blue4", "Dark Orange", "Dark Orchid",
+  "Dark Salmon", "Blue1", "Yellow Green"
 };
 
-const std::string style = {".bl_cls {background: #00BFFF; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
-	      ".gn_cls {background: #66CCAA; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
-	      ".yw_cls {background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px;}" \
-	      ".ls_cls {background: #778899; color: #000000; }" \
-	      ".fu_cls {color: #000000; }" \
-		  ".afu_cls {color: #000000; font-style: italic;}" \
-		  ".ep_cls {color: #1F5AC9; font-weight: bold;font-style: italic;}" \
-		  ".tb_cls {color: #FFFFFF;}" \
-		  ".ctext_cls {background: #778899; color: #FFFFFF; border-style: solid; border-color: black; border-width: 1px;}" \
-		  ".als_cls {color: #000000; font-weight: bold; font-size: 16px;}" \
-		  ".toolbar {background: #778899; color: #FFFFFF;}"  \
-          ".hb_cls {min-height: 32px;}" };
+const std::string hui_style = {
+          ".bl_cls { background: #00BFFF; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px; }\n"
+          ".gn_cls { background: #66CCAA; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px; }\n"
+          ".yw_cls { background: #E5CC66; color: #FFFFFF; margin: 1px; border-style: solid; border-color: black; border-width: 1px; }\n"
+          ".ls_cls { background: #778899; color: #000000; }\n"
+          ".fu_cls { color: #000000; }\n"
+          ".afu_cls { color: #000000; font-style: italic; }\n"
+          ".ep_cls { color: #1F5AC9; font-weight: bold; font-style: italic; }\n"
+          ".tb_cls { color: #FFFFFF; }\n"
+          ".ctext_cls { background: #778899; color: #FFFFFF; border-style: solid; border-color: black; border-width: 1px; }\n"
+          ".als_cls { color: #000000; font-weight: bold; font-size: 16px; }\n"
+          ".toolbar { background: #778899; color: #FFFFFF; }\n"
+          ".hb_cls { min-height: 32px; }\n" };
 
 #endif // _UTIL_H_

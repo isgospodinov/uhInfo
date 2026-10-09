@@ -25,6 +25,8 @@ void CGpus::Gpus_Info_Init()
                         uhiutil::newline(device,"Display controller:",Direction::LEFT);
               else continue;
           
+          if(uhiutil::newline(line,"Advanced Micro Devices, Inc. [AMD/ATI]",Direction::RIGHT)) line = ("AMD " +  line);
+
           uhiutil::newline((adapter.adapter_name = line),"(rev",Direction::LEFT);
           adapter.adapter_link = "/sys/bus/pci/devices/" + device;
 

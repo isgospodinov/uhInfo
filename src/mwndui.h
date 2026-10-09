@@ -1,5 +1,6 @@
 /*
  *    uhInfo
+ *    Modern CSS architecture – GTK3 to GTK4 GUI refactoring - 24-09-2026
  *    Copyright (C) 2020
  */
 

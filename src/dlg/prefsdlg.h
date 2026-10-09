@@ -11,7 +11,7 @@
 class CPrefsDlg : public Gtk::Window
 {
 public:
-   CPrefsDlg(Gtk::Window *const mWnd,const Glib::RefPtr<Gtk::CssProvider> *const cp);
+   CPrefsDlg(Gtk::Window *const mWnd);
    virtual ~CPrefsDlg() = default;
 
    const bool GetInTmpMonStat() const {return ch_InTmpMon.get_active();}

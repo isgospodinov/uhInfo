@@ -12,7 +12,7 @@ CMPGO = $(CPP) -c -o $@ $(BFLAGS) $<
 BFLAGS = `pkg-config --cflags udisks2 gtkmm-4.0` -std=c++20 -Os -Wall# -g
 GTKMMLIBS = `pkg-config --libs gtkmm-4.0`
 ELIBS = -lpthread -ludisks2 -ldl
-DT := $(shell date +%s)
+DT := $(shell date +%s.%N)
 
 $(BUILD)/%.o:*/%.cpp ; $(CMPGO)
 $(BUILD)/%.o:*/*/%.cpp ; $(CMPGO)
@@ -22,7 +22,7 @@ $(BUILD)/%.o:*/*/%.cpp ; $(CMPGO)
 all: bldaf	
 
 cmsg: potf
-	@echo '$(shell printf "** Build time : %ds **" $(shell expr $(shell date +%s) - $(DT)))'
+	@echo "** Build time : "$$(echo "$$(date +%s.%N) $(DT)" | awk '{printf "%.2f", $$1 - $$2}')" sec **"
 	
 bldst: bldbf
 	@$(MAKE) --no-print-directory --jobs $(shell nproc) bldrl

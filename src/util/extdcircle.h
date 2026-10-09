@@ -1,5 +1,6 @@
 /*
  *    uhInfo
+ *    Stress Test – Elimination of external Shell dependencies - 22-09-2026
  *    Copyright (C) 2023
  */
 
@@ -7,19 +8,36 @@
 #define _EXTDCIRCLE_H_
 
 #include "circle.h"
+#include <thread>
+#include <vector>
+#include <cmath>
 
 struct ExtdPoint : Point
 {
     bool StartStresTest(std::list<StresTestSession> &sts, std::string st, double &x, double &y) {
     	if(CheckingDotMatch(x, y, uhiutil::draw::tp_radius)) {
             if(!dr) {
-	            for(int i = std::atoi((uhiutil::execmd("nproc")).c_str()) ; i > 0 ; i--) {
-                    pIDs.push_back(std::atoi((uhiutil::execmd("while : ; do : ; done > /dev/null & echo $!")).c_str()));
-	            }
+                dr = true;
+                sts.push_back({st, "", 0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
 
-	            dr = true;
+                //Get the number of native hardware threads using C++
+                unsigned int num_cores = std::thread::hardware_concurrency();
+                if(num_cores == 0){
+                	sts.pop_back();
+                    StopStresTest();
+                    return false;
+                }
 
-	            sts.push_back({st, "", 0, 0, (sts.empty() ? 1 : sts.back().sID + 1)});
+                // Launch native C++20 jthreads that heavily load the CPU cores
+                for(unsigned int i = 0; i < num_cores; ++i) {
+                    m_threads.push_back(std::jthread([](std::stop_token stop_token) {
+                        volatile double d = 1234.56;
+                        // Execute heavy trigonometry until a stop signal is requested
+                        while(!stop_token.stop_requested()) {
+                            d = std::sin(d) * std::cos(d);
+                        }
+                    }));
+                }
             }
             else {
             	sts.back().stoptime = st;
@@ -34,15 +52,12 @@ struct ExtdPoint : Point
     }
 
     void StopStresTest() {
-       if(!pIDs.empty()) {
-    		for(std::list<int>::iterator it = pIDs.begin(); it != pIDs.end();) {
-                uhiutil::execmd(("kill " + std::to_string(*it)).c_str());
-                it = pIDs.erase(it);
-    		}
-
-           if(dr)
-               dr = false;
-       }
+        //Clearing the std::jthread vector automatically signals
+        //a stop request and joins the threads
+        m_threads.clear();
+        
+        if(dr)
+            dr = false;
     }
 
     void drawing_request(const Cairo::RefPtr<Cairo::Context>& cr) const {
@@ -61,7 +76,8 @@ struct ExtdPoint : Point
 
     const bool Get_StresSessionState() const {return dr;}
 
-    std::list<int> pIDs;
+    //vector native C++20 threads
+    std::vector<std::jthread> m_threads;
 };
 
 #endif /* _EXTDCIRCLE_H_ */

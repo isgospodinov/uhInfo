@@ -11,7 +11,7 @@
 class ClrDialog : public UhiDlgWnd
 {
 public:
-	ClrDialog(Gtk::Window *const pMWnd,const Glib::RefPtr<Gtk::CssProvider> *const cProv);
+	ClrDialog(Gtk::Window *const pMWnd);
 	virtual ~ClrDialog() = default;
 
 	void OnColorChoiceToggled(const Gtk::TreeModel::Path& path, Gtk::TreeViewColumn *column);
