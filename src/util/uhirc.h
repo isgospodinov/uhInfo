@@ -18,7 +18,7 @@
 #define GH_R_BUFF_SZ 4096
 
 #define GITHUB_HOST "api.github.com"
-#define APP_VER "Application version : 0.27"
+#define APP_VER "Application version : 0.28"
 #define LAST_VER "Latest version"
 
 #define CPUMNGBTNSTATE(btn,...) if(std::string(#__VA_ARGS__).empty())  btn.set_sensitive(false); else \
